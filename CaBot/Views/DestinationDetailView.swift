@@ -63,7 +63,7 @@ struct DestinationDetailView: View {
                     detail in
                         Button {
                             if let dest = targetDestination {
-                                tourManager.clearAll()
+                                modelData.clearAll()
                                 tourManager.addToLast(destination: dest)
                                 targetDestination = nil
                                 NavigationUtil.popToRootView()

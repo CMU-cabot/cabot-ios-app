@@ -989,6 +989,11 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         self.share(user_info: SharedInfo(type: .Destinations, value: manager.destinations.map { $0.title.text }.joined(separator: ",")))
     }
 
+    func clearAll(){
+        self.stopSpeak()
+        self.tourManager.clearAllDestinations()
+    }
+
     func tour(manager: TourManager, destinationChanged destination: Destination?) {
         if let dest = destination {
             if let dest_id = dest.value {
@@ -1083,6 +1088,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             self.tts.speak(text, force: true) {_ in }
             
             if self.suitcaseConnected {
+                if self.modeType != .Normal{
+                    self.share(user_info: SharedInfo(type: .RequestUserInfo, value: ""))
+                }
                 DispatchQueue.main.async {
                     self.fallbackService.manage(command: .lang, param: self.resourceLang)
                 }
@@ -1326,7 +1334,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                         if let value = dest.value {
                             if value == userInfo.value {
                                 if userInfo.flag1 { // clear and add
-                                    tourManager.clearAll()
+                                    self.clearAll()
                                 }
                                 tourManager.addToLast(destination: dest)
                                 needToStartAnnounce(wait: true)
@@ -1346,6 +1354,15 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         }
         if userInfo.type == .Skip {
             skipDestination()
+        }
+        if userInfo.type == .RequestUserInfo {
+            self.share(user_info: SharedInfo(type: .Tour, value: self.tourManager.title.text))
+            self.share(user_info: SharedInfo(type: .CurrentDestination, value: self.tourManager.currentDestination?.title.text ?? ""))
+            self.share(user_info: SharedInfo(type: .NextDestination, value: self.tourManager.nextDestination?.title.text ?? ""))
+            self.share(user_info: SharedInfo(type: .Destinations, value: self.tourManager.destinations.map { $0.title.text }.joined(separator: ",")))
+        }
+        if userInfo.type == .ClearDestinations {
+            self.clearAll()
         }
     }
 
@@ -1688,6 +1705,12 @@ class UserInfoBuffer {
             // do nothing
             break
         case .Skip:
+            // do nothing
+            break
+        case .RequestUserInfo:
+            // do nothing
+            break
+        case .ClearDestinations:
             // do nothing
             break
         }

@@ -143,7 +143,7 @@ class TourManager: TourProtocol {
         delegate?.tour(manager: self, destinationChanged: nil)
     }
 
-    func clearAll() {
+    func clearAllDestinations() {
         _destinations.removeAll()
         _currentDestination = nil
         _arrivedDestination = nil
