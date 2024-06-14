@@ -15,9 +15,9 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1</string>
+	<string>0.1</string>
 	<key>CFBundleVersion</key>
-	<string>2</string>
+	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -39,6 +39,8 @@
 	<string>This app uses your microphone</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>This app uses speech recognition</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app uses your camera</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
@@ -47,6 +49,18 @@
 	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UILaunchImage</key>
+		<dict>
+			<key>UILaunchImageMinimumOSVersion</key>
+			<string>14.0</string>
+			<key>UILaunchImageName</key>
+			<string>LaunchImage</string>
+		</dict>
+		<key>UILaunchScreenBackgroundColor</key>
+		<string>UIColor.systemBackgroundColor</string>
+	</dict>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

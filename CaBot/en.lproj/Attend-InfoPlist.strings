@@ -29,3 +29,4 @@ NSLocationAlwaysUsageDescription = "This app uses your location always";
 NSLocationWhenInUseUsageDescription = "This app uses your location when in use";
 NSMicrophoneUsageDescription = "This app uses your microphone";
 NSSpeechRecognitionUsageDescription = "This app uses speech recognition";
+NSCameraUsageDescription = "This app uses your camera";
