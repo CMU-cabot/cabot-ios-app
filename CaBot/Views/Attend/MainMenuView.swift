@@ -534,6 +534,7 @@ struct SettingMenus: View {
     var body: some View {
         let versionNo = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
         let buildNo = Bundle.main.infoDictionary!["CFBundleVersion"] as! String
+        let commitHash = Bundle.main.infoDictionary!["GitCommitHash"] as! String
 
         Section(header:Text("System")) {
             Toggle(isOn: $modelData.isTTSEnabledForAdvanced) {
@@ -623,7 +624,7 @@ struct SettingMenus: View {
                     }).pickerStyle(SegmentedPickerStyle())
                 }
             }
-            Text("Version: \(versionNo) (\(buildNo)) - \(CaBotServiceBLE.CABOT_BLE_VERSION)")
+            Text("Version: \(versionNo) (\(buildNo)) \(commitHash) - \(CaBotServiceBLE.CABOT_BLE_VERSION)")
         }
     }
 }
