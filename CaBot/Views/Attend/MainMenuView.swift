@@ -73,8 +73,36 @@ struct MainMenuView: View {
 struct UserInfoDestinations: View {
     @EnvironmentObject var modelData: CaBotAppModel
 
+    @State private var isConfirming = false
+    @State private var targetTour: Tour?
     var body: some View {
         Form {
+            Section(header: Text("Actions")) {
+                Button(action: {
+                    isConfirming = true
+                }) {
+                    Label{
+                        Text("CANCEL_NAVIGATION")
+                    } icon: {
+                        Image(systemName: "xmark.circle")
+                    }
+                }
+                .confirmationDialog(Text("CANCEL_NAVIGATION"), isPresented: $isConfirming) {
+                    Button {
+                        modelData.clearAll()
+                        NavigationUtil.popToRootView()
+                        modelData.share(user_info: SharedInfo(type: .ClearDestinations, value: ""))
+                        
+                    } label: {
+                        Text("CANCEL_ALL")
+                    }
+                    Button("Cancel", role: .cancel) {
+                    }
+                } message: {
+                    let message = LocalizedStringKey("CANCEL_NAVIGATION_MESSAGE \(modelData.tourManager.destinationCount, specifier: "%d")")
+                    Text(message)
+                }
+            }
             Section(header: Text("Tour")) {
                 ForEach(modelData.userInfo.destinations, id: \.self) { destination in
                     Label {
