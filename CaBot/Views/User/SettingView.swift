@@ -53,6 +53,7 @@ struct SettingView: View {
                         self.isResourceChanging = true
                         modelData.resource = modelData.resource
                         modelData.updateVoice()
+                        modelData.share(user_info: SharedInfo(type: .ChangeLanguage, value: lang))
                     }
                 }
 
@@ -62,14 +63,15 @@ struct SettingView: View {
             }
 
             Section(header:Text("TTS")) {
-                Picker(LocalizedStringKey("Voice"), selection: $modelData.voice) {
+                Picker(LocalizedStringKey("Voice"), selection: $modelData.userVoice) {
                     ForEach(TTSHelper.getVoices(by: locale), id: \.self) { voice in
                         Text(voice.AVvoice.name).tag(voice as Voice?)
                     }
-                }.onChange(of: modelData.voice, perform: { value in
-                    if let voice = modelData.voice {
+                }.onChange(of: modelData.userVoice, perform: { value in
+                    if let voice = modelData.userVoice {
                         if !isResourceChanging {
-                            modelData.playSample()
+                            modelData.playSample(mode: ModeType.Normal)
+                            modelData.share(user_info: SharedInfo(type: .ChangeUserVoiceType, value: "\(voice.id)"))
                         }
                     }
                 }).onTapGesture {
@@ -80,18 +82,19 @@ struct SettingView: View {
                 HStack {
                     Text("Speech Speed")
                         .accessibility(hidden: true)
-                    Slider(value: $modelData.speechRate,
+                    Slider(value: $modelData.userSpeechRate,
                            in: 0...1,
                            step: 0.05,
                            onEditingChanged: { editing in
                             timer?.invalidate()
                             timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { timer in
-                                modelData.playSample()
+                                modelData.playSample(mode: ModeType.Normal)
+                                modelData.share(user_info: SharedInfo(type: .ChangeUserVoiceRate, value: "\(modelData.userSpeechRate)"))
                             }
                     })
                         .accessibility(label: Text("Speech Speed"))
-                        .accessibility(value: Text(String(format:"%.0f %%", arguments:[modelData.speechRate*100.0])))
-                    Text(String(format:"%.0f %%", arguments:[modelData.speechRate*100.0]))
+                        .accessibility(value: Text(String(format:"%.0f %%", arguments:[modelData.userSpeechRate*100.0])))
+                    Text(String(format:"%.0f %%", arguments:[modelData.userSpeechRate*100.0]))
                         .accessibility(hidden: true)
                 }
             }

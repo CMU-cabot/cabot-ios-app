@@ -62,80 +62,106 @@ struct SettingView: View {
                 })
             }
 
-            Section(header:Text("TTS")) {
+            Section(header: Text("TTS")){
                 Toggle(isOn: $modelData.isTTSEnabledForAdvanced) {
                     Text("TTS Enabled (Advanced only)")
                 }
-                Toggle(isOn: $modelData.isTTSUserSync) {
-                    Text("Sync Voice Settings")
+                
+                Text("Select Voice Settings")
+                    .listRowSeparator(.hidden, edges: .bottom)
+                
+                Picker("", selection: $modelData.voiceSetting){
+                    Text(LocalizedStringKey("Attend Voice")).tag(ModeType.Advanced)
+                    Text(LocalizedStringKey("User Voice")).tag(ModeType.Normal)
                 }
-                if(!modelData.isTTSUserSync){
-                    Picker(LocalizedStringKey("Voice"), selection: $modelData.voice) {
-                        ForEach(TTSHelper.getVoices(by: locale), id: \.self) { voice in
-                            Text(voice.AVvoice.name).tag(voice as Voice?)
-                        }
-                    }.onChange(of: modelData.voice, perform: { value in
-                        if let voice = modelData.voice {
-                            if !isResourceChanging {
-                                modelData.playSample()
-                            }
-                        }
-                    }).onTapGesture {
-                        isResourceChanging = false
+                .pickerStyle(SegmentedPickerStyle())
+                .listRowSeparator(.hidden, edges: .top)
+
+                HStack{
+                    Text("Attend Voice")
+                    if(modelData.voiceSetting != .Normal){
+                        Spacer()
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                            .font(.system(size:22))
                     }
-                    .pickerStyle(DefaultPickerStyle())
-                    
-                    HStack {
-                        Text("Speech Speed")
-                            .accessibility(hidden: true)
-                        Slider(value: $modelData.speechRate,
-                               in: 0...1,
-                               step: 0.05,
-                               onEditingChanged: { editing in
-                            timer?.invalidate()
-                            timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { timer in
-                                modelData.playSample()
-                            }
-                        })
-                        .accessibility(label: Text("Speech Speed"))
-                        .accessibility(value: Text(String(format:"%.0f %%", arguments:[modelData.speechRate*100.0])))
-                        Text(String(format:"%.0f %%", arguments:[modelData.speechRate*100.0]))
-                            .accessibility(hidden: true)
+                }
+                Picker(LocalizedStringKey("Voice"), selection: $modelData.attendVoice) {
+                    ForEach(TTSHelper.getVoices(by: locale), id: \.self) { voice in
+                        Text(voice.AVvoice.name).tag(voice as Voice?)
                     }
+                }.onChange(of: modelData.attendVoice, perform: { value in
+                    if let voice = modelData.attendVoice {
+                        if !isResourceChanging {
+                            modelData.playSample(mode: ModeType.Advanced)
+                        }
+                    }
+                }).onTapGesture {
+                    isResourceChanging = false
+                }
+                .pickerStyle(DefaultPickerStyle())
+                .listRowSeparator(.hidden)
+                
+                HStack {
+                    Text("Speech Speed")
+                        .accessibility(hidden: true)
+                    Slider(value: $modelData.attendSpeechRate,
+                            in: 0...1,
+                            step: 0.05,
+                            onEditingChanged: { editing in
+                        timer?.invalidate()
+                        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { timer in
+                            modelData.playSample(mode: ModeType.Advanced)
+                        }
+                    })
+                    .accessibility(label: Text("Speech Speed"))
+                    .accessibility(value: Text(String(format:"%.0f %%", arguments:[modelData.attendSpeechRate*100.0])))
+                    Text(String(format:"%.0f %%", arguments:[modelData.attendSpeechRate*100.0]))
+                        .accessibility(hidden: true)
                 }
                 
-                if(modelData.isTTSUserSync){
-                    Picker(LocalizedStringKey("User Voice"), selection: $modelData.voice) {
-                        ForEach(TTSHelper.getVoices(by: locale), id: \.self) { voice in
-                            Text(voice.AVvoice.name).tag(voice as Voice?)
+                HStack{
+                    Text("User Voice")
+                    if(modelData.voiceSetting == .Normal){
+                        Spacer()
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                            .font(.system(size:22))
+                    }
+                }
+                Picker(LocalizedStringKey("Voice"), selection: $modelData.userVoice) {
+                    ForEach(TTSHelper.getVoices(by: locale), id: \.self) { voice in
+                        Text(voice.AVvoice.name).tag(voice as Voice?)
+                    }
+                }.onChange(of: modelData.userVoice, perform: { value in
+                    if let voice = modelData.userVoice {
+                        if !isResourceChanging {
+                            modelData.playSample(mode: ModeType.Normal)
+                            modelData.share(user_info: SharedInfo(type: .ChangeUserVoiceType, value: "\(voice.id)"))
                         }
-                    }.onChange(of: modelData.voice, perform: { value in
-                        if let voice = modelData.voice {
-                            if !isResourceChanging {
-                                modelData.playSample()
+                    }
+                }).onTapGesture {
+                    isResourceChanging = false
+                }
+                .pickerStyle(DefaultPickerStyle())
+                .listRowSeparator(.hidden)
+                HStack {
+                    Text("Speech Speed")
+                        .accessibility(hidden: true)
+                    Slider(value: $modelData.userSpeechRate,
+                           in: 0...1,
+                           step: 0.05,
+                           onEditingChanged: { editing in
+                            timer?.invalidate()
+                            timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { timer in
+                                modelData.playSample(mode: ModeType.Normal)
+                                modelData.share(user_info: SharedInfo(type: .ChangeUserVoiceRate, value: "\(modelData.userSpeechRate)"))
                             }
-                        }
-                    }).onTapGesture {
-                        isResourceChanging = false
-                    }
-                    .pickerStyle(DefaultPickerStyle())
-                    HStack {
-                        Text("User Speech Speed")
-                            .accessibility(hidden: true)
-                        Slider(value: $modelData.speechRate,
-                               in: 0...1,
-                               step: 0.05,
-                               onEditingChanged: { editing in
-                                timer?.invalidate()
-                                timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { timer in
-                                    modelData.playSample()
-                                }
-                        })
-                            .accessibility(label: Text("User Speech Speed"))
-                            .accessibility(value: Text(String(format:"%.0f %%", arguments:[modelData.speechRate*100.0])))
-                        Text(String(format:"%.0f %%", arguments:[modelData.speechRate*100.0]))
-                            .accessibility(hidden: true)
-                    }
+                    })
+                        .accessibility(label: Text("Speech Speed"))
+                        .accessibility(value: Text(String(format:"%.0f %%", arguments:[modelData.userSpeechRate*100.0])))
+                    Text(String(format:"%.0f %%", arguments:[modelData.userSpeechRate*100.0]))
+                        .accessibility(hidden: true)
                 }
             }
 

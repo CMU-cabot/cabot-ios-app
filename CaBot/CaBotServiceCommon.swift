@@ -47,6 +47,8 @@ struct SharedInfo: Codable {
         case RequestUserInfo
         case ClearDestinations
         case ChangeLanguage
+        case ChangeUserVoiceRate
+        case ChangeUserVoiceType
     }
     init(type: InfoType, value: String, flag1: Bool = false, flag2: Bool = false, location: Int = 0, length: Int = 0) {
         self.type = type
