@@ -29,7 +29,6 @@ struct DestinationDetailView: View {
     @State private var targetDestination: Destination?
 
     var body: some View {
-        let tourManager = modelData.tourManager
         Form {
             Section(header: Text(destination.title.text)) {
                 if let startMessage =  destination.startMessage?.content {

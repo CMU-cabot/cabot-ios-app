@@ -31,7 +31,6 @@ struct DestinationsView: View {
     var destination: Destination?
 
     var body: some View {
-        let tourManager = modelData.tourManager
         let destinations = try! Destination.load(at: src)
         var header: Text?
         if let title = destination?.title {

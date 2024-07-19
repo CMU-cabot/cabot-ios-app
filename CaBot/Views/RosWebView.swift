@@ -112,13 +112,10 @@ struct LocalWebView: UIViewRepresentable {
     fileprivate func loadRequest(in webView: WKWebView) {
         if let htmlPath = Bundle.main.url(forResource: "Resource/localserver/cabot_map", withExtension: "html"),
            let baseUrl = Bundle.main.resourceURL?.appendingPathComponent("Resource/localserver") {
-            do {
-                var components = URLComponents(url: htmlPath, resolvingAgainstBaseURL: false)
-                components?.query = "ip=" + address + "&port=" + port
-                if let queryURL = components?.url {
-                    webView.loadFileURL(queryURL, allowingReadAccessTo: baseUrl)
-                }
-            } catch {
+           var components = URLComponents(url: htmlPath, resolvingAgainstBaseURL: false)
+            components?.query = "ip=" + address + "&port=" + port
+            if let queryURL = components?.url {
+                webView.loadFileURL(queryURL, allowingReadAccessTo: baseUrl)
             }
             webView.isOpaque = false
             webView.isHidden = false

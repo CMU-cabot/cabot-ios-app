@@ -129,12 +129,35 @@ THE SOFTWARE.Copyright (c) 2023  Carnegie Mellon University and Miraikan
         });
 
         // Setup a client to listen to TFs.
+        expected_frames = ["velodyne", "map", "map_global"]
+        originalTFProcessFunc = ROSLIB.TFClient.prototype.processTFArray
+        ROSLIB.TFClient.prototype.processTFArray = (tfs) => {
+            for (index in tfs.transforms) {
+                tf = tfs.transforms[index]
+                expected_frames = expected_frames.filter(function(item) {
+                    return item !== tf.child_frame_id
+                });
+                //console.log(tfs.transforms[index])
+            }
+            originalTFProcessFunc.call(tfClient, tfs)
+        };
+        checkLoopCount = 0;
+        checkLoopID = setInterval(function() {
+            checkLoopCount++;
+            if (expected_frames.length == 0) {
+                clearInterval(checkLoopID)
+            }
+            if (checkLoopCount > 30) {
+                location.reload()
+            }
+        }, 100);
+
         var tfClient = new ROSLIB.TFClient({
             ros : ros,
-            angularThres : 0.01,
+            angularThres : 0.001,
             transThres : 0.01,
             rate : 10.0,
-            updateDelay : 500,
+            updateDelay : 0,
             fixedFrame : '/map'
         });
 
@@ -148,12 +171,12 @@ THE SOFTWARE.Copyright (c) 2023  Carnegie Mellon University and Miraikan
             material : { size : 1, color : 0xff00ff }
         });
 
-        old = ROS3D.Path.prototype.processMessage;
+        originalPathProcessFunc = ROS3D.Path.prototype.processMessage;
         ROS3D.Path.prototype.processMessage = (message) => {
             message.poses.forEach((pose) => {
                 pose.pose.position.z = 1.0;
             })
-            old.call(path, message);
+            originalPathProcessFunc.call(path, message);
         }
         // Setup the marker client.
         var path = new ROS3D.Path({

@@ -209,11 +209,6 @@ static NavDeviceTTS *instance = nil;
         prgoressHandler:phandler];
 }
 
-- (AVSpeechUtterance *)selfspeak:(NSString *)text completionHandler:(void (^)(int))handler
-{
-    return [self selfspeak:text force:NO completionHandler:handler];
-}
-
 - (AVSpeechUtterance *)selfspeak:(NSString *)text
                            force:(BOOL)flag
                completionHandler:(void (^)(int))handler
@@ -228,14 +223,6 @@ static NavDeviceTTS *instance = nil;
                   voice:nil
       completionHandler:handler
         prgoressHandler:phandler];
-}
-
-- (AVSpeechUtterance*) speak: (NSString*) text
-           completionHandler:(void (^)(int))handler
-{
-    return [self speak:text
-                 force:NO
-     completionHandler:handler];
 }
 
 - (AVSpeechUtterance*) speak:(NSString*)text
@@ -555,7 +542,6 @@ static float readTextCount = 10; // default estimated chars per sec (ja)
     
     return str;
 }
-
 
 
 @end

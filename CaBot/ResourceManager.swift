@@ -252,7 +252,7 @@ struct Source: Decodable, Hashable, CustomStringConvertible {
     var error: String? {
         get {
             let error = BufferedInfo()
-            if let content = self.content {
+            if let _ = self.content {
             } else {
                 error.add(info: "Content not found")
             }
@@ -285,7 +285,7 @@ struct Source: Decodable, Hashable, CustomStringConvertible {
     var content: String? {
         get {
             guard let url = url  else { return nil }
-            guard var text = try? String(contentsOf: url) else { return nil }
+            guard let text = try? String(contentsOf: url) else { return nil }
             return text.replacingOccurrences(of: "\r\n", with: "\n")
         }
     }
@@ -850,8 +850,6 @@ class NavigationSetting: Decodable, NavigationSettingProtocol {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        let i18n = decoder.userInfo[.i18n] as! I18N
-        let error = BufferedInfo()
 
         if let flag = try? container.decode(Bool.self, forKey: .enableSubtourOnHandle) {
             self.enableSubtourOnHandle = flag
@@ -1027,21 +1025,17 @@ class ResourceManager {
         let resourceRoot = getResourceRoot()
 
         let fm = FileManager.default
-        do {
-            let enumerator: FileManager.DirectoryEnumerator? = fm.enumerator(at: resourceRoot, includingPropertiesForKeys: [.isDirectoryKey], options: [], errorHandler: nil)
+        let enumerator: FileManager.DirectoryEnumerator? = fm.enumerator(at: resourceRoot, includingPropertiesForKeys: [.isDirectoryKey], options: [], errorHandler: nil)
 
-            while let dir = enumerator?.nextObject() as? URL {
-                if fm.fileExists(atPath: dir.appendingPathComponent(Resource.METADATA_FILE_NAME).path) {
-                    do {
-                        let model = try Resource(at: dir)
-                        list.append(model)
-                    } catch (let error) {
-                        NSLog(error.localizedDescription)
-                    }
+        while let dir = enumerator?.nextObject() as? URL {
+            if fm.fileExists(atPath: dir.appendingPathComponent(Resource.METADATA_FILE_NAME).path) {
+                do {
+                    let model = try Resource(at: dir)
+                    list.append(model)
+                } catch (let error) {
+                    NSLog(error.localizedDescription)
                 }
             }
-        } catch {
-            NSLog("Could not get file list at \(resourceRoot)")
         }
 
         return list.sorted { r1, r2 in

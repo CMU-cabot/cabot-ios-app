@@ -56,12 +56,31 @@
 static NSMutableDictionary<NSString*, UIView*>* waitingViewMap;
 static NSMutableDictionary<NSString*, UIView*>* messageViewMap;
 
++ (UIWindow *)keyWindow
+{
+    UIWindow *foundWindow = nil;
+    NSSet *scenes=[[UIApplication sharedApplication] connectedScenes];
+    NSArray *windows;
+    for(id aScene in scenes){  // it's an NSSet so you can't use the first object
+        windows=[aScene windows];
+        if([aScene activationState]==UISceneActivationStateForegroundActive)
+             break;
+    }
+    for (UIWindow  *window in windows) {
+        if (window.isKeyWindow) {
+            foundWindow = window;
+            break;
+        }
+    }
+    return foundWindow;
+}
+
 +(void)showModalWaitingWithMessage:(NSString *)message
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSArray* windows = [[UIApplication sharedApplication] windows];
-        if (windows.count > 0) {
-            UIView *view = [windows[0] visibleViewController].view;
+        UIWindow* window = [NavUtil keyWindow];
+        if (window != nil) {
+            UIView *view = [window visibleViewController].view;
             [NavUtil showWaitingForView:view withMessage:message];
         }
     });
@@ -70,9 +89,9 @@ static NSMutableDictionary<NSString*, UIView*>* messageViewMap;
 +(void)hideModalWaiting
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSArray* windows = [[UIApplication sharedApplication] windows];
-        if (windows.count > 0) {
-            UIView *view = [windows[0] visibleViewController].view;
+        UIWindow* window = [NavUtil keyWindow];
+        if (window != nil) {
+            UIView *view = [window visibleViewController].view;
             [NavUtil hideWaitingForView:view];
         }
     });

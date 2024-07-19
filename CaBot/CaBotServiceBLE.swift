@@ -60,6 +60,7 @@ class CaBotServiceBLE: NSObject {
     public var teamID:String? = nil
     public var peripheralManager:CBPeripheralManager?
 
+    private let queue = DispatchQueue.global(qos: .utility)
     private let uuid = CBUUID(string: String(format:UUID_FORMAT, 0x0000))
     private var logChar:CaBotNotifyChar!
     private var summonsChar:CaBotNotifyChar!
@@ -84,7 +85,7 @@ class CaBotServiceBLE: NSObject {
 
     func start() {
         if self.peripheralManager != nil {return}
-        let peripheralManager = CBPeripheralManager(delegate: self, queue: nil,
+        let peripheralManager = CBPeripheralManager(delegate: self, queue: queue,
                                                      options: [CBPeripheralManagerOptionShowPowerAlertKey: true,
                                                                CBPeripheralManagerOptionRestoreIdentifierKey: peripheralRestoreKey])
 

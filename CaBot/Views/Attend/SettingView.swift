@@ -91,7 +91,7 @@ struct SettingView: View {
                         Text(voice.AVvoice.name).tag(voice as Voice?)
                     }
                 }.onChange(of: modelData.attendVoice, perform: { value in
-                    if let voice = modelData.attendVoice {
+                    if let _ = modelData.attendVoice {
                         if !isResourceChanging {
                             modelData.playSample(mode: ModeType.Advanced)
                         }

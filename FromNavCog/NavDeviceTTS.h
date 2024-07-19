@@ -71,11 +71,6 @@ typedef enum {
 
 - (AVSpeechUtterance*) speak:(NSString*)text withOptions:(NSDictionary*)options completionHandler:(void(^)(int))handler progressHandler:(void (^)(NSString*, int, NSRange))phandler;
 
-- (AVSpeechUtterance*) speak:(NSString*)text completionHandler:(void(^)(int))handler __attribute__ ((deprecated));
-- (AVSpeechUtterance*) speak:(NSString*)text force:(BOOL)flag completionHandler:(void(^)(int))handler __attribute__ ((deprecated));
-- (AVSpeechUtterance*) selfspeak:(NSString*)text completionHandler:(void(^)(int))handler __attribute__ ((deprecated));
-- (AVSpeechUtterance*) selfspeak:(NSString*)text force:(BOOL)flag completionHandler:(void(^)(int))handler __attribute__ ((deprecated));
-
 - (void) pause:(double)duration;
 - (void) reset;
 - (void) stop:(BOOL)immediate;

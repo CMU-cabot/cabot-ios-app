@@ -38,7 +38,7 @@ public extension UIWindow {
 // https://stackoverflow.com/a/67495147/15421301
 struct NavigationUtil {
   static func popToRootView() {
-    findNavigationController(viewController: UIApplication.shared.windows.filter { $0.isKeyWindow }.first?.rootViewController)?
+      findNavigationController(viewController: NavUtil.keyWindow()?.rootViewController)?
       .popToRootViewController(animated: true)
   }
 

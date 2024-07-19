@@ -226,7 +226,7 @@ class JSView: NSObject, JSViewExport {
             alertController.addAction(ok)
 
 
-            if let view = UIApplication.shared.windows[0].visibleViewController {
+            if let view = NavUtil.keyWindow()?.rootViewController  {
                 view.present(alertController, animated: true, completion: nil)
             }
         }

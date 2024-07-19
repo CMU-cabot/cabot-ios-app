@@ -36,6 +36,7 @@
 
 @interface NavUtil : NSObject
 
++(UIWindow*)keyWindow;
 +(void)showModalWaitingWithMessage:(NSString *)message;
 +(void)hideModalWaiting;
 +(void)showWaitingForView:(UIView*)view withMessage:(NSString*)message;
