@@ -484,6 +484,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     @Published var batteryStatus: BatteryStatus = BatteryStatus()
     @Published var touchStatus: TouchStatus = TouchStatus()
     @Published var userInfo: UserInfoBuffer = UserInfoBuffer()
+    @Published var resourceDownload: ResourceDownload
 
     private var addressCandidate: AddressCandidate
     private var bleService: CaBotServiceBLE
@@ -526,6 +527,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         self.tourManager = TourManager(setting: self.detailSettingModel)
         self.dialogViewHelper = DialogViewHelper()
         self.locationManager =  CLLocationManager()
+        self.resourceDownload = ResourceDownload()
 
         // initialize connection type
         var connectionType: ConnectionType = .BLE
@@ -545,9 +547,6 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         self.tts.delegate = self
         self.logList.delegate = self
 
-        if let selectedIdentifier = UserDefaults.standard.value(forKey: selectedResourceKey) as? String {
-            self.resource = resourceManager.resource(by: selectedIdentifier)
-        }
         if let selectedLang = UserDefaults.standard.value(forKey: selectedResourceLangKey) as? String {
             self.resource?.lang = selectedLang
             self.updateVoice()

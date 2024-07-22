@@ -296,7 +296,7 @@
 "RESTART_LOCALIZATION_MESSAGE"="The localization will be restarted. This should be used when the robot is stopped.";
 
 //Resource Download Alert View
-"RetryAlert" = "Check the connection with the server!";
+"Retry Alert" = "Check the connection with the server!";
 "Retry" = "Retry";
-"ReturnMainmenu" = "ReturnMainMenu";
-"ResourceDownload" = "Resource Download";
+"Return Mainmenu" = "Return MainMenu";
+"Resource Download" = "Resource Download";
