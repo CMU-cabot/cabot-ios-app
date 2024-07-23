@@ -1014,7 +1014,9 @@ class ResourceManager {
             return path!.appendingPathComponent("PreviewResource")
 
         } else {
-            let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            guard let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+                fatalError("Could not find the document directory.")
+            }
             return path
         }
     }
