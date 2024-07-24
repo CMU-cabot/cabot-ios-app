@@ -99,7 +99,7 @@ struct UserInfoDestinations: View {
                     Button("Cancel", role: .cancel) {
                     }
                 } message: {
-                    let message = LocalizedStringKey("CANCEL_NAVIGATION_MESSAGE \(modelData.tourManager.destinationCount, specifier: "%d")")
+                    let message = LocalizedStringKey("CANCEL_NAVIGATION_MESSAGE \(modelData.userInfo.destinations.count, specifier: "%d")")
                     Text(message)
                 }
             }
@@ -174,7 +174,7 @@ struct UserInfoView: View {
                     }
                 }
             }
-            if (modelData.userInfo.destinations.count > 1) {
+            if (modelData.userInfo.destinations.count >= 1) {
                 NavigationLink(destination: UserInfoDestinations().environmentObject(modelData), label: {
                     HStack {
                         Spacer()
