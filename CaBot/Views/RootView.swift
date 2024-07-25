@@ -89,7 +89,6 @@ struct RootView: View {
                              })
             }
         }
-        .environment(\.locale, modelData.resource?.locale ?? .init(identifier: "base"))
     }
 }
 

@@ -49,6 +49,7 @@ struct CaBotApp: App {
         WindowGroup {
             RootView()
                 .environmentObject(modelData)
+                .environment(\.locale, modelData.resource?.locale ?? .current)
         }.onChange(of: scenePhase) { newScenePhase in
 
             modelData.onChange(of: newScenePhase)

@@ -242,18 +242,17 @@ struct ResourceDownloadRetryUIView: View {
         }
         // If download fails, an error message and retry will be displayed
         if modelData.resource == nil {
-            Section(header: Text(CustomLocalizedString("Resource Download", lang: modelData.resourceLang))) {
-                Text(CustomLocalizedString("Retry Alert", lang: modelData.resourceLang))
+            Section(header: Text("Resource Download")) {
+                Text("Retry Alert")
                     .font(.body)
                     .foregroundColor(.red)
                     .lineLimit(1)
                 Button(action: {
-                    let _: () = modelData.resourceDownload.deleteHashKey()
-                    let _: () = modelData.resourceDownload.deleteResourceFile()
-                    let _: () = modelData.resourceDownload.startFileDownload(modelData: modelData)
+                    modelData.resourceDownload.deleteHashKey()
+                    modelData.resourceDownload.deleteResourceFile()
+                    modelData.resourceDownload.startFileDownload(modelData: modelData)
                 }, label: {
-                    Text(CustomLocalizedString("Retry", lang: modelData.resourceLang))
-                        .foregroundColor(.blue)
+                    Text("Retry")
                 })
             }
         }
