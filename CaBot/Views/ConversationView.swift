@@ -72,7 +72,11 @@ struct ConversationView: UIViewControllerRepresentable {
 
         let view = DialogViewControllerCabot()
         view.baseHelper = modelData.dialogViewHelper
-        view.voice = modelData.voice!.AVvoice
+        if(modelData.voiceSetting == .Normal){
+            view.voice = modelData.userVoice!.AVvoice
+        }else{
+            view.voice = modelData.attendVoice!.AVvoice
+        }
         view.modelURL = src.url
 
         let observer = Observer.getInstance(owner:self)
