@@ -394,6 +394,25 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     }
     #endif
     
+    func initTTS()
+    {
+        if let resource = self.resource {
+            let key = "\(selectedVoiceKey)_\(resource.locale.identifier)"
+            if let id = UserDefaults.standard.value(forKey: key) as? String {
+                self.userVoice = TTSHelper.getVoice(by: id)
+            } else {
+                self.userVoice = TTSHelper.getVoices(by: resource.locale)[0]
+            }
+            if let id = UserDefaults.standard.value(forKey: key) as? String {
+                self.attendVoice = TTSHelper.getVoice(by: id)
+            } else {
+                self.attendVoice = TTSHelper.getVoices(by: resource.locale)[0]
+            }
+        }
+        
+        self.updateTTS()
+    }
+    
     func updateVoice() {
         if let resource = self.resource {
             let key = "\(selectedVoiceKey)_\(resource.locale.identifier)"
@@ -494,7 +513,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             updateNetworkConfig()
         }
     }
-    let socketPort: String = "5001"
+    let socketPort: String = "5000"
     let rosPort: String = "9091"
     @Published var menuDebug: Bool = false {
         didSet {
@@ -657,7 +676,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         
         self.userInfo.modelData = self
         
-        self.updateTTS()
+        self.initTTS()
     }
 
     func updateNetworkConfig() {
