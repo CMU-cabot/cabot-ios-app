@@ -30,7 +30,9 @@ struct SettingView: View {
     @State var timer:Timer?
     @State var langOverride:String
     @State var isResourceChanging:Bool = false
-
+    
+    @State var userVoicePickerSelection: Voice?
+    
     var body: some View {
         return Form {
             Section(header: Text("Settings")){
@@ -63,21 +65,28 @@ struct SettingView: View {
             }
 
             Section(header:Text("TTS")) {
-                Picker(LocalizedStringKey("Voice"), selection: $modelData.userVoice) {
+                Picker(LocalizedStringKey("Voice"), selection: $userVoicePickerSelection) {
                     ForEach(TTSHelper.getVoices(by: locale), id: \.self) { voice in
                         Text(voice.AVvoice.name).tag(voice as Voice?)
                     }
-                }.onChange(of: modelData.userVoice, perform: { value in
-                    if let voice = modelData.userVoice {
+                }.onChange(of: userVoicePickerSelection, perform: { value in
+                    if let voice = value {
                         if !isResourceChanging {
-                            modelData.playSample(mode: ModeType.Normal)
-                            modelData.share(user_info: SharedInfo(type: .ChangeUserVoiceType, value: "\(voice.id)"))
+                            if(userVoicePickerSelection != modelData.userVoice){
+                                modelData.userVoice = value
+                                modelData.playSample(mode: ModeType.Normal)
+                                modelData.share(user_info: SharedInfo(type: .ChangeUserVoiceType, value: "\(voice.id)"))
+                            }
+                            userVoicePickerSelection = value
                         }
                     }
                 }).onTapGesture {
                     isResourceChanging = false
                 }
                 .pickerStyle(DefaultPickerStyle())
+                .onAppear {
+                    userVoicePickerSelection = modelData.userVoice
+                }
                 
                 HStack {
                     Text("Speech Speed")
