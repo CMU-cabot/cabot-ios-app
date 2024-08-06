@@ -72,9 +72,9 @@ struct ConversationView: UIViewControllerRepresentable {
 
         let view = DialogViewControllerCabot()
         view.baseHelper = modelData.dialogViewHelper
-        if(modelData.voiceSetting == .Normal){
+        if(modelData.voiceSetting == .User){
             view.voice = modelData.userVoice!.AVvoice
-        }else{
+        }else if(modelData.voiceSetting == .Attend){
             view.voice = modelData.attendVoice!.AVvoice
         }
         view.modelURL = src.url

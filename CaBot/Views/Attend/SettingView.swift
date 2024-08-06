@@ -71,15 +71,15 @@ struct SettingView: View {
                     .listRowSeparator(.hidden, edges: .bottom)
                 
                 Picker("", selection: $modelData.voiceSetting){
-                    Text(LocalizedStringKey("Attend Voice")).tag(ModeType.Advanced)
-                    Text(LocalizedStringKey("User Voice")).tag(ModeType.Normal)
+                    Text(LocalizedStringKey("Attend Voice")).tag(VoiceMode.Attend)
+                    Text(LocalizedStringKey("User Voice")).tag(VoiceMode.User)
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .listRowSeparator(.hidden, edges: .top)
 
                 HStack{
                     Text("Attend Voice")
-                    if(modelData.voiceSetting != .Normal){
+                    if(modelData.voiceSetting == .Attend){
                         Spacer()
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(.green)
@@ -93,7 +93,7 @@ struct SettingView: View {
                 }.onChange(of: modelData.attendVoice, perform: { value in
                     if let _ = modelData.attendVoice {
                         if !isResourceChanging {
-                            modelData.playSample(mode: ModeType.Advanced)
+                            modelData.playSample(mode: VoiceMode.Attend)
                         }
                     }
                 }).onTapGesture {
@@ -111,7 +111,7 @@ struct SettingView: View {
                             onEditingChanged: { editing in
                         timer?.invalidate()
                         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { timer in
-                            modelData.playSample(mode: ModeType.Advanced)
+                            modelData.playSample(mode: VoiceMode.Attend)
                         }
                     })
                     .accessibility(label: Text("Speech Speed"))
@@ -122,7 +122,7 @@ struct SettingView: View {
                 
                 HStack{
                     Text("User Voice")
-                    if(modelData.voiceSetting == .Normal){
+                    if(modelData.voiceSetting == .User){
                         Spacer()
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(.green)
@@ -136,7 +136,7 @@ struct SettingView: View {
                 }.onChange(of: modelData.userVoice, perform: { value in
                     if let voice = modelData.userVoice {
                         if !isResourceChanging {
-                            modelData.playSample(mode: ModeType.Normal)
+                            modelData.playSample(mode: VoiceMode.User)
                             modelData.share(user_info: SharedInfo(type: .ChangeUserVoiceType, value: "\(voice.id)"))
                         }
                     }
@@ -154,7 +154,7 @@ struct SettingView: View {
                            onEditingChanged: { editing in
                             timer?.invalidate()
                             timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { timer in
-                                modelData.playSample(mode: ModeType.Normal)
+                                modelData.playSample(mode: VoiceMode.User)
                                 modelData.share(user_info: SharedInfo(type: .ChangeUserVoiceRate, value: "\(modelData.userSpeechRate)"))
                             }
                     })

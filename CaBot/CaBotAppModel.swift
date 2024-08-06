@@ -63,6 +63,11 @@ enum ModeType: String, CaseIterable{
     case Debug  = "Debug"
 }
 
+enum VoiceMode: String, CaseIterable{
+    case User = "User"
+    case Attend = "Attend"
+}
+
 enum SpeechPriority: String, CaseIterable {
     case Robot = "Robot"
     case App = "App"
@@ -381,13 +386,13 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     }
     
     #if ATTEND
-    @Published var voiceSetting: ModeType = .Advanced {
+    @Published var voiceSetting: VoiceMode = .Attend {
         didSet {
             self.updateTTS()
         }
     }
     #elseif USER
-    @Published var voiceSetting: ModeType = .Normal {
+    @Published var voiceSetting: VoiceMode = .User {
         didSet {
             self.updateTTS()
         }
@@ -417,13 +422,13 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         if let resource = self.resource {
             let key = "\(selectedVoiceKey)_\(resource.locale.identifier)"
             
-            if(voiceSetting == .Normal){
+            if(voiceSetting == .User){
                 if let id = UserDefaults.standard.value(forKey: key) as? String {
                     self.userVoice = TTSHelper.getVoice(by: id)
                 } else {
                     self.userVoice = TTSHelper.getVoices(by: resource.locale)[0]
                 }
-            } else {
+            } else if(voiceSetting == .Attend) {
                 if let id = UserDefaults.standard.value(forKey: key) as? String {
                     self.attendVoice = TTSHelper.getVoice(by: id)
                 } else {
@@ -434,10 +439,10 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     }
     
     func updateTTS() {
-        if(self.voiceSetting == .Normal){
+        if(self.voiceSetting == .User){
             self.tts.rate = self.userSpeechRate
             self.tts.voice = self.userVoice?.AVvoice
-        } else {
+        } else if(voiceSetting == .Attend) {
             self.tts.rate = self.attendSpeechRate
             self.tts.voice = self.attendVoice?.AVvoice
         }
@@ -975,17 +980,17 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         self.tts.stop(false)
     }
 
-    func playSample(mode: ModeType){
+    func playSample(mode: VoiceMode){
         if(self.modeType == .Normal){
             self.tts.rate = self.userSpeechRate
             self.tts.voice = self.userVoice?.AVvoice
             self.tts.speak(CustomLocalizedString("Hello Suitcase!", lang: self.resourceLang), force:true) {_ in
             }
         } else {
-            if(mode == .Normal){
+            if(mode == .User){
                 self.tts.rate = self.userSpeechRate
                 self.tts.voice = self.userVoice?.AVvoice
-            } else {
+            } else if(mode == .Attend) {
                 self.tts.rate = self.attendSpeechRate
                 self.tts.voice = self.attendVoice?.AVvoice
             }
