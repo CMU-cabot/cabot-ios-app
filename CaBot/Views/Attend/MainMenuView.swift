@@ -75,8 +75,36 @@ struct MainMenuView: View {
 struct UserInfoDestinations: View {
     @EnvironmentObject var modelData: CaBotAppModel
 
+    @State private var isConfirming = false
+    @State private var targetTour: Tour?
     var body: some View {
         Form {
+            Section(header: Text("Actions")) {
+                Button(action: {
+                    isConfirming = true
+                }) {
+                    Label{
+                        Text("CANCEL_NAVIGATION")
+                    } icon: {
+                        Image(systemName: "xmark.circle")
+                    }
+                }
+                .confirmationDialog(Text("CANCEL_NAVIGATION"), isPresented: $isConfirming) {
+                    Button {
+                        modelData.clearAll()
+                        NavigationUtil.popToRootView()
+                        modelData.share(user_info: SharedInfo(type: .ClearDestinations, value: ""))
+                        
+                    } label: {
+                        Text("CANCEL_ALL")
+                    }
+                    Button("Cancel", role: .cancel) {
+                    }
+                } message: {
+                    let message = LocalizedStringKey("CANCEL_NAVIGATION_MESSAGE \(modelData.userInfo.destinations.count, specifier: "%d")")
+                    Text(message)
+                }
+            }
             Section(header: Text("Tour")) {
                 ForEach(modelData.userInfo.destinations, id: \.self) { destination in
                     Label {
@@ -148,7 +176,7 @@ struct UserInfoView: View {
                     }
                 }
             }
-            if (modelData.userInfo.destinations.count > 1) {
+            if (modelData.userInfo.destinations.count >= 1) {
                 NavigationLink(destination: UserInfoDestinations().environmentObject(modelData), label: {
                     HStack {
                         Spacer()
@@ -539,42 +567,6 @@ struct SettingMenus: View {
         let commitHash = Bundle.main.infoDictionary!["GitCommitHash"] as! String
 
         Section(header:Text("System")) {
-            Toggle(isOn: $modelData.isTTSEnabledForAdvanced) {
-                Text("TTS Enabled (Advanced only)")
-            }
-            Picker(LocalizedStringKey("Voice"), selection: $modelData.voice) {
-                ForEach(TTSHelper.getVoices(by: locale), id: \.self) { voice in
-                    Text(voice.AVvoice.name).tag(voice as Voice?)
-                }
-            }.onChange(of: modelData.voice, perform: { value in
-                if let _ = modelData.voice {
-                    if !isResourceChanging {
-                        modelData.playSample()
-                    }
-                }
-            }).onTapGesture {
-                isResourceChanging = false
-            }
-            .pickerStyle(DefaultPickerStyle())
-
-            HStack {
-                Text("Speech Speed")
-                    .accessibility(hidden: true)
-                Slider(value: $modelData.speechRate,
-                       in: 0...1,
-                       step: 0.05,
-                       onEditingChanged: { editing in
-                        timer?.invalidate()
-                        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { timer in
-                            modelData.playSample()
-                        }
-                })
-                    .accessibility(label: Text("Speech Speed"))
-                    .accessibility(value: Text(String(format:"%.0f %%", arguments:[modelData.speechRate*100.0])))
-                Text(String(format:"%.0f %%", arguments:[modelData.speechRate*100.0]))
-                    .accessibility(hidden: true)
-            }
-
             if #available(iOS 15.0, *) {
                 NavigationLink (destination: LogFilesView(langOverride: modelData.resourceLang)
                     .environmentObject(modelData.logList),

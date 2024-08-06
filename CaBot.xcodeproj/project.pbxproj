@@ -82,7 +82,6 @@
 		D7CC05052BFB352700C0B10A /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E50DD3269F77CE00729ABD /* RootView.swift */; };
 		D7CC05062BFB352700C0B10A /* NavUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EF5F1E8228DB07100788987 /* NavUtil.m */; };
 		D7CC05072BFB352700C0B10A /* ConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E50DDE26A0B21200729ABD /* ConversationView.swift */; };
-		D7CC05082BFB352700C0B10A /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3096BF1326A5C29F0066F256 /* SettingView.swift */; };
 		D7CC05092BFB352700C0B10A /* RosWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E561455E2A6E02A8005CF82F /* RosWebView.swift */; };
 		D7CC050B2BFB352700C0B10A /* I18NExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EDF3C4129D4776D00AD1115 /* I18NExtension.swift */; };
 		D7CC050C2BFB352700C0B10A /* TTSHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3096BF1726A5D0990066F256 /* TTSHelper.swift */; };
@@ -112,6 +111,7 @@
 		D7CC05382BFB688400C0B10A /* User-InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D7CC05362BFB688400C0B10A /* User-InfoPlist.strings */; };
 		D7D7A6FB2BFECB490072ADF6 /* TourDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7D7A6FA2BFECB490072ADF6 /* TourDetailView.swift */; };
 		D7E54B522C0CD03A002FE3C4 /* MainMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E54B512C0CD03A002FE3C4 /* MainMenuView.swift */; };
+		D7F6BE6E2C2A57C300CD8258 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F6BE6D2C2A57C300CD8258 /* SettingView.swift */; };
 		E46C82642C18081100917AB3 /* ResourceDownload.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46C82632C18081100917AB3 /* ResourceDownload.swift */; };
 		E46C82652C18081100917AB3 /* ResourceDownload.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46C82632C18081100917AB3 /* ResourceDownload.swift */; };
 		E493D8792C2279F700691097 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = E493D8782C2279F700691097 /* ZIPFoundation */; };
@@ -223,6 +223,7 @@
 		D7CC05392BFB68BB00C0B10A /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = "ja.lproj/User-InfoPlist.strings"; sourceTree = "<group>"; };
 		D7D7A6FA2BFECB490072ADF6 /* TourDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TourDetailView.swift; sourceTree = "<group>"; };
 		D7E54B512C0CD03A002FE3C4 /* MainMenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainMenuView.swift; sourceTree = "<group>"; };
+		D7F6BE6D2C2A57C300CD8258 /* SettingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		E46C82632C18081100917AB3 /* ResourceDownload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceDownload.swift; sourceTree = "<group>"; };
 		E561455E2A6E02A8005CF82F /* RosWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosWebView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -320,7 +321,6 @@
 				09725B0924FE4AC300012D42 /* DialogViewControllerCabot.swift */,
 				30E50DE726A0BBE900729ABD /* ToursView.swift */,
 				3013614626A1E77B0050CF9E /* WebContentView.swift */,
-				3096BF1326A5C29F0066F256 /* SettingView.swift */,
 				7E9690C229EAF25C0062DEBD /* DetailSettingView.swift */,
 				E561455E2A6E02A8005CF82F /* RosWebView.swift */,
 				458B54382A970B4A00AD9D10 /* LogFilesView.swift */,
@@ -437,6 +437,7 @@
 				30C3059D26B9036A00A1383A /* DestinationDetailView.swift */,
 				308FCE1A27D8F4C8009FCC7B /* DeviceStatusView.swift */,
 				30E50DD6269F784A00729ABD /* MainMenuView.swift */,
+				3096BF1326A5C29F0066F256 /* SettingView.swift */,
 				308FCE1C27D8F4D3009FCC7B /* SystemStatusView.swift */,
 				3013614226A0F8E10050CF9E /* TourDetailView.swift */,
 			);
@@ -449,6 +450,7 @@
 				D7CC05342BFB419900C0B10A /* DestinationsView.swift */,
 				D7CC05322BFB3BF900C0B10A /* DestinationDetailView.swift */,
 				D7E54B512C0CD03A002FE3C4 /* MainMenuView.swift */,
+				D7F6BE6D2C2A57C300CD8258 /* SettingView.swift */,
 				D7D7A6FA2BFECB490072ADF6 /* TourDetailView.swift */,
 			);
 			path = User;
@@ -826,7 +828,7 @@
 				D7CC05072BFB352700C0B10A /* ConversationView.swift in Sources */,
 				E46C82652C18081100917AB3 /* ResourceDownload.swift in Sources */,
 				D7D7A6FB2BFECB490072ADF6 /* TourDetailView.swift in Sources */,
-				D7CC05082BFB352700C0B10A /* SettingView.swift in Sources */,
+				D7F6BE6E2C2A57C300CD8258 /* SettingView.swift in Sources */,
 				D7CC05092BFB352700C0B10A /* RosWebView.swift in Sources */,
 				D7CC050B2BFB352700C0B10A /* I18NExtension.swift in Sources */,
 				D7CC050C2BFB352700C0B10A /* TTSHelper.swift in Sources */,

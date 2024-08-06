@@ -63,6 +63,11 @@ enum ModeType: String, CaseIterable{
     case Debug  = "Debug"
 }
 
+enum VoiceMode: String, CaseIterable{
+    case User = "User"
+    case Attend = "Attend"
+}
+
 enum SpeechPriority: String, CaseIterable {
     case Robot = "Robot"
     case App = "App"
@@ -270,6 +275,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     private let selectedVoiceKey = "SelectedVoiceKey"
     private let isTTSEnabledKey = "isTTSEnabledKey"
     private let speechRateKey = "speechRateKey"
+    private let attendSpeechRateKey = "attendSpeechRateKey"
     private let connectionTypeKey = "connection_type"
     private let teamIDKey = "team_id"
     private let socketAddrKey = "socket_url"
@@ -359,36 +365,100 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         }
     }
 
-    @Published var voice: Voice? = nil {
+    @Published var attendVoice: Voice? = nil {
         didSet {
-            if let id = voice?.AVvoice.identifier {
+            if let id = attendVoice?.AVvoice.identifier {
                 let key = "\(selectedVoiceKey)_\(resource?.locale.identifier ?? "en-US")"
                 UserDefaults.standard.setValue(id, forKey: key)
                 UserDefaults.standard.synchronize()
-
-                if let voice = self.voice {
-                    self.tts.voice = voice.AVvoice
+            }
+        }
+    }
+    
+    @Published var userVoice: Voice? = nil {
+        didSet {
+            if let id = userVoice?.AVvoice.identifier {
+                let key = "\(selectedVoiceKey)_\(resource?.locale.identifier ?? "en-US")"
+                UserDefaults.standard.setValue(id, forKey: key)
+                UserDefaults.standard.synchronize()
+            }
+        }
+    }
+    
+    #if ATTEND
+    @Published var voiceSetting: VoiceMode = .Attend {
+        didSet {
+            self.updateTTS()
+        }
+    }
+    #elseif USER
+    @Published var voiceSetting: VoiceMode = .User {
+        didSet {
+            self.updateTTS()
+        }
+    }
+    #endif
+    
+    func initTTS()
+    {
+        if let resource = self.resource {
+            let key = "\(selectedVoiceKey)_\(resource.locale.identifier)"
+            if let id = UserDefaults.standard.value(forKey: key) as? String {
+                self.userVoice = TTSHelper.getVoice(by: id)
+            } else {
+                self.userVoice = TTSHelper.getVoices(by: resource.locale)[0]
+            }
+            if let id = UserDefaults.standard.value(forKey: key) as? String {
+                self.attendVoice = TTSHelper.getVoice(by: id)
+            } else {
+                self.attendVoice = TTSHelper.getVoices(by: resource.locale)[0]
+            }
+        }
+        
+        self.updateTTS()
+    }
+    
+    func updateVoice() {
+        if let resource = self.resource {
+            let key = "\(selectedVoiceKey)_\(resource.locale.identifier)"
+            
+            if(voiceSetting == .User){
+                if let id = UserDefaults.standard.value(forKey: key) as? String {
+                    self.userVoice = TTSHelper.getVoice(by: id)
+                } else {
+                    self.userVoice = TTSHelper.getVoices(by: resource.locale)[0]
+                }
+            } else if(voiceSetting == .Attend) {
+                if let id = UserDefaults.standard.value(forKey: key) as? String {
+                    self.attendVoice = TTSHelper.getVoice(by: id)
+                } else {
+                    self.attendVoice = TTSHelper.getVoices(by: resource.locale)[0]
                 }
             }
         }
     }
-    func updateVoice() {
-        if let resource = self.resource {
-            let key = "\(selectedVoiceKey)_\(resource.locale.identifier)"
-            print(key)
-            if let id = UserDefaults.standard.value(forKey: key) as? String {
-                self.voice = TTSHelper.getVoice(by: id)
-            } else {
-                self.voice = TTSHelper.getVoices(by: resource.locale)[0]
-            }
+    
+    func updateTTS() {
+        if(self.voiceSetting == .User){
+            self.tts.rate = self.userSpeechRate
+            self.tts.voice = self.userVoice?.AVvoice
+        } else if(voiceSetting == .Attend) {
+            self.tts.rate = self.attendSpeechRate
+            self.tts.voice = self.attendVoice?.AVvoice
         }
     }
 
-    @Published var speechRate: Double = 0.5 {
+    @Published var attendSpeechRate: Double = 0.5 {
         didSet {
-            UserDefaults.standard.setValue(speechRate, forKey: speechRateKey)
+            UserDefaults.standard.setValue(attendSpeechRate, forKey: attendSpeechRateKey)
             UserDefaults.standard.synchronize()
-            self.tts.rate = speechRate
+        }
+    }
+    
+    @Published var userSpeechRate: Double = 0.5 {
+        didSet {
+            UserDefaults.standard.setValue(userSpeechRate, forKey: speechRateKey)
+            UserDefaults.standard.synchronize()
         }
     }
 
@@ -483,8 +553,8 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     @Published var showingSystemStatusMenu: Bool = false
     @Published var batteryStatus: BatteryStatus = BatteryStatus()
     @Published var touchStatus: TouchStatus = TouchStatus()
-    @Published var userInfo: UserInfoBuffer = UserInfoBuffer()
     @Published var resourceDownload: ResourceDownload
+    @Published var userInfo: UserInfoBuffer
 
     private var addressCandidate: AddressCandidate
     private var bleService: CaBotServiceBLE
@@ -513,13 +583,13 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         self.init(preview: true)
     }
 
-    init(preview: Bool) {
+    init(preview: Bool, mode: ModeType = .Normal) {
+        self.modeType = mode
         self.detailSettingModel = DetailSettingModel()
-
         self.preview = preview
         self.tts = CaBotTTS(voice: nil)
-        let bleService = CaBotServiceBLE(with: self.tts)
-        let tcpService = CaBotServiceTCP(with: self.tts)
+        let bleService = CaBotServiceBLE(with: self.tts, mode: mode)
+        let tcpService = CaBotServiceTCP(with: self.tts, mode: mode)
         self.bleService = bleService
         self.tcpService = tcpService
         self.fallbackService = FallbackService(services: [bleService, tcpService])
@@ -528,6 +598,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         self.dialogViewHelper = DialogViewHelper()
         self.locationManager =  CLLocationManager()
         self.resourceDownload = ResourceDownload()
+        self.userInfo = UserInfoBuffer(modelData: nil)
 
         // initialize connection type
         var connectionType: ConnectionType = .BLE
@@ -564,8 +635,11 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         if let menuDebug = UserDefaults.standard.value(forKey: menuDebugKey) as? Bool {
             self.menuDebug = menuDebug
         }
+        if let attendSpeechRate = UserDefaults.standard.value(forKey: attendSpeechRateKey) as? Double {
+            self.attendSpeechRate = attendSpeechRate
+        }
         if let speechRate = UserDefaults.standard.value(forKey: speechRateKey) as? Double {
-            self.speechRate = speechRate
+            self.userSpeechRate = speechRate
         }
         if let modeType = UserDefaults.standard.value(forKey: modeTypeKey) as? String {
             self.modeType = ModeType(rawValue: modeType)!
@@ -603,6 +677,10 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             NSLog("\(exception.reason ?? "")")
             NSLog("\(exception.callStackSymbols)")
         }
+        
+        self.userInfo.modelData = self
+        
+        self.initTTS()
     }
 
     func updateNetworkConfig() {
@@ -901,10 +979,25 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         self.tts.stop(false)
     }
 
-    func playSample(){
-        self.tts.rate = self.speechRate
-        self.tts.speak(CustomLocalizedString("Hello Suitcase!", lang: self.resourceLang), forceSelfvoice:true, force:true) {_ in
+    func playSample(mode: VoiceMode){
+        if(self.modeType == .Normal){
+            self.tts.rate = self.userSpeechRate
+            self.tts.voice = self.userVoice?.AVvoice
+            self.tts.speak(CustomLocalizedString("Hello Suitcase!", lang: self.resourceLang), force:true) {_ in
+            }
+        } else {
+            if(mode == .User){
+                self.tts.rate = self.userSpeechRate
+                self.tts.voice = self.userVoice?.AVvoice
+            } else if(mode == .Attend) {
+                self.tts.rate = self.attendSpeechRate
+                self.tts.voice = self.attendVoice?.AVvoice
+            }
+            self.tts.speakForAdvanced(CustomLocalizedString("Hello Suitcase!", lang: self.resourceLang), force:true) {_ in
+            }
         }
+        
+        self.updateTTS()
     }
 
     func playAudio(file: String) {
@@ -1363,6 +1456,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             self.share(user_info: SharedInfo(type: .CurrentDestination, value: self.tourManager.currentDestination?.title.text ?? ""))
             self.share(user_info: SharedInfo(type: .NextDestination, value: self.tourManager.nextDestination?.title.text ?? ""))
             self.share(user_info: SharedInfo(type: .Destinations, value: self.tourManager.destinations.map { $0.title.text }.joined(separator: ",")))
+            self.share(user_info: SharedInfo(type: .ChangeLanguage, value: self.resourceLang))
+            self.share(user_info: SharedInfo(type: .ChangeUserVoiceType, value: "\(self.userVoice?.id ?? "")"))
+            self.share(user_info: SharedInfo(type: .ChangeUserVoiceRate, value: "\(self.userSpeechRate)"))
         }
         if userInfo.type == .ClearDestinations {
             self.clearAll()
@@ -1370,6 +1466,14 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         if userInfo.type == .ChangeLanguage {
             self.resource?.lang = userInfo.value
             self.updateVoice()
+        }
+        if userInfo.type == .ChangeUserVoiceRate {
+            self.userSpeechRate = Double(userInfo.value) ?? 0.5
+            self.updateTTS()
+        }
+        if userInfo.type == .ChangeUserVoiceType {
+            self.userVoice = TTSHelper.getVoice(by: userInfo.value)
+            self.updateTTS()
         }
     }
 
@@ -1655,8 +1759,10 @@ class UserInfoBuffer {
     var destinations: [String] = []
     var speakingText: [SpeakingText] = []
     var speakingIndex = -1
+    weak var modelData: CaBotAppModel?
 
-    init() {
+    init(modelData: CaBotAppModel? = nil) {
+        self.modelData = modelData
     }
 
     func clear() {
@@ -1721,7 +1827,16 @@ class UserInfoBuffer {
             // do nothing
             break
         case .ChangeLanguage:
-            // do nothing
+            modelData?.resource?.lang = userInfo.value
+            modelData?.updateVoice()
+            break
+        case .ChangeUserVoiceRate:
+            modelData?.userSpeechRate = Double(userInfo.value) ?? 0.5
+            modelData?.updateTTS()
+            break
+        case .ChangeUserVoiceType:
+            modelData?.userVoice = TTSHelper.getVoice(by: userInfo.value)
+            modelData?.updateTTS()
             break
         }
     }

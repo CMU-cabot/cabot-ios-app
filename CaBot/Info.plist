@@ -63,6 +63,8 @@
 	</dict>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+	<key>GitCommitHash</key>
+	<string>123456789</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
@@ -82,5 +84,17 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>UILaunchScreen</key>
+	<dict>
+	    <key>UILaunchScreenBackgroundColor</key>
+	    <string>UIColor.systemBackgroundColor</string>
+	    <key>UILaunchImage</key>
+	    <dict>
+	        <key>UILaunchImageName</key>
+	        <string>AppIcon</string>
+	        <key>UILaunchImageMinimumOSVersion</key>
+	        <string>14.0</string>
+	    </dict>
+	</dict>
 </dict>
 </plist>

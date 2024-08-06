@@ -26,6 +26,7 @@ import SocketIO
 
 class CaBotServiceTCP: NSObject {
     fileprivate var tts:CaBotTTS
+    fileprivate let mode: ModeType
     fileprivate var address: String?
     fileprivate var port: String?
     fileprivate var manager: SocketManager?
@@ -43,8 +44,9 @@ class CaBotServiceTCP: NSObject {
         return lhs === rhs
     }
 
-    init(with tts:CaBotTTS) {
+    init(with tts:CaBotTTS, mode: ModeType) {
         self.tts = tts
+        self.mode = mode
     }
 
     func emit(_ event: String, _ items: SocketData..., completion: (() -> ())? = nil)  {
@@ -278,7 +280,8 @@ class CaBotServiceTCP: NSObject {
         DispatchQueue.global(qos: .utility).async {
             self.heartBeatTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] (timer) in
                 guard let weakself = self else { return }
-                weakself.emit("heartbeat", "true")
+                guard let deviceID = UIDevice.current.identifierForVendor else { return }
+                weakself.emit("heartbeat", "\(deviceID)/\(weakself.mode.rawValue)")
                 weakself.emit("req_version", true)
 
                 let now = Date().timeIntervalSince1970

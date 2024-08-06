@@ -179,9 +179,13 @@
 
 
 // SettingView
+"TTS"="TTS";
+"Attend Voice"="Attend Voice";
 "Speech Voice"="Speech Voice";
 "Voice"="Voice";
+"User Voice"="User Voice";
 "Speech Speed"="Speed";
+"User Speech Speed"="User Speed";
 "Connection"="Connection";
 
 "PRIORITY_CONNECTION"="Priority Connection";
@@ -273,6 +277,7 @@
 "ADD_DESTINATION"="Add Destination";
 
 "TTS Enabled (Advanced only)"="TTS Enabled (Advanced only)";
+"Select Voice Settings"="Select Voice Settings";
 "Speech Priority"="Speech Priority";
 "Robot"="Robot";
 "App"="App";

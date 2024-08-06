@@ -35,14 +35,13 @@ public func NSLog(_ format: String, _ args: CVarArg...) {
 struct CaBotApp: App {
     @Environment(\.scenePhase) var scenePhase
     
-    var modelData: CaBotAppModel = CaBotAppModel(preview: false)
+    #if ATTEND
+    var modelData: CaBotAppModel = CaBotAppModel(preview: false, mode: .Advanced)
+    #elseif USER
+    var modelData: CaBotAppModel = CaBotAppModel(preview: false, mode: .Normal)
+    #endif
 
     init() {
-        #if ATTEND
-            modelData.modeType = .Advanced
-        #elseif USER
-            modelData.modeType = .Normal
-        #endif
     }
 
     var body: some Scene {
