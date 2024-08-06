@@ -274,8 +274,8 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     private let selectedResourceLangKey = "selectedResourceLangKey"
     private let selectedVoiceKey = "SelectedVoiceKey"
     private let isTTSEnabledKey = "isTTSEnabledKey"
+    private let speechRateKey = "speechRateKey"
     private let attendSpeechRateKey = "attendSpeechRateKey"
-    private let userSpeechRateKey = "userSpeechRateKey"
     private let connectionTypeKey = "connection_type"
     private let teamIDKey = "team_id"
     private let socketAddrKey = "socket_url"
@@ -457,7 +457,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     
     @Published var userSpeechRate: Double = 0.5 {
         didSet {
-            UserDefaults.standard.setValue(userSpeechRate, forKey: userSpeechRateKey)
+            UserDefaults.standard.setValue(userSpeechRate, forKey: speechRateKey)
             UserDefaults.standard.synchronize()
         }
     }
@@ -639,8 +639,8 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         if let attendSpeechRate = UserDefaults.standard.value(forKey: attendSpeechRateKey) as? Double {
             self.attendSpeechRate = attendSpeechRate
         }
-        if let userSpeechRate = UserDefaults.standard.value(forKey: userSpeechRateKey) as? Double {
-            self.userSpeechRate = userSpeechRate
+        if let speechRate = UserDefaults.standard.value(forKey: speechRateKey) as? Double {
+            self.userSpeechRate = speechRate
         }
         if let modeType = UserDefaults.standard.value(forKey: modeTypeKey) as? String {
             self.modeType = ModeType(rawValue: modeType)!
