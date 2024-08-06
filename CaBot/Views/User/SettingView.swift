@@ -69,7 +69,8 @@ struct SettingView: View {
                     ForEach(TTSHelper.getVoices(by: locale), id: \.self) { voice in
                         Text(voice.AVvoice.name).tag(voice as Voice?)
                     }
-                }.onChange(of: userVoicePickerSelection, perform: { value in
+                }
+                .onChange(of: userVoicePickerSelection, perform: { value in
                     if let voice = value {
                         if !isResourceChanging {
                             if(userVoicePickerSelection != modelData.userVoice){
@@ -80,7 +81,11 @@ struct SettingView: View {
                             userVoicePickerSelection = value
                         }
                     }
-                }).onTapGesture {
+                })
+                .onChange(of: modelData.userVoice, perform: { value in
+                    userVoicePickerSelection = modelData.userVoice
+                })
+                .onTapGesture {
                     isResourceChanging = false
                 }
                 .pickerStyle(DefaultPickerStyle())
