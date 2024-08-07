@@ -1446,6 +1446,11 @@ class SystemStatusData: NSObject, ObservableObject {
     func update(with status: SystemStatus) {
         self.level = status.level
         self.components = OrderedDictionary<String,ComponentData>()
+        // Sort diagnostics by level in the order: Error (2) → Warning (1) → OK (0) → Stale (3)
+        let sortedDiagnostics = status.diagnostics.sorted {
+               let levelOrder: [DiagnosticLevel] = [.Error, .Warning, .OK, .Stale]
+               return levelOrder.firstIndex(of: $0.level)! < levelOrder.firstIndex(of: $1.level)!
+           }
         var allKeys = Set(self.components.keys)
         var max_level: Int = -1
         for diagnostic in status.diagnostics {
@@ -1465,7 +1470,7 @@ class SystemStatusData: NSObject, ObservableObject {
                 self.summary = summary
             }
         }
-        for diagnostic in status.diagnostics {
+        for diagnostic in sortedDiagnostics {
             if let root = diagnostic.rootName {
                 if let data = components[root] {
                     data.update(detail: diagnostic)
