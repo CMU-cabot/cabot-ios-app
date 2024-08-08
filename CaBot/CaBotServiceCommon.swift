@@ -165,6 +165,16 @@ enum DeviceStatusLevel:String, Decodable {
             return Color.gray
         }
     }
+    var sortOrder: Int {
+        switch self {
+        case .Error:
+            return 0
+        case .Unknown:
+            return 1
+        case .OK:
+            return 2
+        }
+    }
 }
 
 struct SystemStatus: Decodable {
