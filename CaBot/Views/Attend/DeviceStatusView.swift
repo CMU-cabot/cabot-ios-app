@@ -36,7 +36,6 @@ struct DeviceStatusView: View {
                         // Sort the devices based on their level
                         let sortedDevices = modelData.deviceStatus.devices.sorted { $0.level.sortOrder < $1.level.sortOrder }
                         ForEach (sortedDevices, id: \.self) {device in
-                        
                             VStack(alignment: .leading, spacing: 5) {
                                 Label(device.type, systemImage: device.level.icon)
                                     .labelStyle(StatusLabelStyle(color: device.level.color))
