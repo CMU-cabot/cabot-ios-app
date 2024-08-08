@@ -1550,7 +1550,7 @@ class SystemStatusData: NSObject, ObservableObject {
     func update(with status: SystemStatus) {
         self.level = status.level
         self.components = OrderedDictionary<String,ComponentData>()
-        let levelOrder: [DiagnosticLevel] = [.Error, .Warning, .OK, .Stale]
+        let levelOrder: [DiagnosticLevel] = [.Error, .Warning, .Stale, .OK]
         let sortedDiagnostics = status.diagnostics.sorted {
             let index0 = levelOrder.firstIndex(of: $0.level) ?? levelOrder.count
             let index1 = levelOrder.firstIndex(of: $1.level) ?? levelOrder.count
