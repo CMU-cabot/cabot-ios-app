@@ -33,13 +33,7 @@ struct DeviceStatusView: View {
                     List {
                         Label(modelData.deviceStatus.level.rawValue, systemImage: modelData.deviceStatus.level.icon)
                             .labelStyle(StatusLabelStyle(color: modelData.deviceStatus.level.color))
-                        let levelOrder: [DeviceStatusLevel] = [.Error, .Unknown, .OK]
-                        let sortedDevices = modelData.deviceStatus.devices.sorted {
-                            let index0 = levelOrder.firstIndex(of: $0.level) ?? levelOrder.count
-                            let index1 = levelOrder.firstIndex(of: $1.level) ?? levelOrder.count
-                            return index0 < index1
-                        }
-                        ForEach (sortedDevices, id: \.self) {device in
+                        ForEach (modelData.deviceStatus.devices, id: \.self) {device in
                             VStack(alignment: .leading, spacing: 5) {
                                 Label(device.type, systemImage: device.level.icon)
                                     .labelStyle(StatusLabelStyle(color: device.level.color))

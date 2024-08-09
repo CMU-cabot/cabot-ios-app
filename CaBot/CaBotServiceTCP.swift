@@ -161,7 +161,13 @@ class CaBotServiceTCP: NSObject {
             guard let weakself = self else { return }
             guard let delegate = weakself.delegate else { return }
             do {
-                let status = try JSONDecoder().decode(DeviceStatus.self, from: data)
+                var status = try JSONDecoder().decode(DeviceStatus.self, from: data)
+                let levelOrder: [DeviceStatusLevel] = [.Error, .Unknown, .OK]
+                status.devices.sort {
+                    let index0 = levelOrder.firstIndex(of: $0.level) ?? levelOrder.count
+                    let index1 = levelOrder.firstIndex(of: $1.level) ?? levelOrder.count
+                    return index0 < index1
+                }
                 DispatchQueue.main.async {
                     delegate.cabot(service: weakself, deviceStatus: status)
                 }
