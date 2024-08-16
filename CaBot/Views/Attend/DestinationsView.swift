@@ -83,27 +83,37 @@ struct DestinationsView: View {
                             detail in
                                 Button {
                                     if let destination = targetDestination {
-                                        modelData.share(destination: destination, clear: false)
-                                        NavigationUtil.popToRootView()
-                                        targetDestination = nil
-                                    }
-                                } label: {
-                                    Text("ADD_DESTINATION")
-                                }
-                                Button {
-                                    if let destination = targetDestination {
                                         modelData.share(destination: destination)
                                         NavigationUtil.popToRootView()
                                         targetDestination = nil
                                     }
                                 } label: {
-                                    Text("CLEAR_AND_ADD_DESTINATION")
+                                    Text("CLEAR_ALL_THEN_ADD")
+                                }
+                                Button {
+                                    if let destination = targetDestination {
+                                        modelData.share(destination: destination, clear: false, addFirst: true)
+                                        NavigationUtil.popToRootView()
+                                        targetDestination = nil
+                                    }
+                                } label: {
+                                    Text("ADD_TO_FIRST")
+                                }
+                                Button {
+                                    if let destination = targetDestination {
+                                        modelData.share(destination: destination, clear: false)
+                                        NavigationUtil.popToRootView()
+                                        targetDestination = nil
+                                    }
+                                } label: {
+                                    Text("ADD_TO_LAST")
                                 }
                                 Button("Cancel", role: .cancel) {
                                     targetDestination = nil
                                 }
                             } message: { detail in
-                                let message = LocalizedStringKey("SEND_DESTINATION_MESSAGE \(detail.title.text)")
+                                let message = LocalizedStringKey("CANCEL_NAVIGATION_MESSAGE \(modelData.tourManager.destinationCount, specifier: "%d")")
+                                print("modelData.tourManager.destinationCount = \(modelData.tourManager)")
                                 Text(message)
                             }
                             Spacer()
