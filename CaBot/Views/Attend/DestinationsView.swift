@@ -112,8 +112,7 @@ struct DestinationsView: View {
                                     targetDestination = nil
                                 }
                             } message: { detail in
-                                let message = LocalizedStringKey("CANCEL_NAVIGATION_MESSAGE \(modelData.tourManager.destinationCount, specifier: "%d")")
-                                print("modelData.tourManager.destinationCount = \(modelData.tourManager)")
+                                let message = LocalizedStringKey("ADD_A_DESTINATION_MESSAGE \(modelData.userInfo.destinations.count, specifier: "%d")")
                                 Text(message)
                             }
                             Spacer()

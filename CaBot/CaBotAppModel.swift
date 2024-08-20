@@ -518,7 +518,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             updateNetworkConfig()
         }
     }
-    let socketPort: String = "5001"
+    let socketPort: String = "5000"
     let rosPort: String = "9091"
     @Published var menuDebug: Bool = false {
         didSet {
