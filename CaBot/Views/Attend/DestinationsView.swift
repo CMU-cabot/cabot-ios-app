@@ -62,8 +62,15 @@ struct DestinationsView: View {
                     } else {
                         HStack {
                             Button(action: {
-                                targetDestination = destination
-                                isConfirming = true
+                                if (modelData.userInfo.destinations.count > 0) {
+                                    targetDestination = destination
+                                    isConfirming = true
+                                } else {
+                                    // if there is no destination, start immediately
+                                    modelData.share(destination: destination, clear: false)
+                                    modelData.needToStartAnnounce(wait: true)
+                                    NavigationUtil.popToRootView()
+                                }
                             }){
                                 VStack(alignment: .leading) {
                                     Text(destination.title.text)
