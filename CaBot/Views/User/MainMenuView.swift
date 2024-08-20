@@ -428,6 +428,20 @@ struct StatusMenus: View {
                         }
                     }
                 ).isDetailLink(false)
+                NavigationLink(
+                    destination: SystemStatusView().environmentObject(modelData),
+                    label: {
+                        HStack {
+                            Label(LocalizedStringKey("System"),
+                                  systemImage: modelData.systemStatus.summary.icon)
+                            .labelStyle(StatusLabelStyle(color: modelData.systemStatus.summary.color))
+                            Text(":")
+                            Text(LocalizedStringKey(modelData.systemStatus.levelText()))
+                            Text("-")
+                            Text(LocalizedStringKey(modelData.systemStatus.summary.text))
+                        }
+                    }
+                ).isDetailLink(false)
             }
         }
     }
