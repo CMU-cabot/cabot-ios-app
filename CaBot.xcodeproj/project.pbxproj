@@ -45,6 +45,7 @@
 		30E99D94266A92EA001ACAAA /* JSHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E99D93266A92EA001ACAAA /* JSHelper.swift */; };
 		30E99D96266A993E001ACAAA /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E99D95266A993E001ACAAA /* Extension.swift */; };
 		30E99DA4266B2216001ACAAA /* BeaconSampler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E99DA3266B2216001ACAAA /* BeaconSampler.swift */; };
+		454120652C74310A00875A47 /* SystemStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 454120642C74310A00875A47 /* SystemStatusView.swift */; };
 		458B54392A970B4A00AD9D10 /* LogFilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458B54382A970B4A00AD9D10 /* LogFilesView.swift */; };
 		7E29F014228B548200CA7DD6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7E29F013228B548200CA7DD6 /* Assets.xcassets */; };
 		7E29F022228B548200CA7DD6 /* CaBotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E29F021228B548200CA7DD6 /* CaBotTests.swift */; };
@@ -185,6 +186,7 @@
 		30E99D93266A92EA001ACAAA /* JSHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSHelper.swift; sourceTree = "<group>"; };
 		30E99D95266A993E001ACAAA /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		30E99DA3266B2216001ACAAA /* BeaconSampler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeaconSampler.swift; sourceTree = "<group>"; };
+		454120642C74310A00875A47 /* SystemStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStatusView.swift; sourceTree = "<group>"; };
 		458B54382A970B4A00AD9D10 /* LogFilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogFilesView.swift; sourceTree = "<group>"; };
 		7E0995842BA510F500365136 /* NavCog3.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NavCog3.pch; sourceTree = "<group>"; };
 		7E29F009228B548100CA7DD6 /* CaBot-Attend.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CaBot-Attend.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -444,6 +446,7 @@
 				D7E54B512C0CD03A002FE3C4 /* MainMenuView.swift */,
 				D7F6BE6D2C2A57C300CD8258 /* SettingView.swift */,
 				D7D7A6FA2BFECB490072ADF6 /* TourDetailView.swift */,
+				454120642C74310A00875A47 /* SystemStatusView.swift */,
 			);
 			path = User;
 			sourceTree = "<group>";
@@ -795,6 +798,7 @@
 				D7CC05042BFB352700C0B10A /* Logging.m in Sources */,
 				D7CC05052BFB352700C0B10A /* RootView.swift in Sources */,
 				D7CC05062BFB352700C0B10A /* NavUtil.m in Sources */,
+				454120652C74310A00875A47 /* SystemStatusView.swift in Sources */,
 				D7CC05072BFB352700C0B10A /* ConversationView.swift in Sources */,
 				D7D7A6FB2BFECB490072ADF6 /* TourDetailView.swift in Sources */,
 				D7F6BE6E2C2A57C300CD8258 /* SettingView.swift in Sources */,
