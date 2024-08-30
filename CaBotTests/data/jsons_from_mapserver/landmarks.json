@@ -1,0 +1,4761 @@
+{
+    "landmarks": [
+        {
+            "node": "EDITOR_node_1692669299937",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "Locker Room",
+            "geometry": {
+                "coordinates": [
+                    139.77696631103754,
+                    35.619534554838935
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77695859968662,
+                35.619530739184825
+            ],
+            "name_pron": "Locker Room",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1692669299937",
+                "ent1_lon": 139.77695859968662,
+                "ent1_n": "",
+                "name_ja": "\u30ed\u30c3\u30ab\u30fc\u30eb\u30fc\u30e0",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77696631103754,
+                "facil_id": "EDITOR_facil_1692669303556",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619530739184825,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.619534554838935,
+                "name_en": "Locker Room"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1692668919555",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "Entrance",
+            "geometry": {
+                "coordinates": [
+                    139.77702624164522,
+                    35.61964827487523
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7770199552178,
+                35.61962783389798
+            ],
+            "name_pron": "Entrance",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1692668919555",
+                "ent1_lon": 139.7770199552178,
+                "ent1_n": "",
+                "name_ja": "\u30a8\u30f3\u30c8\u30e9\u30f3\u30b9",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77702624164522,
+                "facil_id": "EDITOR_facil_1692668923803",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61962783389798,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.61964827487523,
+                "name_en": "Entrance"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1674009663672",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "Symbol Zone",
+            "geometry": {
+                "coordinates": [
+                    139.7770410776138,
+                    35.619508935443534
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7770370543003,
+                35.61950784525632
+            ],
+            "name_pron": "Symbol Zone",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1674009663672",
+                "ent1_lon": 139.7770370543003,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7770410776138,
+                "facil_id": "EDITOR_facil_1674009670188",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61950784525632,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.619508935443534,
+                "name_en": "Symbol Zone"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1701416901551",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.77700319141147,
+                    35.619476229820506
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77701023221016,
+                35.61947241416361
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1701416901551",
+                "ent1_lon": 139.77701023221016,
+                "ent1_n": "",
+                "name_ja": "\u30b8\u30aa\u30b3\u30b9\u30e2\u30b9(\u5de6)",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77700319141147,
+                "facil_id": "EDITOR_facil_1701416916708",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61947241416361,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.619476229820506
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1711329541961",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "Geo-Cosmos",
+            "geometry": {
+                "coordinates": [
+                    139.7770245220437,
+                    35.61945675826989
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77702602272967,
+                35.61946142039494
+            ],
+            "name_pron": "Geo-Cosmos",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1711329541961",
+                "ent1_lon": 139.77702602272967,
+                "ent1_n": "",
+                "name_ja": "\u30b8\u30aa\u30fb\u30b3\u30b9\u30e2\u30b9",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7770245220437,
+                "facil_id": "EDITOR_facil_1711329544721",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61946142039494,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.61945675826989,
+                "name_en": "Geo-Cosmos"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1665538300723",
+            "exit": "",
+            "node_height": 7.0,
+            "name": "Conference Room Uranus",
+            "geometry": {
+                "coordinates": [
+                    139.77709272762252,
+                    35.61953055086646
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77709758912633,
+                35.6195306871398
+            ],
+            "name_pron": "Conference Room Uranus",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1665538300723",
+                "ent1_lon": 139.77709758912633,
+                "ent1_n": "",
+                "name_ja": "\u30b3\u30f3\u30d5\u30a1\u30ec\u30f3\u30b9\u30eb\u30fc\u30e0\u3000\u5929\u738b\u661f",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7770957276225,
+                "facil_id": "EDITOR_facil_1665538291810",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619530687139786,
+                "ent1_fl": 7,
+                "facil_type": 99,
+                "lat": 35.61954055086646,
+                "name_en": "Conference Room Uranus"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1673433318063",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "Exhibition entrance",
+            "geometry": {
+                "coordinates": [
+                    139.77675274014476,
+                    35.61947009751469
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77674771100286,
+                35.61947077888203
+            ],
+            "name_pron": "Exhibition entrance",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1673433318063",
+                "ent1_lon": 139.77674771100286,
+                "ent1_n": "",
+                "name_ja": "\u5c55\u793a\u30be\u30fc\u30f3\u5165\u53e3",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77675274014476,
+                "facil_id": "EDITOR_facil_1673433322082",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61947077888203,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.61947009751469,
+                "name_en": "Exhibition entrance"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1674552258098",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "exit",
+            "geometry": {
+                "coordinates": [
+                    139.77712774649262,
+                    35.61952610589029
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77712573483586,
+                35.61952133632211
+            ],
+            "name_pron": "exit",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1674552258098",
+                "ent1_lon": 139.77712573483586,
+                "ent1_n": "",
+                "name_ja": "exit",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77712774649262,
+                "facil_id": "EDITOR_facil_1674552263468",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61952133632211,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.61952610589029,
+                "name_en": "exit"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1639555757259",
+            "exit": "",
+            "node_height": 7.0,
+            "name": "Miraikan Hall Entrance",
+            "geometry": {
+                "coordinates": [
+                    139.7768178963209,
+                    35.61940904294323
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77681053802672,
+                35.61940861568732
+            ],
+            "name_pron": "Miraikan Hall Entrance",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1639555757259",
+                "ent1_lon": 139.77681053802672,
+                "ent1_n": "",
+                "name_ja": "\u672a\u6765\u9928\u30db\u30fc\u30eb\u5165\u53e3",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77682089632088,
+                "facil_id": "EDITOR_facil_1639555773798",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61940861568732,
+                "ent1_fl": 7,
+                "facil_type": 99,
+                "lat": 35.619419042943235,
+                "name_en": "Miraikan Hall Entrance"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1668739739277",
+            "exit": "",
+            "node_height": 7.0,
+            "name": "Conference Room Jupiter",
+            "geometry": {
+                "coordinates": [
+                    139.77712893744422,
+                    35.61952073918482
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77713329603387,
+                35.61951528825007
+            ],
+            "name_pron": "Conference Room Jupiter",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1668739739277",
+                "ent1_lon": 139.77713329603387,
+                "ent1_n": "",
+                "name_ja": "\u30b3\u30f3\u30d5\u30a1\u30ec\u30f3\u30b9\u30eb\u30fc\u30e0\u3000\u6728\u661f",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7771319374442,
+                "facil_id": "EDITOR_facil_1668739756764",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61951528825006,
+                "ent1_fl": 7,
+                "facil_type": 99,
+                "lat": 35.619530739184796,
+                "name_en": "Conference Room Jupiter"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1711329476712",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "Nobel Q",
+            "geometry": {
+                "coordinates": [
+                    139.77685097604987,
+                    35.61938983240195
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77684745565054,
+                35.619389014760316
+            ],
+            "name_pron": "Nobel Q",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1711329476712",
+                "ent1_lon": 139.77684745565054,
+                "ent1_n": "",
+                "name_ja": "\u30ce\u30fc\u30d9\u30ebQ",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77685097604987,
+                "facil_id": "EDITOR_facil_1711329478778",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619389014760316,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.61938983240195,
+                "name_en": "Nobel Q"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1674009639484",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "Communication Lobi",
+            "geometry": {
+                "coordinates": [
+                    139.77666908875105,
+                    35.61950893544352
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7766717709601,
+                35.619505256061586
+            ],
+            "name_pron": "Communication Lobi",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1674009639484",
+                "ent1_lon": 139.7766717709601,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77666908875105,
+                "facil_id": "EDITOR_facil_1674009635704",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619505256061586,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.61950893544352,
+                "name_en": "Communication Lobi"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1639555363559",
+            "exit": "",
+            "node_height": 7.0,
+            "name": "Miraikan Hall",
+            "geometry": {
+                "coordinates": [
+                    139.77681853272472,
+                    35.61936608285522
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77682853003455,
+                35.61937220107974
+            ],
+            "name_pron": "Miraikan Hall",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1639555363559",
+                "ent1_lon": 139.77682853003455,
+                "ent1_n": "",
+                "name_ja": "\u672a\u6765\u9928\u30db\u30fc\u30eb",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7768215327247,
+                "facil_id": "EDITOR_facil_1639555694768",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61937220107973,
+                "ent1_fl": 7,
+                "facil_type": 99,
+                "lat": 35.619376082855226,
+                "name_en": "Miraikan Hall"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1673863118343",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "Symbol Center1",
+            "geometry": {
+                "coordinates": [
+                    139.77717904374003,
+                    35.61950239432002
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77717703208322,
+                35.619499260031446
+            ],
+            "name_pron": "Symbol Center1",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1673863118343",
+                "ent1_lon": 139.77717703208322,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77717904374003,
+                "facil_id": "EDITOR_facil_1674020242664",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619499260031446,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.61950239432002,
+                "name_en": "Symbol Center1"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1636531462982",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "Miraikan",
+            "geometry": {
+                "coordinates": [
+                    139.77708808804988,
+                    35.61976552439852
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77703612216408,
+                35.61972495249742
+            ],
+            "name_pron": "Miraikan",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1636531462982",
+                "ent1_lon": 139.77703612216408,
+                "ent1_n": "",
+                "name_ja": "\u65e5\u672c\u79d1\u5b66\u672a\u6765\u9928",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77708808804988,
+                "facil_id": "EDITOR_facil_1636531458545",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61972495249742,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.61976552439852,
+                "name_en": "Miraikan"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1673863121858",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "Symbol Center2",
+            "geometry": {
+                "coordinates": [
+                    139.77717988193038,
+                    35.61947350435132
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77719547227022,
+                35.61946982496772
+            ],
+            "name_pron": "Symbol Center2",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1673863121858",
+                "ent1_lon": 139.77719547227022,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77717988193038,
+                "facil_id": "EDITOR_facil_1674020244186",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61946982496772,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.61947350435132,
+                "name_en": "Symbol Center2"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1691563854743",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.77663019672036,
+                    35.61948808561041
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77663371711967,
+                35.61948767679009
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1691563854743",
+                "ent1_lon": 139.77663371711967,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77663019672036,
+                "facil_id": "EDITOR_facil_1691570989528",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61948767679009,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.61948808561041
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1627883261261",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "Promoting Medicine Together, Exit",
+            "geometry": {
+                "coordinates": [
+                    139.77681247054946,
+                    35.61933926726823
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77681024533095,
+                35.61933809280407
+            ],
+            "name_pron": "Promoting Medicine Together, Exit",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627883261261",
+                "ent1_lon": 139.77681024533095,
+                "ent1_n": "",
+                "name_ja": "\u3068\u3082\u306b\u9032\u3081\u308b\u533b\u7642\u3001\u51fa\u53e3",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77681247054946,
+                "facil_id": "EDITOR_facil_1627883519920",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61933809280407,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61933926726823,
+                "name_en": "Promoting Medicine Together, Exit"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1655269176577",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "This is ISS, go ahead2",
+            "geometry": {
+                "coordinates": [
+                    139.7769074875624,
+                    35.61931987199371
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77690966685725,
+                35.619315511234774
+            ],
+            "name_pron": "This is ISS, go ahead2",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1655269176577",
+                "ent1_lon": 139.77690966685725,
+                "ent1_n": "",
+                "name_ja": "\u3053\u3061\u3089\u3001\u56fd\u969b\u5b87\u5b99\u30b9\u30c6\u30fc\u30b7\u30e7\u30f3\uff12",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7769074875624,
+                "facil_id": "EDITOR_facil_1655269194740",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619315511234774,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61931987199371,
+                "name_en": "This is ISS, go ahead2"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1653283668013",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.77672407403585,
+                    35.61936380413927
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77671990056947,
+                35.619363343298446
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1653283668013",
+                "ent1_lon": 139.77671990056947,
+                "ent1_n": "",
+                "name_ja": "3F\u5c55\u793a\u51fa\u5165\u308a\u53e3",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77672407403585,
+                "facil_id": "EDITOR_facil_1701416785106",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619363343298446,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.61936380413927
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1653278627618",
+            "exit": "Entrance",
+            "node_height": 3.0,
+            "name": "Digitally Natural - Naturally Digital",
+            "geometry": {
+                "coordinates": [
+                    139.77691737820822,
+                    35.61928907412455
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77691134323788,
+                35.619286621197304
+            ],
+            "name_pron": "Digitally Natural - Naturally Digital",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1653278627618",
+                "ent1_lon": 139.77691134323788,
+                "hulop_tags": "read",
+                "ent1_n": "",
+                "name_ja": "\u8a08\u7b97\u6a5f\u3068\u81ea\u7136\u3001\u8a08\u7b97\u6a5f\u306e\u81ea\u7136",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77691737820822,
+                "ent1_n_en": "Entrance",
+                "facil_id": "EDITOR_facil_1653278958194",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619286621197304,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.61928907412455,
+                "ent1_n_ja": "\u5165\u53e3",
+                "name_en": "Digitally Natural - Naturally Digital"
+            },
+            "exit_pron": "Entrance"
+        },
+        {
+            "node": "EDITOR_node_1709866637748",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.77695080451667,
+                    35.619288035954625
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77695055305958,
+                35.61928599184793
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1709866637748",
+                "ent1_lon": 139.77695055305958,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77695080451667,
+                "facil_id": "EDITOR_facil_1709866643293",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61928599184793,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.619288035954625
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1673863135968",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "Symbol Center3",
+            "geometry": {
+                "coordinates": [
+                    139.7772278264165,
+                    35.619436710508126
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77722162380815,
+                35.61943916343151
+            ],
+            "name_pron": "Symbol Center3",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1673863135968",
+                "ent1_lon": 139.77722162380815,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7772278264165,
+                "facil_id": "EDITOR_facil_1674020245521",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61943916343151,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.619436710508126,
+                "name_en": "Symbol Center3"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1669689553513",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "Robots in Your Life",
+            "geometry": {
+                "coordinates": [
+                    139.7767693537982,
+                    35.61930692599728
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77677505349226,
+                35.61930256523681
+            ],
+            "name_pron": "Robots in Your Life",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1669689553513",
+                "ent1_lon": 139.77677505349226,
+                "ent1_n": "",
+                "name_ja": "\u30ed\u30dc\u30c3\u30c8\u3068\u66ae\u3089\u3057",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7767693537982,
+                "facil_id": "EDITOR_facil_1662356469676",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61930256523681,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.61930692599728,
+                "name_en": "Robots in Your Life"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1653278635977",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "Digitally Natural - Naturally Digital",
+            "geometry": {
+                "coordinates": [
+                    139.7768789890916,
+                    35.619284543025856
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.776881377934,
+                35.61928600796968
+            ],
+            "name_pron": "Digitally Natural - Naturally Digital",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1653278635977",
+                "ent1_lon": 139.776881377934,
+                "ent1_n": "",
+                "name_ja": "\u8a08\u7b97\u6a5f\u3068\u81ea\u7136\u3001\u8a08\u7b97\u6a5f\u306e\u81ea\u7136",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7768789890916,
+                "ent1_n_en": "",
+                "facil_id": "EDITOR_facil_1653278956448",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61928600796968,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.619284543025856,
+                "ent1_n_ja": "",
+                "name_en": "Digitally Natural - Naturally Digital"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1627883266823",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "This is ISS, go ahead",
+            "geometry": {
+                "coordinates": [
+                    139.7769127337956,
+                    35.61927898635143
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77689795095077,
+                35.61928452869368
+            ],
+            "name_pron": "This is ISS, go ahead",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627883266823",
+                "ent1_lon": 139.77689795095077,
+                "ent1_n": "",
+                "name_ja": "\u3053\u3061\u3089\u3001\u56fd\u969b\u5b87\u5b99\u30b9\u30c6\u30fc\u30b7\u30e7\u30f3",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7769157337956,
+                "facil_id": "EDITOR_facil_1627883522146",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61928452869368,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.619288986351435,
+                "name_en": "This is ISS, go ahead"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1662684319743",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "Paro's Head",
+            "geometry": {
+                "coordinates": [
+                    139.77704319057477,
+                    35.619297182410634
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77702734877778,
+                35.619303791687756
+            ],
+            "name_pron": "Paro's Head",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1662684319743",
+                "ent1_lon": 139.77702734877778,
+                "ent1_n": "",
+                "name_ja": "\u30d1\u30ed\u306e\u982d",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77704319057477,
+                "facil_id": "EDITOR_facil_1662684322743",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619303791687756,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.619297182410634,
+                "name_en": "Paro's Head"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1658904735631",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "ISS, Guide inside",
+            "geometry": {
+                "coordinates": [
+                    139.77691184615207,
+                    35.61927578743729
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77690731992433,
+                35.619276468806135
+            ],
+            "name_pron": "ISS, Guide inside",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1658904735631",
+                "ent1_lon": 139.77690731992433,
+                "ent1_n": "",
+                "name_ja": "\u3053\u3061\u3089\u56fd\u969b\u5b87\u5b99\u30b9\u30c6\u30fc\u30b7\u30e7\u30f3\u3001\u5c55\u793a\u5185\u6848\u5185",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77691484615207,
+                "facil_id": "EDITOR_facil_1658908103775",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619276468806135,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61928578743728,
+                "name_en": "ISS, Guide inside"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1665542219251",
+            "exit": "",
+            "node_height": 7.0,
+            "name": "Conference Room Saturn",
+            "geometry": {
+                "coordinates": [
+                    139.77720890080047,
+                    35.61939686660071
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77721208592368,
+                35.61939414112912
+            ],
+            "name_pron": "Conference Room Saturn",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1665542219251",
+                "ent1_lon": 139.77721208592368,
+                "ent1_n": "",
+                "name_ja": "\u30b3\u30f3\u30d5\u30a1\u30ec\u30f3\u30b9\u30eb\u30fc\u30e0\u3000\u571f\u661f",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77721190080047,
+                "facil_id": "EDITOR_facil_1665542222029",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61939414112912,
+                "ent1_fl": 7,
+                "facil_type": 99,
+                "lat": 35.619406866600684,
+                "name_en": "Conference Room Saturn"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1627894167988",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "This is ISS, go ahead",
+            "geometry": {
+                "coordinates": [
+                    139.77690036294473,
+                    35.619273913672714
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7768746888112,
+                35.61927148617916
+            ],
+            "name_pron": "This is ISS, go ahead",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627894167988",
+                "ent1_lon": 139.7768746888112,
+                "ent1_n": "",
+                "name_ja": "\u3053\u3061\u3089\u3001\u56fd\u969b\u5b87\u5b99\u30b9\u30c6\u30fc\u30b7\u30e7\u30f3\u3001\u51fa\u53e3",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77690336294472,
+                "facil_id": "EDITOR_facil_1627895247692",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61927148617913,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61928391367273,
+                "name_en": "This is ISS, go ahead"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1659490369830",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.77658241987226,
+                    35.61942335570161
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77658696358523,
+                35.61941952207917
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1659490369830",
+                "ent1_lon": 139.77658696358523,
+                "hulop_tags": "short",
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77658241987226,
+                "facil_id": "EDITOR_facil_1680078868708",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61941952207917,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.61942335570161
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1701138397342",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.77673448855063,
+                    35.61930333268475
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7767343209125,
+                35.61930253207642
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1701138397342",
+                "ent1_lon": 139.7767343209125,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77673448855063,
+                "facil_id": "EDITOR_facil_1701138406600",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61930253207642,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61930333268475
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1704951237624",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.77681275457147,
+                    35.619276452682655
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7768083959818,
+                35.619268821349635
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1704951237624",
+                "ent1_lon": 139.7768083959818,
+                "ent1_n": "",
+                "name_ja": "\u30cf\u30ed\u30fc\u30ed\u30dc\u30c3\u30c8",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77681275457147,
+                "facil_id": "EDITOR_facil_1704951213342",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619268821349635,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.619276452682655
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1701416909538",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.7771483659744,
+                    35.61933041708835
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77713998407123,
+                35.619332870015015
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1701416909538",
+                "ent1_lon": 139.77713998407123,
+                "ent1_n": "",
+                "name_ja": "\u30b8\u30aa\u30b3\u30b9\u30e2\u30b9(\u53f3)",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7771483659744,
+                "facil_id": "EDITOR_facil_1701416917987",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619332870015015,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.61933041708835
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1701421243697",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.77668076055122,
+                    35.619307471999846
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7766800899989,
+                35.6193070461444
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1701421243697",
+                "ent1_lon": 139.7766800899989,
+                "ent1_n": "",
+                "name_ja": "CO2\u6392\u51fa\u91cf",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77668076055122,
+                "facil_id": "EDITOR_facil_1701421255842",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.6193070461444,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.619307471999846
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1627883259214",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "Promoting Medicine Together, Entrance",
+            "geometry": {
+                "coordinates": [
+                    139.77673639439678,
+                    35.619278664081335
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77673885126276,
+                35.61927725006797
+            ],
+            "name_pron": "Promoting Medicine Together, Entrance",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627883259214",
+                "ent1_lon": 139.77673885126276,
+                "ent1_n": "",
+                "name_ja": "\u3068\u3082\u306b\u9032\u3081\u308b\u533b\u7642\u3001\u5165\u53e3",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77673939439677,
+                "facil_id": "EDITOR_facil_1627883518704",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61927725006797,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61928866408135,
+                "name_en": "Promoting Medicine Together, Entrance"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1711093108133",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.77667797356838,
+                    35.61929062515638
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77667378261683,
+                35.61928871732351
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1711093108133",
+                "ent1_lon": 139.77667378261683,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77667797356838,
+                "facil_id": "EDITOR_facil_1711093111157",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61928871732351,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61929062515638
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1627883275080",
+            "exit": "Exit",
+            "node_height": 5.0,
+            "name": "Stories of One, Everyone, and You",
+            "geometry": {
+                "coordinates": [
+                    139.7768342321259,
+                    35.61923601492565
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7768220290468,
+                35.61923667613159
+            ],
+            "name_pron": "Stories of One, Everyone, and You",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627883275080",
+                "ent1_lon": 139.7768220290468,
+                "hulop_tags": "read",
+                "ent1_n": "",
+                "name_ja": "\u307c\u304f\u3068\u307f\u3093\u306a\u3068\u305d\u3057\u3066\u304d\u307f",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7768372321259,
+                "ent1_n_en": "Exit",
+                "ent1_n_hira": "",
+                "facil_id": "EDITOR_facil_1627883524788",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61923667613162,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61924601492568,
+                "ent1_n_ja": "\u51fa\u53e3",
+                "name_en": "Stories of One, Everyone, and You"
+            },
+            "exit_pron": "Exit"
+        },
+        {
+            "node": "EDITOR_node_1659688426783",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "ISS, Outside",
+            "geometry": {
+                "coordinates": [
+                    139.7769806615771,
+                    35.61923347441683
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7769838467003,
+                35.619228296010206
+            ],
+            "name_pron": "ISS, Outside",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1659688426783",
+                "ent1_lon": 139.7769838467003,
+                "ent1_n": "",
+                "name_ja": "\u3053\u3061\u3089\u56fd\u969b\u5b87\u5b99\u30b9\u30c6\u30fc\u30b7\u30e7\u30f3\u3001\u5916\u5074",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7769836615771,
+                "facil_id": "EDITOR_facil_1659688440611",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619228296010206,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.619243474416834,
+                "name_en": "ISS, Outside"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1658904783929",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "ISS, in exhibition",
+            "geometry": {
+                "coordinates": [
+                    139.77695274983952,
+                    35.619225570532905
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77695090582083,
+                35.61921896125007
+            ],
+            "name_pron": "ISS, in exhibition",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1658904783929",
+                "ent1_lon": 139.77695090582083,
+                "ent1_n": "",
+                "name_ja": "\u3053\u3061\u3089\u56fd\u969b\u5b87\u5b99\u30b9\u30c6\u30fc\u30b7\u30e7\u30f3\u3000\u5c55\u793a\u5185",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77695574983952,
+                "facil_id": "EDITOR_facil_1658971047193",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61921896125007,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61923557053291,
+                "name_en": "ISS, in exhibition"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1627883253870",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "Planetary Crisis",
+            "geometry": {
+                "coordinates": [
+                    139.77675084152685,
+                    35.61923975537776
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77674541645814,
+                35.6192393389814
+            ],
+            "name_pron": "Planetary Crisis",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627883253870",
+                "ent1_lon": 139.77674541645814,
+                "hulop_tags": "",
+                "ent1_n": "",
+                "name_ja": "\u30d7\u30e9\u30cd\u30bf\u30ea\u30fc\u30af\u30e9\u30a4\u30b7\u30b9",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77675084152685,
+                "facil_id": "EDITOR_facil_1627883514210",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.6192393389814,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61923975537776,
+                "name_en": "Planetary Crisis"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1701421047574",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.77663505822417,
+                    35.61928871732353
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7766323760152,
+                35.61928408401498
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1701421047574",
+                "ent1_lon": 139.7766323760152,
+                "ent1_n": "",
+                "name_ja": "\u9032\u884c\u3059\u308b\u6c17\u5019\u5909\u52d5",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77663505822417,
+                "facil_id": "EDITOR_facil_1701421050598",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61928408401498,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61928871732353
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1659493619566",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "test6",
+            "geometry": {
+                "coordinates": [
+                    139.7765086766095,
+                    35.61941008513638
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7765123646469,
+                35.61940000089241
+            ],
+            "name_pron": "test6",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1659493619566",
+                "ent1_lon": 139.7765123646469,
+                "ent1_n": "",
+                "name_ja": "test6",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7765116766095,
+                "facil_id": "EDITOR_facil_1659493655002",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61940000089241,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.6194200851364,
+                "name_en": "test6"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1659688428637",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "ISS, Back",
+            "geometry": {
+                "coordinates": [
+                    139.7769628919424,
+                    35.61920294906774
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7769650712372,
+                35.61920458435456
+            ],
+            "name_pron": "ISS, Back",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1659688428637",
+                "ent1_lon": 139.7769650712372,
+                "ent1_n": "",
+                "name_ja": "\u3053\u3061\u3089\u56fd\u969b\u5b87\u5b99\u30b9\u30c6\u30fc\u30b7\u30e7\u30f3\u3001\u88cf\u5074",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77696589194238,
+                "facil_id": "EDITOR_facil_1659688443064",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61920458435458,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61921294906776,
+                "name_en": "ISS, Back"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1712803684159",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.7767668217421,
+                    35.619217923065165
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77676983922717,
+                35.61921853629765
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1712803684159",
+                "ent1_lon": 139.77676983922717,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7767668217421,
+                "facil_id": "EDITOR_facil_1712803693642",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61921853629765,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.619217923065165
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1653278642171",
+            "exit": "Exit",
+            "node_height": 3.0,
+            "name": "Backward from the Future",
+            "geometry": {
+                "coordinates": [
+                    139.77685836960984,
+                    35.619199678493956
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77686306347562,
+                35.61919041186741
+            ],
+            "name_pron": "Backward from the Future",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1653278642171",
+                "ent1_lon": 139.77686306347562,
+                "ent1_n": "",
+                "name_ja": "\u672a\u6765\u9006\u7b97\u601d\u8003",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77686136960983,
+                "ent1_n_en": "Exit",
+                "facil_id": "EDITOR_facil_1653278927496",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61919041186741,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.619209678493945,
+                "ent1_n_ja": "\u51fa\u53e3",
+                "name_en": "Backward from the Future"
+            },
+            "exit_pron": "Exit"
+        },
+        {
+            "node": "EDITOR_node_1665538133244",
+            "exit": "",
+            "node_height": 7.0,
+            "name": "Miraikan Hall Back door",
+            "geometry": {
+                "coordinates": [
+                    139.77698242177678,
+                    35.61920022358957
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77697705735875,
+                35.6191991333983
+            ],
+            "name_pron": "Miraikan Hall Back door",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1665538133244",
+                "ent1_lon": 139.77697705735875,
+                "ent1_n": "",
+                "name_ja": "\u672a\u6765\u9928\u30db\u30fc\u30eb\u3000\u88cf\u53e3",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77698542177677,
+                "facil_id": "EDITOR_facil_1665538128106",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.6191991333983,
+                "ent1_fl": 7,
+                "facil_type": 99,
+                "lat": 35.619210223589576,
+                "name_en": "Miraikan Hall Back door"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1653551389829",
+            "exit": "Entrance",
+            "node_height": 3.0,
+            "name": "Nanairo Quest",
+            "geometry": {
+                "coordinates": [
+                    139.77669793998317,
+                    35.61923252049384
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77670363967732,
+                35.61922257250092
+            ],
+            "name_pron": "Nanairo Quest",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1653551389829",
+                "ent1_lon": 139.77670363967732,
+                "ent1_n": "",
+                "name_ja": "\u30ca\u30ca\u30a4\u30ed\u30af\u30a8\u30b9\u30c8",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77669793998317,
+                "ent1_n_en": "Entrance",
+                "facil_id": "EDITOR_facil_1653278953825",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61922257250092,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.61923252049384,
+                "ent1_n_ja": "\u5165\u53e3",
+                "name_en": "Nanairo Quest"
+            },
+            "exit_pron": "Entrance"
+        },
+        {
+            "node": "EDITOR_node_1653613360376",
+            "exit": "Entrance",
+            "node_height": 3.0,
+            "name": "Backward from the Future",
+            "geometry": {
+                "coordinates": [
+                    139.7767472255738,
+                    35.61920322161794
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7767420287938,
+                35.61920254025044
+            ],
+            "name_pron": "Backward from the Future",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1653613360376",
+                "ent1_lon": 139.7767420287938,
+                "hulop_tags": "read",
+                "ent1_n": "",
+                "name_ja": "\u672a\u6765\u9006\u7b97\u601d\u8003",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7767472255738,
+                "ent1_n_en": "Entrance",
+                "facil_id": "EDITOR_facil_1653278932418",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61920254025044,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.61920322161794,
+                "ent1_n_ja": "\u5165\u53e3",
+                "name_en": "Backward from the Future"
+            },
+            "exit_pron": "Entrance"
+        },
+        {
+            "node": "EDITOR_node_1653278767604",
+            "exit": "Exit",
+            "node_height": 3.0,
+            "name": "Nanairo Quest",
+            "geometry": {
+                "coordinates": [
+                    139.77668369074775,
+                    35.619225297977096
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77669056390835,
+                35.61921616762699
+            ],
+            "name_pron": "Nanairo Quest",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1653278767604",
+                "ent1_lon": 139.77669056390835,
+                "hulop_tags": "read",
+                "ent1_n": "",
+                "name_ja": "\u30ca\u30ca\u30a4\u30ed\u30af\u30a8\u30b9\u30c8",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77668369074775,
+                "ent1_n_en": "Exit",
+                "facil_id": "EDITOR_facil_1653278951924",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61921616762699,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.619225297977096,
+                "ent1_n_ja": "\u51fa\u53e3",
+                "name_en": "Nanairo Quest"
+            },
+            "exit_pron": "Exit"
+        },
+        {
+            "node": "EDITOR_node_1627883273058",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "Stories of One, Everyone, and You, Entrance",
+            "geometry": {
+                "coordinates": [
+                    139.77675346581282,
+                    35.61919567002259
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77674964375439,
+                35.61919438234605
+            ],
+            "name_pron": "Stories of One, Everyone, and You, Entrance",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627883273058",
+                "ent1_lon": 139.77674964375439,
+                "ent1_n": "",
+                "name_ja": "\u307c\u304f\u3068\u307f\u3093\u306a\u3068\u305d\u3057\u3066\u304d\u307f\u3001\u5165\u53e3",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77675346581282,
+                "facil_id": "EDITOR_facil_1627883523560",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61919438234605,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61919567002259,
+                "name_en": "Stories of One, Everyone, and You, Entrance"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1709801791494",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.77667428553104,
+                    35.61922085295389
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77666959166527,
+                35.61922303333613
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1709801791494",
+                "ent1_lon": 139.77666959166527,
+                "ent1_n": "",
+                "name_ja": "\u30d7\u30e9\u30cd\u30bf\u30ea\u30fc\u30af\u30e9\u30a4\u30b7\u30b9\uff08\u30c4\u30a2\u30fc\uff09",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77667428553104,
+                "facil_id": "EDITOR_facil_1710209113347",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61922303333613,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61922085295389
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1659414475049",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "5F, Elevator",
+            "geometry": {
+                "coordinates": [
+                    139.77650440183888,
+                    35.6193409262784
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77649954033507,
+                35.61933929099449
+            ],
+            "name_pron": "5F, Elevator",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1659414475049",
+                "ent1_lon": 139.77649954033507,
+                "ent1_n": "",
+                "name_ja": "5\u968e\u30a8\u30ec\u30d9\u30fc\u30bf\u30fc\u524d",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77650740183887,
+                "facil_id": "EDITOR_facil_1659421319287",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61933929099449,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.6193509262784,
+                "name_en": "5F, Elevator"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1659414534164",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "3F,Elevator",
+            "geometry": {
+                "coordinates": [
+                    139.77650691640986,
+                    35.619336565520825
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.776494822329,
+                35.6193339449693
+            ],
+            "name_pron": "3F,Elevator",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1659414534164",
+                "ent1_lon": 139.776494822329,
+                "ent1_n": "",
+                "name_ja": "\u4e09\u968e\u30a8\u30ec\u30d9\u30fc\u30bf\u30fc\u524d",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77650991640985,
+                "facil_id": "EDITOR_facil_1659420877509",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.6193339449693,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.61934656552083,
+                "name_en": "3F,Elevator"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1659492107636",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "test3",
+            "geometry": {
+                "coordinates": [
+                    139.7765414498509,
+                    35.61930215640898
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7765395220132,
+                35.6192984088802
+            ],
+            "name_pron": "test3",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1659492107636",
+                "ent1_lon": 139.7765395220132,
+                "ent1_n": "",
+                "name_ja": "test3",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7765414498509,
+                "facil_id": "EDITOR_facil_1659492124740",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.6192984088802,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61930215640898,
+                "name_en": "test3"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1659493604050",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "test5",
+            "geometry": {
+                "coordinates": [
+                    139.77653415759517,
+                    35.61930651716912
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77653524724255,
+                35.61929087975555
+            ],
+            "name_pron": "test5",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1659493604050",
+                "ent1_lon": 139.77653524724255,
+                "ent1_n": "",
+                "name_ja": "test5",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77653715759516,
+                "facil_id": "EDITOR_facil_1659493658268",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61929087975555,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.61931651716915,
+                "name_en": "test5"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1659493609682",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "test4",
+            "geometry": {
+                "coordinates": [
+                    139.77645670880983,
+                    35.619350806118945
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7764751489968,
+                35.61934358361496
+            ],
+            "name_pron": "test4",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1659493609682",
+                "ent1_lon": 139.7764751489968,
+                "ent1_n": "",
+                "name_ja": "test4",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77645970880982,
+                "facil_id": "EDITOR_facil_1659493656396",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61934358361495,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.619360806118934,
+                "name_en": "test4"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1659413394541",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "5F, in Elevator",
+            "geometry": {
+                "coordinates": [
+                    139.77650222254402,
+                    35.61928028446967
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77650545304638,
+                35.619277099983194
+            ],
+            "name_pron": "5F, in Elevator",
+            "properties": {
+                "parking": 99,
+                "hulop_file": "EDITOR",
+                "hulop_heading": 60,
+                "ent1_n": "",
+                "name_ja": "5\u968e\u30a8\u30ec\u30d9\u30fc\u30bf\u30fc\u5185",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77650222254402,
+                "hulop_sub_category": "_nav_elevator_cab_",
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619277099983194,
+                "lat": 35.61928028446967,
+                "hulop_height": 5,
+                "escalator": 99,
+                "ent1_node": "EDITOR_node_1659413394541",
+                "ent1_lon": 139.77650545304638,
+                "hulop_content": "{\"set_back\":[2.5,0.0],\"set_forward\":[3.0,0.0],\"door\":[1.0,0.0],\"buttons\":[1.0,1.0]}",
+                "hulop_angle": 90,
+                "facil_id": "EDITOR_facil_1659516150112",
+                "toilet": 99,
+                "hulop_major_category": "_nav_poi_",
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "name_en": "5F, in Elevator"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1659413465378",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "3F, in Elevator",
+            "geometry": {
+                "coordinates": [
+                    139.7765028511868,
+                    35.61927755899383
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77650545304638,
+                35.619277099983194
+            ],
+            "name_pron": "3F, in Elevator",
+            "properties": {
+                "parking": 99,
+                "hulop_file": "EDITOR",
+                "hulop_heading": 60,
+                "ent1_n": "",
+                "name_ja": "3\u968e\u30a8\u30ec\u30d9\u30fc\u30bf\u30fc\u5185",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7765028511868,
+                "hulop_sub_category": "_nav_elevator_cab_",
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619277099983194,
+                "lat": 35.61927755899383,
+                "hulop_height": 3,
+                "escalator": 99,
+                "ent1_node": "EDITOR_node_1659413465378",
+                "ent1_lon": 139.77650545304638,
+                "hulop_content": "{\"set_back\":[2.5,0.0],\"set_forward\":[3.0,0.0],\"door\":[1.0,0.0],\"buttons\":[1.0,1.0]}",
+                "hulop_angle": 90,
+                "facil_id": "EDITOR_facil_1659515999411",
+                "toilet": 99,
+                "hulop_major_category": "_nav_poi_",
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "name_en": "3F, in Elevator"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1718326233693",
+            "exit": "",
+            "node_height": 7.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.77650019340211,
+                    35.61927588203615
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77650545304638,
+                35.619277099983194
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "hulop_height": 7,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1718326233693",
+                "hulop_heading": 60,
+                "ent1_lon": 139.77650545304638,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77650019340211,
+                "hulop_content": "{\"set_back\":[2.5,0.0],\"set_forward\":[3.0,0.0],\"door\":[1.0,0.0],\"buttons\":[1.0,1.0]}",
+                "hulop_sub_category": "_nav_elevator_cab_",
+                "hulop_angle": 90,
+                "facil_id": "EDITOR_facil_1718326160574",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619277099983194,
+                "hulop_major_category": "_nav_poi_",
+                "ent1_fl": 7,
+                "facil_type": 99,
+                "lat": 35.61927588203615
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1710835407474",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "CELLS in Progress",
+            "geometry": {
+                "coordinates": [
+                    139.77665882091966,
+                    35.619177620049854
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77665215730664,
+                35.619178880584016
+            ],
+            "name_pron": "CELLS in Progress",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1710835407474",
+                "ent1_lon": 139.77665215730664,
+                "hulop_tags": "read",
+                "ent1_n": "",
+                "name_ja": "\u7d30\u80de\u305f\u3061\u7814\u7a76\u958b\u767a\u4e2d",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77665882091966,
+                "facil_id": "EDITOR_facil_1710835437346",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619178880584016,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.619177620049854,
+                "name_en": "CELLS in Progress"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1627895015467",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.7766176413507,
+                    35.6191908888231
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7766147883696,
+                35.619189357911196
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627895015467",
+                "ent1_lon": 139.7766147883696,
+                "ent1_n": "",
+                "name_ja": "\u5730\u7403\u74b0\u5883\u30b7\u30a2\u30bf\u30fc",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7766176413507,
+                "facil_id": "EDITOR_facil_1627895203053",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619189357911196,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.6191908888231,
+                "name_en": ""
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1655798658060",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "CELLS in Progress, Exhibition1",
+            "geometry": {
+                "coordinates": [
+                    139.77676113953305,
+                    35.61912772583629
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7767538053678,
+                35.61912072475816
+            ],
+            "name_pron": "CELLS in Progress, Exhibition1",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1655798658060",
+                "ent1_lon": 139.7767538053678,
+                "ent1_n": "",
+                "name_ja": "\u7d30\u80de\u305f\u3061\u7814\u7a76\u958b\u767a\u4e2d\u3001\u5c55\u793a\uff11",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77676413953304,
+                "facil_id": "EDITOR_facil_1654156097370",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61912072475816,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61913772583631,
+                "name_en": "CELLS in Progress, Exhibition1"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1653278651755",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "A Hunds-On Model of the Internet, Entrance",
+            "geometry": {
+                "coordinates": [
+                    139.77666726221756,
+                    35.61914189833247
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.776660556695,
+                35.619151710062724
+            ],
+            "name_pron": "A Hunds-On Model of the Internet, Entrance",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1653278651755",
+                "ent1_lon": 139.776660556695,
+                "ent1_n": "",
+                "name_ja": "\u30a4\u30f3\u30bf\u30fc\u30cd\u30c3\u30c8\u7269\u7406\u30e2\u30c7\u30eb\u3001\u5165\u53e3",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77666726221756,
+                "facil_id": "EDITOR_facil_1653278934414",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619151710062724,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.61914189833247,
+                "name_en": "A Hunds-On Model of the Internet, Entrance"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1638867852902",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "Miraikan Shop",
+            "geometry": {
+                "coordinates": [
+                    139.7774444671791,
+                    35.619374165615596
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77739680045602,
+                35.619422940441495
+            ],
+            "name_pron": "Miraikan Shop",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1638867852902",
+                "ent2_lat": 35.61941068226072,
+                "ent1_lon": 139.77739680045602,
+                "ent1_n": "",
+                "name_ja": "\u672a\u6765\u9928\u30b7\u30e7\u30c3\u30d7",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7774444671791,
+                "ent2_n": "",
+                "ent2_node": "EDITOR_node_1694335014927",
+                "ent2_lon": 139.7775236237794,
+                "facil_id": "EDITOR_facil_1638867873628",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619422940441495,
+                "ent1_fl": 1,
+                "ent2_fl": 1,
+                "facil_type": 99,
+                "lat": 35.619374165615596,
+                "name_en": "Miraikan Shop"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1694335014927",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "Miraikan Shop",
+            "geometry": {
+                "coordinates": [
+                    139.7774444671791,
+                    35.619374165615596
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7775236237794,
+                35.61941068226072
+            ],
+            "name_pron": "Miraikan Shop",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1638867852902",
+                "ent2_lat": 35.61941068226072,
+                "ent1_lon": 139.77739680045602,
+                "ent1_n": "",
+                "name_ja": "\u672a\u6765\u9928\u30b7\u30e7\u30c3\u30d7",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7774444671791,
+                "ent2_n": "",
+                "ent2_node": "EDITOR_node_1694335014927",
+                "ent2_lon": 139.7775236237794,
+                "facil_id": "EDITOR_facil_1638867873628",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619422940441495,
+                "ent1_fl": 1,
+                "ent2_fl": 1,
+                "facil_type": 99,
+                "lat": 35.619374165615596,
+                "name_en": "Miraikan Shop"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1653541234303",
+            "exit": "Exit",
+            "node_height": 3.0,
+            "name": "A Hunds-On Model of the Internet",
+            "geometry": {
+                "coordinates": [
+                    139.77663792555646,
+                    35.61914053559373
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77663323169062,
+                35.61914830321254
+            ],
+            "name_pron": "A Hunds-On Model of the Internet",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1653541234303",
+                "ent1_lon": 139.77663323169062,
+                "hulop_tags": "read",
+                "ent1_n": "",
+                "name_ja": "\u30a4\u30f3\u30bf\u30fc\u30cd\u30c3\u30c8\u7269\u7406\u30e2\u30c7\u30eb",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77663792555646,
+                "ent1_n_en": "Exit",
+                "facil_id": "EDITOR_facil_1653278936065",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61914830321254,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.61914053559373,
+                "ent1_n_ja": "\u51fa\u53e3",
+                "name_en": "A Hunds-On Model of the Internet"
+            },
+            "exit_pron": "Exit"
+        },
+        {
+            "node": "EDITOR_node_1627883280147",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "CELLS in Progress, Entrance",
+            "geometry": {
+                "coordinates": [
+                    139.77660628652833,
+                    35.61915041146362
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77660110393734,
+                35.61914812385062
+            ],
+            "name_pron": "CELLS in Progress, Entrance",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627883280147",
+                "ent1_lon": 139.77660110393734,
+                "ent1_n": "",
+                "name_ja": "\u7d30\u80de\u305f\u3061\u7814\u7a76\u958b\u767a\u4e2d\u3001\u5165\u53e3",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77660928652833,
+                "facil_id": "EDITOR_facil_1627883527625",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61914812385062,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61916041146361,
+                "name_en": "CELLS in Progress, Entrance"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1655269538491",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "End point2",
+            "geometry": {
+                "coordinates": [
+                    139.77648371949283,
+                    35.619211057363614
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77648367758331,
+                35.619208757741006
+            ],
+            "name_pron": "End point2",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1655269538491",
+                "ent1_lon": 139.77648367758331,
+                "ent1_n": "",
+                "name_ja": "\u7d42\u70b92",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77648371949283,
+                "facil_id": "EDITOR_facil_1655269550539",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619208757741006,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.619211057363614,
+                "name_en": "End point2"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1658973542850",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "EngineCircle MidPoint",
+            "geometry": {
+                "coordinates": [
+                    139.7765122808279,
+                    35.61917876044582
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77651622032235,
+                35.61917896485669
+            ],
+            "name_pron": "EngineCircle MidPoint",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1658973542850",
+                "ent1_lon": 139.77651622032235,
+                "ent1_n": "",
+                "name_ja": "\u30a8\u30f3\u30b8\u30f3\u5468\u56f2\u3000\u4e2d\u70b9",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77651528082788,
+                "facil_id": "EDITOR_facil_1658970798516",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61917896485669,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61918876044581,
+                "name_en": "EngineCircle MidPoint"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1654158739972",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "CELLS in Progress,Exhibition2",
+            "geometry": {
+                "coordinates": [
+                    139.77668637295676,
+                    35.619093112224164
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77668234964324,
+                35.61909174948383
+            ],
+            "name_pron": "CELLS in Progress,Exhibition2",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1654158739972",
+                "ent1_lon": 139.77668234964324,
+                "ent1_n": "",
+                "name_ja": "\u7d30\u80de\u305f\u3061\u7814\u7a76\u958b\u767a\u4e2d\u3001\u5c55\u793a\uff12",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77668937295675,
+                "facil_id": "EDITOR_facil_1654156095474",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61909174948383,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61910311222417,
+                "name_en": "CELLS in Progress,Exhibition2"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1658814216291",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "RocketEngine round last stop",
+            "geometry": {
+                "coordinates": [
+                    139.77655041848732,
+                    35.61914762184283
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7765467304499,
+                35.61915389044658
+            ],
+            "name_pron": "RocketEngine round last stop",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "address": "",
+                "ent1_node": "EDITOR_node_1658814216291",
+                "ent1_lon": 139.7765467304499,
+                "ent1_n": "",
+                "name_ja": "\u30ed\u30b1\u30c3\u30c8\u30a8\u30f3\u30b8\u30f3\u4e00\u5468\u7d42\u70b9",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7765534184873,
+                "facil_id": "EDITOR_facil_1658796371877",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61915389044658,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61915762184283,
+                "name_en": "RocketEngine round last stop"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1658973599360",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "EnginCircle",
+            "geometry": {
+                "coordinates": [
+                    139.77652292584492,
+                    35.619162816392375
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77653315176676,
+                35.61916554187182
+            ],
+            "name_pron": "EnginCircle",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1658973599360",
+                "ent1_lon": 139.77653315176676,
+                "ent1_n": "",
+                "name_ja": "\u30a8\u30f3\u30b8\u30f3\u306e\u5468\u56f2",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7765259258449,
+                "facil_id": "EDITOR_facil_1658969281026",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61916554187182,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61917281639239,
+                "name_en": "EnginCircle"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1659492104858",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "test1",
+            "geometry": {
+                "coordinates": [
+                    139.77644644097848,
+                    35.61921296519206
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7764454351501,
+                35.61921224975465
+            ],
+            "name_pron": "test1",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1659492104858",
+                "ent1_lon": 139.7764454351501,
+                "ent1_n": "",
+                "name_ja": "test1",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77644644097848,
+                "facil_id": "EDITOR_facil_1659492122407",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61921224975465,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61921296519206,
+                "name_en": "test1"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1691564349255",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "Men's restroom",
+            "geometry": {
+                "coordinates": [
+                    139.77638728916648,
+                    35.61926875321271
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77638469077647,
+                35.61926936644488
+            ],
+            "name_pron": "Men's restroom",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1691564349255",
+                "ent1_lon": 139.77638469077647,
+                "ent1_n": "",
+                "name_ja": "\u7537\u5b50\u30c8\u30a4\u30ec",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77638728916648,
+                "facil_id": "EDITOR_facil_1691570985315",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61926936644488,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.61926875321271,
+                "name_en": "Men's restroom"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1627895414035",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.7765968367457,
+                    35.61911237886197
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77660509086903,
+                35.619119463091536
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627895414035",
+                "ent1_lon": 139.77660509086903,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7765968367457,
+                "hulop_sub_category": "exhibition_area",
+                "facil_id": "EDITOR_facil_1680070121874",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619119463091536,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61911237886197
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1627883241801",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "Rocket Engine",
+            "geometry": {
+                "coordinates": [
+                    139.77652449148624,
+                    35.61914574387055
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.776538232996,
+                35.61915515512207
+            ],
+            "name_pron": "Rocket Engine",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627883241801",
+                "ent1_lon": 139.776538232996,
+                "hulop_tags": "",
+                "ent1_n": "",
+                "name_ja": "\u30ed\u30b1\u30c3\u30c8\u30a8\u30f3\u30b8\u30f3",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77652449148624,
+                "facil_id": "EDITOR_facil_1627883322229",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61915515512207,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61914574387055,
+                "name_en": "Rocket Engine"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1665541892227",
+            "exit": "",
+            "node_height": 7.0,
+            "name": "Conference Room Mars",
+            "geometry": {
+                "coordinates": [
+                    139.77653717508028,
+                    35.61913808266223
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7765458922596,
+                35.61914244343063
+            ],
+            "name_pron": "Conference Room Mars",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1665541892227",
+                "ent1_lon": 139.7765458922596,
+                "ent1_n": "",
+                "name_ja": "\u30b3\u30f3\u30d5\u30a1\u30ec\u30f3\u30b9\u30eb\u30fc\u30e0\u3000\u706b\u661f",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77654017508027,
+                "facil_id": "EDITOR_facil_1665541895771",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61914244343065,
+                "ent1_fl": 7,
+                "facil_type": 99,
+                "lat": 35.61914808266225,
+                "name_en": "Conference Room Mars"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1627883282024",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "CELLS in Progress, Exit",
+            "geometry": {
+                "coordinates": [
+                    139.77664641605784,
+                    35.61908198314126
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77664734391243,
+                35.61908742997031
+            ],
+            "name_pron": "CELLS in Progress, Exit",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627883282024",
+                "ent1_lon": 139.77664734391243,
+                "ent1_n": "",
+                "name_ja": "\u7d30\u80de\u305f\u3061\u7814\u7a76\u958b\u767a\u4e2d\u3001\u51fa\u53e3",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77664641605784,
+                "facil_id": "EDITOR_facil_1627883528701",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61908742997031,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61908198314126,
+                "name_en": "CELLS in Progress, Exit"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1626153223873",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "Start point",
+            "geometry": {
+                "coordinates": [
+                    139.77643207647432,
+                    35.61919497451743
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77643715776563,
+                35.61919261993529
+            ],
+            "name_pron": "Start point",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1626153223873",
+                "ent1_lon": 139.77643715776563,
+                "ent1_n": "",
+                "name_ja": "\u59cb\u70b9",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7764350764743,
+                "facil_id": "EDITOR_facil_1626153557852",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61919261993529,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.6192049745174,
+                "name_en": "Start point"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1710988439214",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "Rocket Engine",
+            "geometry": {
+                "coordinates": [
+                    139.77650178596377,
+                    35.619136771918065
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7765039652586,
+                35.619134864081545
+            ],
+            "name_pron": "Rocket Engine",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1710988439214",
+                "ent1_lon": 139.7765039652586,
+                "hulop_tags": "read",
+                "ent1_n": "",
+                "name_ja": "\u30ed\u30b1\u30c3\u30c8\u30a8\u30f3\u30b8\u30f3",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77650178596377,
+                "facil_id": "EDITOR_facil_1710988436864",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619134864081545,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.619136771918065,
+                "name_en": "Rocket Engine"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1627883286827",
+            "exit": "Entrance",
+            "node_height": 5.0,
+            "name": "Earth Environment and Me,",
+            "geometry": {
+                "coordinates": [
+                    139.77654690795214,
+                    35.619104825029126
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7765422226504,
+                35.619107898833605
+            ],
+            "name_pron": "Earth Environment and Me,",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627883286827",
+                "ent1_lon": 139.7765422226504,
+                "hulop_tags": "read",
+                "ent1_n": "",
+                "name_ja": "\u5730\u7403\u74b0\u5883\u3068\u308f\u305f\u3057",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77654690795214,
+                "ent1_n_en": "Entrance",
+                "facil_id": "EDITOR_facil_1627883530513",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619107898833605,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.619104825029126,
+                "ent1_n_ja": "\u5165\u53e3",
+                "name_en": "Earth Environment and Me,"
+            },
+            "exit_pron": "Entrance"
+        },
+        {
+            "node": "EDITOR_node_1626153479659",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "End point",
+            "geometry": {
+                "coordinates": [
+                    139.7764175199769,
+                    35.619184375330406
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77641926432202,
+                35.61918398101179
+            ],
+            "name_pron": "End point",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1626153479659",
+                "ent1_lon": 139.77641926432202,
+                "ent1_n": "",
+                "name_ja": "\u7d42\u70b9",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77642051997688,
+                "facil_id": "EDITOR_facil_1626153565454",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61918398101179,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61919437533042,
+                "name_en": "End point"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1691564351878",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "Women's restroom",
+            "geometry": {
+                "coordinates": [
+                    139.77632224559784,
+                    35.61925573906272
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77631989866495,
+                35.61925383122906
+            ],
+            "name_pron": "Women's restroom",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1691564351878",
+                "ent1_lon": 139.77631989866495,
+                "ent1_n": "",
+                "name_ja": "\u5973\u5b50\u30c8\u30a4\u30ec",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77632224559784,
+                "facil_id": "EDITOR_facil_1691570983115",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61925383122906,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.61925573906272,
+                "name_en": "Women's restroom"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1653278680296",
+            "exit": "Entrance",
+            "node_height": 3.0,
+            "name": "Park of Aging",
+            "geometry": {
+                "coordinates": [
+                    139.77653067910538,
+                    35.61908861518127
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77653365468092,
+                35.619087865674416
+            ],
+            "name_pron": "Park of Aging",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1653278680296",
+                "ent1_lon": 139.77653365468092,
+                "hulop_tags": "read",
+                "ent1_n": "",
+                "name_ja": "\u8001\u3044\u30d1\u30fc\u30af",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77653067910538,
+                "ent1_n_en": "Entrance",
+                "facil_id": "EDITOR_facil_1653278937919",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619087865674416,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.61908861518127,
+                "ent1_n_ja": "\u5165\u53e3",
+                "name_en": "Park of Aging"
+            },
+            "exit_pron": "Entrance"
+        },
+        {
+            "node": "EDITOR_node_1627883317258",
+            "exit": "Entrance",
+            "node_height": 5.0,
+            "name": "Many Small Insights equal Major Discoveries",
+            "geometry": {
+                "coordinates": [
+                    139.7764343706493,
+                    35.619124443029406
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77643577672094,
+                35.61912066415647
+            ],
+            "name_pron": "Many Small Insights equal Major Discoveries",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627883317258",
+                "ent1_lon": 139.77643577672094,
+                "ent1_n": "",
+                "name_ja": "\u3061\u308a\u3082\u7a4d\u3082\u308c\u3070\u4e16\u754c\u3092\u304b\u3048\u308b",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7764343706493,
+                "ent1_n_en": "Entrance",
+                "facil_id": "EDITOR_facil_1627883542238",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61912066415647,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.619124443029406,
+                "ent1_n_ja": "\u5165\u53e3",
+                "name_en": "Many Small Insights equal Major Discoveries"
+            },
+            "exit_pron": "Entrance"
+        },
+        {
+            "node": "EDITOR_node_1702010124791",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "Co-stadio",
+            "geometry": {
+                "coordinates": [
+                    139.77651167660952,
+                    35.61906890741953
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77650681510568,
+                35.61907381328882
+            ],
+            "name_pron": "Co-stadio",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1702010124791",
+                "ent1_lon": 139.77650681510568,
+                "ent1_n": "",
+                "name_ja": "\u30b3\u30fb\u30b9\u30bf\u30b8\u30aa",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77651167660952,
+                "facil_id": "EDITOR_facil_1702010132414",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61907381328882,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61906890741953,
+                "name_en": "Co-stadio"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1692668890209",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "Water dispenser",
+            "geometry": {
+                "coordinates": [
+                    139.7762939147651,
+                    35.6192378871886
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77629659697413,
+                35.61923952247494
+            ],
+            "name_pron": "Water dispenser",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1692668890209",
+                "ent1_lon": 139.77629659697413,
+                "ent1_n": "",
+                "name_ja": "\u7d66\u6c34\u6a5f",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7762939147651,
+                "facil_id": "EDITOR_facil_1692668898162",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61923952247494,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.6192378871886,
+                "name_en": "Water dispenser"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1662358290488",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "Microorganism size",
+            "geometry": {
+                "coordinates": [
+                    139.77653818090866,
+                    35.61905018587336
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7765443835171,
+                35.61904459863234
+            ],
+            "name_pron": "Microorganism size",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1662358290488",
+                "ent1_lon": 139.7765443835171,
+                "ent1_n": "",
+                "name_ja": "\u5fae\u751f\u7269\u306e\u5927\u304d\u3055",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77654118090865,
+                "facil_id": "EDITOR_facil_1662358369348",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61904459863234,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.619060185873366,
+                "name_en": "Microorganism size"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1659926416845",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "WaitingStation",
+            "geometry": {
+                "coordinates": [
+                    139.77627356422556,
+                    35.61924028810925
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77628010211,
+                35.619232588636805
+            ],
+            "name_pron": "WaitingStation",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1659926416845",
+                "ent1_lon": 139.77628010211,
+                "ent1_n": "",
+                "name_ja": "\u5f85\u6a5f\u5834\u6240",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77627656422555,
+                "facil_id": "EDITOR_facil_1659926422093",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61923258863679,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61925028810926,
+                "name_en": "WaitingStation"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1680070180511",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.776515616104,
+                    35.61904921580225
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7765198908746,
+                35.619060935381256
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1680070180511",
+                "ent1_lon": 139.7765198908746,
+                "hulop_tags": "short",
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.776515616104,
+                "facil_id": "EDITOR_facil_1682928416681",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619060935381256,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.61904921580225
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1653278686939",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "The tearoom going from zero to one",
+            "geometry": {
+                "coordinates": [
+                    139.77640855477614,
+                    35.619087184300625
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77640708794308,
+                35.61908670734239
+            ],
+            "name_pron": "The tearoom going from zero to one",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1653278686939",
+                "ent1_lon": 139.77640708794308,
+                "hulop_tags": "read",
+                "ent1_n": "",
+                "name_ja": "\u96f6\u58f1\u5eb5(\u30bc\u30ed\u30a4\u30c1\u30a2\u30f3)",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77640855477614,
+                "facil_id": "EDITOR_facil_1653278941302",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61908670734239,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.619087184300625,
+                "name_en": "The tearoom going from zero to one"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1627883318365",
+            "exit": "Exit",
+            "node_height": 5.0,
+            "name": "Many Small Insights equal Major Discoveries",
+            "geometry": {
+                "coordinates": [
+                    139.7763821321862,
+                    35.619097017504814
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7763839585275,
+                35.61908891299093
+            ],
+            "name_pron": "Many Small Insights equal Major Discoveries",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627883318365",
+                "ent1_lon": 139.7763839585275,
+                "ent1_n": "",
+                "name_ja": "\u3061\u308a\u3082\u7a4d\u3082\u308c\u3070\u4e16\u754c\u3092\u304b\u3048\u308b",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7763851321862,
+                "ent1_n_en": "Exit",
+                "facil_id": "EDITOR_facil_1627883543481",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61908891299093,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61910701750483,
+                "ent1_n_ja": "\u51fa\u53e3",
+                "name_en": "Many Small Insights equal Major Discoveries"
+            },
+            "exit_pron": "Exit"
+        },
+        {
+            "node": "EDITOR_node_1638868116149",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.77763770148158,
+                    35.61926282530173
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77764472762294,
+                35.61926605854815
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1638868116149",
+                "ent1_lon": 139.77764472762294,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77763770148158,
+                "facil_id": "EDITOR_facil_1672124770121",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61926605854815,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.61926282530173
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1627884649478",
+            "exit": "Exit",
+            "node_height": 5.0,
+            "name": "Earth Environment and Me,",
+            "geometry": {
+                "coordinates": [
+                    139.77649987938278,
+                    35.618989910446274
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77649657279377,
+                35.61898786462558
+            ],
+            "name_pron": "Earth Environment and Me,",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627884649478",
+                "ent1_lon": 139.77649657279377,
+                "ent1_n": "",
+                "name_ja": "\u5730\u7403\u74b0\u5883\u3068\u308f\u305f\u3057",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77650287938278,
+                "ent1_n_en": "Exit",
+                "facil_id": "EDITOR_facil_1627883531686",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61898786462558,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61899991044628,
+                "ent1_n_ja": "\u51fa\u53e3",
+                "name_en": "Earth Environment and Me,"
+            },
+            "exit_pron": "Exit"
+        },
+        {
+            "node": "EDITOR_node_1663051810612",
+            "exit": "",
+            "node_height": 3.0,
+            "name": "Visionarylab test",
+            "geometry": {
+                "coordinates": [
+                    139.7765049885721,
+                    35.618987090911745
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77650649731467,
+                35.618995812465826
+            ],
+            "name_pron": "Visionarylab test",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1663051810612",
+                "ent1_lon": 139.77650649731467,
+                "ent1_n": "",
+                "name_ja": "\u3073\u3058\u3087\u306a\u308a\u30fc\u3089\u307c\u3000\u30c6\u30b9\u30c8",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7765049885721,
+                "facil_id": "EDITOR_facil_1663051816210",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.618995812465826,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.618987090911745,
+                "name_en": "Visionarylab test"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1627883296791",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "Mission Survival: 10 Billion",
+            "geometry": {
+                "coordinates": [
+                    139.77641445525725,
+                    35.61900462943484
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77642124116366,
+                35.61899981490498
+            ],
+            "name_pron": "Mission Survival: 10 Billion",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627883296791",
+                "ent1_lon": 139.77642124116366,
+                "hulop_tags": "read",
+                "ent1_n": "",
+                "name_ja": "100\u5104\u4eba\u3067\u30b5\u30d0\u30a4\u30d0\u30eb",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77641445525725,
+                "facil_id": "EDITOR_facil_1627883534421",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61899981490498,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61900462943484,
+                "name_en": "Mission Survival: 10 Billion"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1654161534565",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "Mission Survival: 10 Billion, Model",
+            "geometry": {
+                "coordinates": [
+                    139.77640842904756,
+                    35.619001399708054
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77641010542823,
+                35.618995539915005
+            ],
+            "name_pron": "Mission Survival: 10 Billion, Model",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1654161534565",
+                "ent1_lon": 139.77641010542823,
+                "ent1_n": "",
+                "name_ja": "100\u5104\u4eba\u3067\u30b5\u30d0\u30a4\u30d0\u30eb\u3001 \u6a21\u578b",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77640842904756,
+                "facil_id": "EDITOR_facil_1654161563399",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.618995539915005,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.619001399708054,
+                "name_en": "Mission Survival: 10 Billion, Model"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1627883308126",
+            "exit": "Exit",
+            "node_height": 5.0,
+            "name": "Understanding the Universe through Neutrinos",
+            "geometry": {
+                "coordinates": [
+                    139.7763194671788,
+                    35.619059734289365
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77631417587617,
+                35.619054619668674
+            ],
+            "name_pron": "Understanding the Universe through Neutrinos",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627883308126",
+                "ent1_lon": 139.77631417587617,
+                "ent1_n": "",
+                "name_ja": "\u30cb\u30e5\u30fc\u30c8\u30ea\u30ce\u304b\u3089\u63a2\u308b\u5b87\u5b99",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7763194671788,
+                "ent1_n_en": "Exit",
+                "facil_id": "EDITOR_facil_1627883540654",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.619054619668674,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.619059734289365,
+                "ent1_n_ja": "\u51fa\u53e3",
+                "name_en": "Understanding the Universe through Neutrinos"
+            },
+            "exit_pron": "Exit"
+        },
+        {
+            "node": "EDITOR_node_1654161177732",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "Mission Survival: 10 Billion, Exhibition1",
+            "geometry": {
+                "coordinates": [
+                    139.77643724530932,
+                    35.61896779193533
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7764327365668,
+                35.61896024487319
+            ],
+            "name_pron": "Mission Survival: 10 Billion, Exhibition1",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1654161177732",
+                "ent1_lon": 139.7764327365668,
+                "ent1_n": "",
+                "name_ja": "100\u5104\u4eba\u3067\u30b5\u30d0\u30a4\u30d0\u30eb\u3001\u5c55\u793a\uff11",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77643724530932,
+                "facil_id": "EDITOR_facil_1654161224444",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61896024487319,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61896779193533,
+                "name_en": "Mission Survival: 10 Billion, Exhibition1"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1654161179718",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "Mission Survival: 10 Billion, Exhibition2",
+            "geometry": {
+                "coordinates": [
+                    139.77641109377143,
+                    35.61893685765787
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77640306462956,
+                35.61893299000461
+            ],
+            "name_pron": "Mission Survival: 10 Billion, Exhibition2",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1654161179718",
+                "ent1_lon": 139.77640306462956,
+                "ent1_n": "",
+                "name_ja": "100\u5104\u4eba\u3067\u30b5\u30d0\u30a4\u30d0\u30eb\u3001\u5c55\u793a\uff12",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77641109377143,
+                "facil_id": "EDITOR_facil_1654161226588",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61893299000461,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61893685765787,
+                "name_en": "Mission Survival: 10 Billion, Exhibition2"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1627883306681",
+            "exit": "Entrance",
+            "node_height": 5.0,
+            "name": "Understanding the Universe through Neutrinos",
+            "geometry": {
+                "coordinates": [
+                    139.7762702170165,
+                    35.61902020601208
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77627833719566,
+                35.61901286368841
+            ],
+            "name_pron": "Understanding the Universe through Neutrinos",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627883306681",
+                "ent1_lon": 139.77627833719566,
+                "hulop_tags": "read",
+                "ent1_n": "",
+                "name_ja": "\u30cb\u30e5\u30fc\u30c8\u30ea\u30ce\u304b\u3089\u63a2\u308b\u5b87\u5b99",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7762702170165,
+                "ent1_n_en": "Entrance",
+                "facil_id": "EDITOR_facil_1627883539521",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61901286368841,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61902020601208,
+                "ent1_n_ja": "\u5165\u53e3",
+                "name_en": "Understanding the Universe through Neutrinos"
+            },
+            "exit_pron": "Entrance"
+        },
+        {
+            "node": "EDITOR_node_1653278682976",
+            "exit": "Exit",
+            "node_height": 3.0,
+            "name": "Park of Aging",
+            "geometry": {
+                "coordinates": [
+                    139.7763306449861,
+                    35.61897646150578
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77633902688933,
+                35.61898927129053
+            ],
+            "name_pron": "Park of Aging",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1653278682976",
+                "ent1_lon": 139.77633902688933,
+                "ent1_n": "",
+                "name_ja": "\u8001\u3044\u30d1\u30fc\u30af",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7763306449861,
+                "ent1_n_en": "Exit",
+                "facil_id": "EDITOR_facil_1653278939558",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61898927129053,
+                "ent1_fl": 3,
+                "facil_type": 99,
+                "lat": 35.61897646150578,
+                "ent1_n_ja": "\u51fa\u53e3",
+                "name_en": "Park of Aging"
+            },
+            "exit_pron": "Exit"
+        },
+        {
+            "node": "EDITOR_node_1654161182510",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "Mission Survival: 10 Billion, Exhibition3",
+            "geometry": {
+                "coordinates": [
+                    139.77636666968462,
+                    35.61892091355425
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77636165802792,
+                35.6189218155059
+            ],
+            "name_pron": "Mission Survival: 10 Billion, Exhibition3",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1654161182510",
+                "ent1_lon": 139.77636165802792,
+                "ent1_n": "",
+                "name_ja": "100\u5104\u4eba\u3067\u30b5\u30d0\u30a4\u30d0\u30eb\u3001\u5c55\u793a\uff13",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77636666968462,
+                "facil_id": "EDITOR_facil_1654161228383",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.6189218155059,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61892091355425,
+                "name_en": "Mission Survival: 10 Billion, Exhibition3"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1627883303190",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "Mission Survival: 10 Billion",
+            "geometry": {
+                "coordinates": [
+                    139.77626892654587,
+                    35.61897470898397
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77627138663294,
+                35.618981670377636
+            ],
+            "name_pron": "Mission Survival: 10 Billion",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1627883303190",
+                "ent1_lon": 139.77627138663294,
+                "ent1_n": "",
+                "name_ja": "100\u5104\u4eba\u3067\u30b5\u30d0\u30a4\u30d0\u30eb\u3001\u51fa\u53e3",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77627192654586,
+                "facil_id": "EDITOR_facil_1627883536736",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61898167037765,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61898470898397,
+                "name_en": "Mission Survival: 10 Billion"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1654161202130",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "Mission Survival: 10 Billion, Exhibition4",
+            "geometry": {
+                "coordinates": [
+                    139.77632626891133,
+                    35.618926637078985
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77632041906426,
+                35.61892631256052
+            ],
+            "name_pron": "Mission Survival: 10 Billion, Exhibition4",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1654161202130",
+                "ent1_lon": 139.77632041906426,
+                "ent1_n": "",
+                "name_ja": "100\u5104\u4eba\u3067\u30b5\u30d0\u30a4\u30d0\u30eb\u3001\u5c55\u793a\uff14",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77632626891133,
+                "facil_id": "EDITOR_facil_1654161231364",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61892631256052,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.618926637078985,
+                "name_en": "Mission Survival: 10 Billion, Exhibition4"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1654161207539",
+            "exit": "",
+            "node_height": 5.0,
+            "name": "Mission Survival: 10 Billion, Exhibition5",
+            "geometry": {
+                "coordinates": [
+                    139.77628301829097,
+                    35.61894884980211
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7762868914516,
+                35.61894402822746
+            ],
+            "name_pron": "Mission Survival: 10 Billion, Exhibition5",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1654161207539",
+                "ent1_lon": 139.7762868914516,
+                "ent1_n": "",
+                "name_ja": "100\u5104\u4eba\u3067\u30b5\u30d0\u30a4\u30d0\u30eb\u3001\u5c55\u793a\uff15",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77628301829097,
+                "facil_id": "EDITOR_facil_1654161234425",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61894402822746,
+                "ent1_fl": 5,
+                "facil_type": 99,
+                "lat": 35.61894884980211,
+                "name_en": "Mission Survival: 10 Billion, Exhibition5"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1639555338871",
+            "exit": "",
+            "node_height": 7.0,
+            "name": "Conference Room Neptune",
+            "geometry": {
+                "coordinates": [
+                    139.776149261409,
+                    35.619032383860514
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7761421569386,
+                35.61904487118072
+            ],
+            "name_pron": "Conference Room Neptune",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1639555338871",
+                "ent1_lon": 139.7761421569386,
+                "ent1_n": "",
+                "name_ja": "\u30b3\u30f3\u30d5\u30a1\u30ec\u30f3\u30b9\u30eb\u30fc\u30e0\u3000\u6d77\u738b\u661f",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77615226140898,
+                "facil_id": "EDITOR_facil_1639555478123",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61904487118072,
+                "ent1_fl": 7,
+                "facil_type": 99,
+                "lat": 35.61904238386053,
+                "name_en": "Conference Room Neptune"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1665538325965",
+            "exit": "",
+            "node_height": 7.0,
+            "name": "Neptune Back door",
+            "geometry": {
+                "coordinates": [
+                    139.77634673824025,
+                    35.61887044004621
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7763524379344,
+                35.61887207533985
+            ],
+            "name_pron": "Neptune Back door",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1665538325965",
+                "ent1_lon": 139.7763524379344,
+                "ent1_n": "",
+                "name_ja": "\u6d77\u738b\u661f\u3000\u88cf\u53e3",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77634973824024,
+                "facil_id": "EDITOR_facil_1665538329033",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61887207533984,
+                "ent1_fl": 7,
+                "facil_type": 99,
+                "lat": 35.61888044004621,
+                "name_en": "Neptune Back door"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1636531362038",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "Circular plaza",
+            "geometry": {
+                "coordinates": [
+                    139.7780414497844,
+                    35.61949367789829
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77803143096648,
+                35.61949450500289
+            ],
+            "name_pron": "Circular plaza",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1636531362038",
+                "ent1_lon": 139.77803143096648,
+                "ent1_n": "",
+                "name_ja": "\u5186\u5f62\u5e83\u5834",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7780414497844,
+                "facil_id": "EDITOR_facil_1636531638634",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61949450500289,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.61949367789829,
+                "name_en": "Circular plaza"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1671691582873",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.7779330797494,
+                    35.618891478277675
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77794137783346,
+                35.61889209151269
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1671691582873",
+                "ent1_lon": 139.77794137783346,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7779330797494,
+                "facil_id": "EDITOR_facil_1672123423143",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61889209151269,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.618891478277675
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1636531376115",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "Wangan Studio",
+            "geometry": {
+                "coordinates": [
+                    139.77804488038342,
+                    35.620236510702725
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77803121961415,
+                35.62021918863809
+            ],
+            "name_pron": "Wangan Studio",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1636531376115",
+                "ent1_lon": 139.77803121961415,
+                "ent1_n": "",
+                "name_ja": "\u6e7e\u5cb8\u30b9\u30bf\u30b8\u30aa",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77804488038342,
+                "facil_id": "EDITOR_facil_1636531381226",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.62021918863809,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.620236510702725,
+                "name_en": "Wangan Studio"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1671691532936",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.7780459839851,
+                    35.61875343213697
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77805864065888,
+                35.61875963263513
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1671691532936",
+                "ent1_lon": 139.77805864065888,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.7780459839851,
+                "facil_id": "EDITOR_facil_1672123534362",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61875963263513,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.61875343213697
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1694056963518",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "test",
+            "geometry": {
+                "coordinates": [
+                    139.77888258174062,
+                    35.61755352450015
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7788885079657,
+                35.61755106604308
+            ],
+            "name_pron": "test",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1694056963518",
+                "ent1_lon": 139.7788885079657,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77888258174062,
+                "facil_id": "EDITOR_facil_1694056973410",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61755106604308,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.61755352450015,
+                "name_en": "test"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1694056924484",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "test",
+            "geometry": {
+                "coordinates": [
+                    139.77886950597164,
+                    35.61749506176014
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7788713071654,
+                35.61749003831305
+            ],
+            "name_pron": "test",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1694056924484",
+                "ent1_lon": 139.7788713071654,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77886950597164,
+                "facil_id": "EDITOR_facil_1694056976245",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61749003831305,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.61749506176014,
+                "name_en": "test"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1672123558893",
+            "exit": "",
+            "node_height": 1.0,
+            "name": "",
+            "geometry": {
+                "coordinates": [
+                    139.77908005937928,
+                    35.61761784709246
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77907989174122,
+                35.6176213902846
+            ],
+            "name_pron": "",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1672123558893",
+                "ent1_lon": 139.77907989174122,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77908005937928,
+                "facil_id": "EDITOR_facil_1672123573759",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.6176213902846,
+                "ent1_fl": 1,
+                "facil_type": 99,
+                "lat": 35.61761784709246
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1694057160278",
+            "exit": "",
+            "node_height": 2.0,
+            "name": "test",
+            "geometry": {
+                "coordinates": [
+                    139.77885106578472,
+                    35.617444775592915
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.7788550890982,
+                35.61744300399293
+            ],
+            "name_pron": "test",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1694057160278",
+                "ent1_lon": 139.7788550890982,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77885106578472,
+                "facil_id": "EDITOR_facil_1694057166979",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61744300399293,
+                "ent1_fl": 2,
+                "facil_type": 99,
+                "lat": 35.617444775592915,
+                "name_en": "test"
+            },
+            "exit_pron": ""
+        },
+        {
+            "node": "EDITOR_node_1694057058908",
+            "exit": "",
+            "node_height": 2.0,
+            "name": "Ticket Gate",
+            "geometry": {
+                "coordinates": [
+                    139.77902691811323,
+                    35.61739121874591
+                ],
+                "type": "Point"
+            },
+            "node_coordinates": [
+                139.77902557700872,
+                35.61739080991488
+            ],
+            "name_pron": "Ticket Gate",
+            "properties": {
+                "parking": 99,
+                "escalator": 99,
+                "hulop_file": "EDITOR",
+                "ent1_node": "EDITOR_node_1694057058908",
+                "ent1_lon": 139.77902557700872,
+                "ent1_n": "",
+                "nursing": 99,
+                "brail_tile": 99,
+                "lon": 139.77902691811323,
+                "facil_id": "EDITOR_facil_1694057056132",
+                "toilet": 99,
+                "elevator": 99,
+                "barrier": 99,
+                "ent1_lat": 35.61739080991488,
+                "ent1_fl": 2,
+                "facil_type": 99,
+                "lat": 35.61739121874591,
+                "name_en": "Ticket Gate"
+            },
+            "exit_pron": ""
+        }
+    ]
+}
