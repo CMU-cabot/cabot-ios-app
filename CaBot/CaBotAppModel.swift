@@ -1184,6 +1184,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 if self.modeType != .Normal{
                     self.share(user_info: SharedInfo(type: .RequestUserInfo, value: ""))
                 }
+                else if self.modeType == .Normal{
+                    self.share(user_info: SharedInfo(type: .ChangeLanguage, value: self.resourceLang))
+                }
                 DispatchQueue.main.async {
                     _ = self.fallbackService.manage(command: .lang, param: self.resourceLang)
                 }
