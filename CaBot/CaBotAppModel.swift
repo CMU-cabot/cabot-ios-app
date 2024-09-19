@@ -1412,7 +1412,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             }
             return
         }
-        if userInfo.type == .OverrideTour {
+        /*if userInfo.type == .OverrideTour {
             if let src = resource?.toursSource {
                 do {
                     let tours = try Tour.load(at: src)
@@ -1425,6 +1425,20 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 } catch {
                     NSLog("\(src) cannot be loaded")
                 }
+            }
+        }*/
+        if userInfo.type == .OverrideTour {
+            NSLog("============= LoadJson========")
+            do {
+                let tours = try TourFromJSON.loadFromJSON()
+                for tour in tours {
+                    if tour.id == userInfo.value {
+                        tourManager.setFromJSON(tour: tour)
+                        needToStartAnnounce(wait: true)
+                    }
+                }
+            } catch {
+                NSLog("cannot be loaded")
             }
         }
         if userInfo.type == .OverrideDestination {

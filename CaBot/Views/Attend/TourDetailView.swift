@@ -96,22 +96,6 @@ struct StaticTourDetailFromJSONView: View {
         Form {
             Section(header: Text("Actions")) {
                 Button(action: {
-                    for d in tour.destinationsJSON {
-                        let destination = Destination(
-                            title: d.title,
-                            value: d.matchedDestinationD?.value,
-                            pron: "porn",
-                            file: nil,
-                            summaryMessage: d.matchedMessage?.summaryMessage?.text ?? "",
-                            startMessage: d.matchedMessage?.startMessage?.text ?? "",
-                            arriveMessages: d.matchedMessage?.arriveMessages?.map { $0.text } ?? [],
-                            content: nil,
-                            waitingDestination: nil,
-                            subtour: nil
-                        )
-                       
-                        tour.destinations.append(destination)
-                    }
                     targetTour = tour
                     isConfirming = true
                    
@@ -125,7 +109,7 @@ struct StaticTourDetailFromJSONView: View {
                 .disabled(hasError)
                 .confirmationDialog(Text("SEND_TOUR"), isPresented: $isConfirming, presenting: targetTour) { detail in
                     Button {
-                       // modelData.shareFromJSON(tour: targetTour!)
+                        modelData.shareFromJSON(tour: targetTour!)
                         tourManager.setFromJSON(tour: targetTour!)
                        
                         NavigationUtil.popToRootView()
