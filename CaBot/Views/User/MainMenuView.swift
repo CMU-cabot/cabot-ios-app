@@ -352,6 +352,59 @@ struct DestinationMenus: View {
     }
 }
 
+struct DestinationFromJSONMenus: View {
+    @EnvironmentObject var modelData: CaBotAppModel
+    @State private var isConfirming = false
+
+    var body: some View {
+        let maxDestinationNumber = 2 + (modelData.tourManager.currentDestination==nil ? 1 : 0)
+
+        if modelData.tourManager.hasDestinationFromJSON {
+            Section(header: Text("Destinations")) {
+                if let cd = modelData.tourManager.currentDestination {
+                    HStack {
+                        Label(cd.title.text,
+                              systemImage: "arrow.triangle.turn.up.right.diamond")
+                        .accessibilityLabel(Text("Navigating to \(cd.title.text)"))
+                        if modelData.menuDebug {
+                            Spacer()
+                            Button(action: {
+                                isConfirming = true
+                            }) {
+                                Image(systemName: "checkmark.seal")
+                            }
+                            .confirmationDialog(Text("Complete Destination"), isPresented: $isConfirming) {
+                                Button {
+                                    modelData.debugCabotArrived()
+                                } label: {
+                                    Text("Complete Destination")
+                                }
+                                Button("Cancel", role: .cancel) {
+                                }
+                            } message: {
+                                Text("Complete Destination Message")
+                            }
+                        }
+                    }
+                }
+                ForEach(modelData.tourManager.first(n: maxDestinationNumber-1), id: \.self) {dest in
+                    Label(dest.title.text, systemImage: "mappin.and.ellipse")
+                }
+                if modelData.tourManager.destinations.count > 0 {
+                    NavigationLink(
+                        destination: DynamicTourDetailView(tour: modelData.tourManager),
+                        label: {
+                            HStack {
+                                Spacer()
+                                Text("See detail")
+                            }
+                        })
+                }
+            }
+        }
+    }
+}
+
 struct MainMenus: View {
     @EnvironmentObject var modelData: CaBotAppModel
 
@@ -376,6 +429,15 @@ struct MainMenus: View {
                             })
                     }
                 //}
+                if let src = cm.toursSource {
+                    NavigationLink(
+                        destination: ToursViewFromJSON()
+                            .environmentObject(modelData),
+                        label: {
+                            Text("SELECT_TOUR_FROM_JSON")
+                        })
+                }
+
             }
 
 

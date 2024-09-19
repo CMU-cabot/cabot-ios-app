@@ -32,10 +32,12 @@ struct StaticTourDetailView: View {
     var body: some View {
         let hasError = tour.destinations.first(where: {d in d.error != nil}) != nil
 
+        let tourManager = modelData.tourManager
         Form {
             Section(header: Text("Actions")) {
                 Button(action: {
                     targetTour = tour
+                    tour.debugDestinations() // デバッグ情報を表示
                     isConfirming = true
                 }) {
                     Label{
@@ -79,6 +81,74 @@ struct StaticTourDetailView: View {
         }
     }
 }
+
+struct StaticTourDetailFromJSONView: View {
+    @EnvironmentObject var modelData: CaBotAppModel
+    @State private var isConfirming = false
+    @State private var targetTour: TourFromJSON?
+    
+    var tour: TourFromJSON
+
+    var body: some View {
+        let hasError = tour.destinations.first(where: {d in d.error != nil}) != nil
+        let tourManager = modelData.tourManager
+        
+        Form {
+            Section(header: Text("Actions")) {
+                Button(action: {
+                    for d in tour.destinationsJSON {
+                        let destination = Destination(
+                            title: d.title,
+                            value: d.matchedDestinationD?.value,
+                            pron: "porn",
+                            file: nil,
+                            summaryMessage: d.matchedMessage?.summaryMessage?.text ?? "",
+                            startMessage: d.matchedMessage?.startMessage?.text ?? "",
+                            arriveMessages: d.matchedMessage?.arriveMessages?.map { $0.text } ?? [],
+                            content: nil,
+                            waitingDestination: nil,
+                            subtour: nil
+                        )
+                       
+                        tour.destinations.append(destination)
+                    }
+                    targetTour = tour
+                    isConfirming = true
+                   
+                }) {
+                    Label{
+                        Text("SEND_TOUR")
+                    } icon: {
+                        Image(systemName: "arrow.triangle.turn.up.right.diamond")
+                    }
+                }
+                .disabled(hasError)
+                .confirmationDialog(Text("SEND_TOUR"), isPresented: $isConfirming, presenting: targetTour) { detail in
+                    Button {
+                       // modelData.shareFromJSON(tour: targetTour!)
+                        tourManager.setFromJSON(tour: targetTour!)
+                       
+                        NavigationUtil.popToRootView()
+                        targetTour = nil
+                    } label: {
+                        Text("SEND_TOUR")
+                    }
+                    Button("Cancel", role: .cancel) {
+                    }
+                } message: { detail in
+                    let message = LocalizedStringKey("SEND_TOUR_MESSAGE \(detail.title.text)")
+                    Text(message)
+                }
+            }
+            Section(header: Text(tour.title.text)) {
+                ForEach(tour.destinationsJSON, id: \.ref) { dest in
+                    Label(dest.title.text, systemImage: "mappin.and.ellipse")
+                }
+            }
+        }
+    }
+}
+
 
 struct DynamicTourDetailView: View {
     @EnvironmentObject var modelData: CaBotAppModel

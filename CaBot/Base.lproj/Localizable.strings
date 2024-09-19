@@ -106,6 +106,7 @@
 "START_CONVERSATION"="Start Conversation";
 "SELECT_DESTINATION"="Select Destination";
 "SELECT_TOUR"="Select Tour";
+"SELECT_TOUR_FROM_JSON"="Select Tour From Json";
 "Others"="Others";
 
 "Status"="Status";

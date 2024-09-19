@@ -40,8 +40,8 @@ struct MainMenuView: View {
                 ActionMenus()
                     .environmentObject(modelData)
             }
-            DestinationMenus()
-                .environmentObject(modelData)
+            //DestinationMenus()
+                //.environmentObject(modelData)
             MainMenus()
                 .environmentObject(modelData)
                 .disabled(!modelData.suitcaseConnected && !modelData.menuDebug)
@@ -276,7 +276,7 @@ struct ArrivedActionMenus: View {
                 .disabled(!modelData.suitcaseConnected && !modelData.menuDebug)
             }
             if let count = ad.arriveMessages?.count {
-                if let text = ad.arriveMessages?[count-1].content {
+                if let text = ad.arriveMessages?[count-1] {
                     Button(action: {
                         modelData.speak(text) {}
                     }) {
@@ -421,6 +421,15 @@ struct MainMenus: View {
                             })
                     }
                 //}
+                if let src = cm.toursSource {
+                    NavigationLink(
+                        destination: ToursViewFromJSON()
+                            .environmentObject(modelData),
+                        label: {
+                            Text("SELECT_TOUR_FROM_JSON")
+                        })
+                }
+                
             }
 
 

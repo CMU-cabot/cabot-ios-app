@@ -89,6 +89,63 @@ struct StaticTourDetailView: View {
     }
 }
 
+struct StaticTourDetailFromJSONView: View {
+    @EnvironmentObject var modelData: CaBotAppModel
+    @State private var isConfirming = false
+    @State private var targetTour: TourFromJSON?
+
+    var tour: TourFromJSON
+
+    var body: some View {
+        let tourManager = modelData.tourManager
+        
+        Form {
+            Section(header: Text("Actions")) {
+                Button(action: {
+                    print("Debug: Tour destinations count: \(tour.destinationsJSON.count)")
+                    if tourManager.hasDestinationFromJSON {
+                        targetTour = tour
+                        isConfirming = true
+                    } else {
+                        tourManager.setFromJSON(tour: tour)
+                        modelData.needToStartAnnounce(wait: true)
+                        NavigationUtil.popToRootView()
+                    }
+                }) {
+                    Label {
+                        Text("SEND_TOUR")
+                    } icon: {
+                        Image(systemName: "arrow.triangle.turn.up.right.diamond")
+                    }
+                }
+                .confirmationDialog(Text("ADD_TOUR"), isPresented: $isConfirming) {
+                    Button {
+                        print("Debug: Confirming tour destinations count: \(tour.destinationsJSON.count)")
+                        if let tour = targetTour {
+                            tourManager.setFromJSON(tour: tour)
+                            NavigationUtil.popToRootView()
+                            targetTour = nil
+                        }
+                    } label: {
+                        Text("OVERWRITE_TOUR")
+                    }
+                    Button("Cancel", role: .cancel) {
+                    }
+                } message: {
+                    let message = LocalizedStringKey("ADD_TOUR_MESSAGE \(modelData.tourManager.destinationCount, specifier: "%d")")
+                    Text(message)
+                }
+            }
+            Section(header: Text(tour.title.text)) {
+                ForEach(tour.destinationsJSON, id: \.ref) { dest in
+                    Label(dest.title.text, systemImage: "mappin.and.ellipse")
+                }
+            }
+        }
+    }
+}
+
+
 struct DynamicTourDetailView: View {
     @EnvironmentObject var modelData: CaBotAppModel
     @State private var isConfirming = false

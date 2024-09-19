@@ -86,7 +86,7 @@ class KeyedI18NText: Equatable {
             }
         }
     }
-
+    
     var pron: String {
         get {
             if let base = self.base {
@@ -153,7 +153,7 @@ class I18NText: Equatable {
             return warn.summary()
         }
     }
-
+    
     private struct CodingKeys: CodingKey {
         var stringValue: String
         init?(stringValue: String) {
@@ -269,7 +269,7 @@ struct Source: Decodable, Hashable, CustomStringConvertible {
         }
     }
     let i18n: I18N
-
+    
     var url: URL? {
         get {
             switch(type) {
@@ -596,9 +596,9 @@ class Destination: Decodable, Hashable {
     let title: I18NText
     let value:String?
     let file:Source?
-    let summaryMessage: Source?
-    let startMessage:Source?
-    let arriveMessages: [Source]?
+    let summaryMessage: String
+    let startMessage:String
+    let arriveMessages: [String]?
     let content:Source?
     let waitingDestination:WaitingDestination?
     let subtour:Tour?
@@ -667,33 +667,33 @@ class Destination: Decodable, Hashable {
 
         // if 'ref' is specified, try to find a destination
     outer: if let refstr = try? container.decode(String.self, forKey: .ref) {
-            guard refCount < 10 else {
-                self.ref = nil
-                error.add(info: CustomLocalizedString("Too deep nested reference \(refCount) [ref]=\(refstr)", lang: i18n.langCode))
-                break outer
-            }
-            if let ref = Reference.from(ref: refstr) {
-                self.ref = ref
-                let refSrc = Source(base: base, type: .local, src: ref.file, i18n: i18n)
-                if let tempDest = try? Destination.load(at: refSrc, refCount: refCount+1, reference: ref) {
-                    if tempDest.count == 1 {
-                        refDest = tempDest[0]
-                    } else if tempDest.count > 1 {
-                        error.add(info: CustomLocalizedString("Found multiple \(ref.file)/\(ref.value)", lang: i18n.langCode))
-
-                    } else {
-                        error.add(info: CustomLocalizedString("Cannot find \(ref.file)/\(ref.value)", lang: i18n.langCode))
-                    }
+        guard refCount < 10 else {
+            self.ref = nil
+            error.add(info: CustomLocalizedString("Too deep nested reference \(refCount) [ref]=\(refstr)", lang: i18n.langCode))
+            break outer
+        }
+        if let ref = Reference.from(ref: refstr) {
+            self.ref = ref
+            let refSrc = Source(base: base, type: .local, src: ref.file, i18n: i18n)
+            if let tempDest = try? Destination.load(at: refSrc, refCount: refCount+1, reference: ref) {
+                if tempDest.count == 1 {
+                    refDest = tempDest[0]
+                } else if tempDest.count > 1 {
+                    error.add(info: CustomLocalizedString("Found multiple \(ref.file)/\(ref.value)", lang: i18n.langCode))
+                    
                 } else {
-                    error.add(info: CustomLocalizedString("Parse Error \(ref.file)/\(ref.value)", lang: i18n.langCode))
+                    error.add(info: CustomLocalizedString("Cannot find \(ref.file)/\(ref.value)", lang: i18n.langCode))
                 }
             } else {
-                self.ref = nil
-                error.add(info: CustomLocalizedString("Reference error (syntax='file/value')", lang: i18n.langCode))
+                error.add(info: CustomLocalizedString("Parse Error \(ref.file)/\(ref.value)", lang: i18n.langCode))
             }
         } else {
             self.ref = nil
+            error.add(info: CustomLocalizedString("Reference error (syntax='file/value')", lang: i18n.langCode))
         }
+    } else {
+        self.ref = nil
+    }
         
         self.refDest = refDest
 
@@ -729,16 +729,16 @@ class Destination: Decodable, Hashable {
             warning.add(info: CustomLocalizedString("file specified by Source(type, src) is deprecated, use just 'src' string instead", lang: i18n.langCode))
         }
         if let summaryMessage = try? container.decode(Source.self, forKey: .summaryMessage) {
-            self.summaryMessage = summaryMessage
+            self.summaryMessage = summaryMessage.content ?? "nil"
         } else {
-            self.summaryMessage = refDest?.summaryMessage
+            self.summaryMessage = refDest?.summaryMessage ?? "nil"
         }
         if let startMessage = try? container.decode(Source.self, forKey: .startMessage) {
-            self.startMessage = startMessage
+            self.startMessage = startMessage.content ?? ""
         } else {
-            self.startMessage = refDest?.startMessage
+            self.startMessage = refDest?.startMessage ??  ""
         }
-        if let arriveMessages = try? container.decode([Source].self, forKey: .arriveMessages) {
+        if let arriveMessages = try? container.decode([String].self, forKey: .arriveMessages) {
             self.arriveMessages = arriveMessages
         } else {
             self.arriveMessages = refDest?.arriveMessages
@@ -751,41 +751,41 @@ class Destination: Decodable, Hashable {
         
         var tempSubtour: Tour? = nil
     outer: do {
-            let subtour = try container.decode(String.self, forKey: .subtour)
-            guard refCount < 5 else {
-                error.add(info: CustomLocalizedString("Nested reference [ref]=\(subtour)", lang: i18n.langCode))
-                tempSubtour = nil
-                break outer
-            }
-            if let ref = Reference.from(ref: subtour) {
-                let src = Source(base: base, type: .local, src: ref.file, i18n: i18n)
-                if let tempTour = try? Tour.load(at: src, refCount: refCount+1, reference: ref) {
-                    if tempTour.count == 1 {
-                        tempSubtour = tempTour[0]
-                        error.add(info: tempTour[0].error)
-                    } else if tempTour.count > 1 {
-                        tempSubtour = nil
-                        error.add(info: CustomLocalizedString("Found multiple \(ref.file)/\(ref.value)", lang: i18n.langCode))
-                    } else {
-                        tempSubtour = nil
-                        error.add(info: CustomLocalizedString("Cannot find \(ref.file)/\(ref.value)", lang: i18n.langCode))
-                    }
+        let subtour = try container.decode(String.self, forKey: .subtour)
+        guard refCount < 5 else {
+            error.add(info: CustomLocalizedString("Nested reference [ref]=\(subtour)", lang: i18n.langCode))
+            tempSubtour = nil
+            break outer
+        }
+        if let ref = Reference.from(ref: subtour) {
+            let src = Source(base: base, type: .local, src: ref.file, i18n: i18n)
+            if let tempTour = try? Tour.load(at: src, refCount: refCount+1, reference: ref) {
+                if tempTour.count == 1 {
+                    tempSubtour = tempTour[0]
+                    error.add(info: tempTour[0].error)
+                } else if tempTour.count > 1 {
+                    tempSubtour = nil
+                    error.add(info: CustomLocalizedString("Found multiple \(ref.file)/\(ref.value)", lang: i18n.langCode))
                 } else {
                     tempSubtour = nil
-                    error.add(info: CustomLocalizedString("Parse Error \(ref.file)/\(ref.value)", lang: i18n.langCode))
+                    error.add(info: CustomLocalizedString("Cannot find \(ref.file)/\(ref.value)", lang: i18n.langCode))
                 }
             } else {
                 tempSubtour = nil
-                error.add(info:CustomLocalizedString("Reference error (syntax='file/value')", lang: i18n.langCode))
+                error.add(info: CustomLocalizedString("Parse Error \(ref.file)/\(ref.value)", lang: i18n.langCode))
             }
-        } catch DecodingError.typeMismatch {
-            error.add(info: CustomLocalizedString("subtour should be speficied in ref format (file/id)", lang: i18n.langCode))
+        } else {
             tempSubtour = nil
-        } catch {
-            if tempSubtour == nil, let temp = refDest?.subtour {
-                tempSubtour = temp
-            }
+            error.add(info:CustomLocalizedString("Reference error (syntax='file/value')", lang: i18n.langCode))
         }
+    } catch DecodingError.typeMismatch {
+        error.add(info: CustomLocalizedString("subtour should be speficied in ref format (file/id)", lang: i18n.langCode))
+        tempSubtour = nil
+    } catch {
+        if tempSubtour == nil, let temp = refDest?.subtour {
+            tempSubtour = temp
+        }
+    }
         self.subtour = tempSubtour
         
         if var waitingDestination = try? container.decode(WaitingDestination.self, forKey: .waitingDestination) {
@@ -807,14 +807,14 @@ class Destination: Decodable, Hashable {
         self.warning = warning.summary()
     }
     
-    init(title: String, value: String?, pron: String?, file: Source?, summaryMessage: Source?, startMessage: Source?, content: Source?, waitingDestination: WaitingDestination?, subtour: Tour?) {
+    init(title: I18NText,value: String?, pron: String?, file: Source?, summaryMessage: String, startMessage: String,arriveMessages: [String], content: Source?, waitingDestination: WaitingDestination?, subtour: Tour?) {
         self.i18n = I18N.shared
-        self.title = I18NText(text: [:], pron: [:])
+        self.title = title
         self.value = value
         self.file = file
         self.summaryMessage = summaryMessage
         self.startMessage = startMessage
-        self.arriveMessages = nil
+        self.arriveMessages = arriveMessages
         self.content = content
         self.waitingDestination = waitingDestination
         self.subtour = subtour
@@ -891,6 +891,22 @@ class Tour: Decodable, Hashable, TourProtocol {
         case debug
     }
     
+    func debugDestinations() {
+           for (index, destination) in destinations.enumerated() {
+               print("Destination \(index + 1):")
+               
+               print("  Title: \(destination.title)")
+               print("  Value: \(destination.value ?? "nil")")
+               print("  file: \(destination.file?.src ?? "nil")")
+               print("  Smessage: \(destination.startMessage ?? "nil")")
+               print("  SuMessage: \(destination.summaryMessage ?? "nil")")
+               print("  ref: \(destination.ref?.value ?? "nil")")
+               print("  refDest: \(destination.refDest?.title.text ?? "nil")")
+               print("  content: \(destination.content?.content ?? "nil")")
+               // Add any other properties you want to debug
+           }
+       }
+    
     static func load(at src: Source, refCount: Int = 0, reference: Reference? = nil) throws -> [Tour] {
         do {
             guard let url = src.url else { throw MetadataError.contentLoadError }
@@ -959,6 +975,456 @@ class Tour: Decodable, Hashable, TourProtocol {
         }
     }
 }
+
+// TourFromJSON クラスの定義
+class TourFromJSON: Decodable, Hashable, TourProtocol {
+    var currentDestination: Destination?
+    
+    // MARK: - Properties
+    let title: I18NText
+    let id: String
+    var destinationsJSON: [DestinationJSON]
+    //var destinations: [Destination]
+    let defaultVar: String?
+    var destinations: [Destination] // 新しく追加したプロパティ
+
+    // MARK: - Static Properties
+    private static var _allDestinationsD: [DestinationD] = []
+    private static var _allMessages: [Message] = []
+
+    static var allDestinationsD: [DestinationD] {
+        get { return _allDestinationsD }
+        set { _allDestinationsD = newValue }
+    }
+
+    static var allMessages: [Message] {
+        get { return _allMessages }
+        set { _allMessages = newValue }
+    }
+
+    // MARK: - Nested Types
+    struct DestinationJSON: Decodable {
+        let ref: String
+        let refTitle: String
+        var matchedDestinationD: DestinationD?
+        var matchedMessages: Message?
+        var matchedMessage: Message?
+        var title: I18NText
+
+        enum CodingKeys: String, CodingKey {
+            case ref
+            case refTitle = "#ref"
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            ref = try container.decode(String.self, forKey: .ref)
+            refTitle = try container.decode(String.self, forKey: .refTitle)
+            matchedDestinationD = nil
+           // matchedMessages = []
+            matchedMessage = nil
+            title = I18NText(text: [:], pron: [:])
+        }
+
+        init(ref: String, refTitle: String, title: I18NText) {
+            self.ref = ref
+            self.refTitle = refTitle
+            self.matchedDestinationD = nil
+            // self.matchedMessages = []
+             matchedMessage = nil
+            self.title = title
+        }
+    }
+
+    struct DestinationD: Decodable {
+        let floor: Int
+        let value: String
+        let title: String
+        let variation: String?
+        let arrivalAngle: Int?
+
+        enum CodingKeys: String, CodingKey {
+            case floor, value
+            case title = "#title"
+            case variation = "var"
+            case arrivalAngle
+        }
+    }
+    
+
+    struct Message: Decodable {
+          let type: String
+          let parent: String
+          var summaryMessage: I18NText? // Optional to allow for cases where type doesn't match
+          var startMessage: I18NText? // Optional to allow for cases where type doesn't match
+          var arriveMessages: [I18NText]? // Optional to allow for cases where type doesn't match
+
+          enum CodingKeys: String, CodingKey {
+              case type
+              case parent
+              case textJa = "text:ja" // 既存のキー
+              case textEn = "text:en" // 既存のキー
+          }
+
+          // Custom initializer to handle the logic of assigning messages based on type
+          init(from decoder: Decoder) throws {
+              let container = try decoder.container(keyedBy: CodingKeys.self)
+              type = try container.decode(String.self, forKey: .type)
+              parent = try container.decode(String.self, forKey: .parent)
+
+              let textJa = try container.decode(String.self, forKey: .textJa)
+              let textEn = try container.decode(String.self, forKey: .textEn)
+
+              // Assign textJa and textEn to the appropriate I18NText property based on type
+              switch type {
+              case "summary":
+                  summaryMessage = I18NText(text: ["ja": textJa, "en": textEn], pron: [:])
+                  startMessage = nil
+                  arriveMessages = nil
+              case "startMessage":
+                  startMessage = I18NText(text: ["ja": textJa, "en": textEn], pron: [:])
+                  summaryMessage = nil
+                  arriveMessages = nil
+              case "arriveMessage":
+                  arriveMessages = [I18NText(text: ["ja": textJa, "en": textEn], pron: [:])]
+                  summaryMessage = nil
+                  startMessage = nil
+              default:
+                  summaryMessage = nil
+                  startMessage = nil
+                  arriveMessages = nil
+              }
+          }
+      }
+
+    // MARK: - Initializers
+    init(title: I18NText, id: String, destinationsJSON: [DestinationJSON], defaultVar: String?) {
+        self.title = title
+        self.id = id
+        self.destinationsJSON = destinationsJSON
+        self.defaultVar = defaultVar
+        self.destinations = [] // 初期化
+        self.matchDestinationsD()
+        //self.matchMessages()
+        self.matchMessage()
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        id = try container.decode(String.self, forKey: .id)
+        destinationsJSON = try container.decode([DestinationJSON].self, forKey: .destinations)
+        defaultVar = try container.decodeIfPresent(String.self, forKey: .defaultVar)
+        destinations = [] // 初期化
+        
+        let titleContainer = try decoder.container(keyedBy: TitleCodingKeys.self)
+        
+        var titleDict: [String: String] = [:]
+        if let titleJa = try titleContainer.decodeIfPresent(String.self, forKey: .titleJa) {
+            titleDict["ja"] = titleJa
+        }
+        if let titleEn = try titleContainer.decodeIfPresent(String.self, forKey: .titleEn) {
+            titleDict["en"] = titleEn
+        }
+        
+        title = I18NText(text: titleDict, pron: [:])
+        
+        matchDestinationsD()
+        //matchMessages()
+        matchMessage()
+    }
+
+    // MARK: - Hashable Conformance
+    static func == (lhs: TourFromJSON, rhs: TourFromJSON) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+
+    // MARK: - Private Methods
+    private func matchDestinationsD() {
+        for index in 0..<destinationsJSON.count {
+            let destination = destinationsJSON[index]
+            let refParts = destination.ref.split(separator: "#")
+            if refParts.count == 2 {
+                let value = String(refParts[0])
+                let variation = String(refParts[1])
+                if let matched = TourFromJSON.allDestinationsD.first(where: {
+                    $0.value == value && ($0.variation == variation || $0.variation == nil)
+                }) {
+                    destinationsJSON[index].matchedDestinationD = matched
+                }
+            } else {
+                if let matched = TourFromJSON.allDestinationsD.first(where: { $0.value == destination.ref }) {
+                    destinationsJSON[index].matchedDestinationD = matched
+                }
+            }
+        }
+    }
+    
+    private func matchMessage() { // 変更: matchMessagesをmatchMessageに変更
+          for index in 0..<destinationsJSON.count {
+              let destination = destinationsJSON[index]
+              let matchedMessageForDestination = TourFromJSON.allMessages.first { message in
+                  return message.parent == destination.ref
+              }
+              destinationsJSON[index].matchedMessage = matchedMessageForDestination // 変更: matchedMessagesをmatchedMessageに変更
+          }
+      }
+
+   /* private func matchMessages() {
+        for index in 0..<destinationsJSON.count {
+            let destination = destinationsJSON[index]
+            let matchedMessagesForDestination = TourFromJSON.allMessages.filter { message in
+                if destination.ref.contains("#") {
+                    return message.parent == destination.ref
+                } else {
+                    return message.parent.hasPrefix(destination.ref)
+                }
+            }
+            destinationsJSON[index].matchedMessages = matchedMessagesForDestination
+        }
+    }*/
+    
+    // MARK: - Static Methods
+    static func loadFromJSON() throws -> [TourFromJSON] {
+            do {
+                let fileURL = getTourDataJSON().appendingPathComponent("app-resource/tourdata.json")
+                let data = try Data(contentsOf: fileURL)
+                let jsonObject = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                
+                guard let jsonDict = jsonObject as? [String: Any],
+                      let tourDicts = jsonDict["tours"] as? [[String: Any]],
+                      let destinationsDArray = jsonDict["destinations"] as? [[String: Any]],
+                      let messagesArray = jsonDict["messages"] as? [[String: Any]] else {
+                    throw MetadataError.contentLoadError
+                }
+                
+                var tours = try parseTours(from: tourDicts)
+                
+                _allDestinationsD = try destinationsDArray.map { try JSONDecoder().decode(DestinationD.self, from: JSONSerialization.data(withJSONObject: $0)) }
+                _allMessages = try messagesArray.map { try JSONDecoder().decode(Message.self, from: JSONSerialization.data(withJSONObject: $0)) }
+                for tour in tours {
+                    tour.matchDestinationsD()
+                    //tour.matchMessages()
+                    tour.matchMessage()
+                }
+                // Featureデータを読み込む
+                let features = try Feature.loadFromJSON()
+
+                print("\nDebug: Loaded \(features.count) Feature objects")
+               
+                for tourIndex in 0..<tours.count {
+                    let tour = tours[tourIndex]
+                    print("\nDebug: Tour ID: \(tour.id)")
+                    print("Tour Title: \(tour.title.text)")
+                    print("Destinations count: \(tour.destinationsJSON.count)")
+                    
+                    for destIndex in 0..<tour.destinationsJSON.count {
+                        var destination = tour.destinationsJSON[destIndex]
+                        
+                        print("  Destination \(destIndex + 1):")
+                        print("    ref: \(destination.ref)")
+                        print("    refTitle: \(destination.refTitle)")
+                        
+                        if let matchedD = destination.matchedDestinationD {
+                            print("    Matched DestinationD:")
+                            print("      value: \(matchedD.value)")
+                            print("      floor: \(matchedD.floor)")
+                            print("      variation: \(matchedD.variation ?? "nil")")
+                            print("      arrivalAngle: \(matchedD.arrivalAngle ?? -1)")
+                            
+                            if let matchedFeature = features.first(where: { $0.ent1Node == matchedD.value }) {
+                                let newTitle = I18NText(
+                                    text: ["ja": matchedFeature.nameJa, "en": matchedFeature.nameEn],
+                                    pron: [:]  // 必要に応じて発音情報を追加
+                                )
+                                
+                                let dictionary: [String: String] = ["ja": matchedFeature.nameJa, "en": matchedFeature.nameEn]
+                                let jaText = dictionary["ja"] ?? ""
+                                let enText = dictionary["en"] ?? ""
+
+                                let combinedString = "ja: \(jaText), en: \(enText)"
+                                destination.title = newTitle
+                                tours[tourIndex].destinationsJSON[destIndex] = destination
+                                
+                                print("    Matched Feature:")
+                                print("      ent1Node: \(matchedFeature.ent1Node)")
+                                print("      nameJa: \(matchedFeature.nameJa)")
+                                print("      nameEn: \(matchedFeature.nameEn)")
+                            } else {
+                                print("    No matching Feature found")
+                            }
+                        } else {
+                            print("    No matched DestinationD found")
+                        }
+                        
+                        print("    Title:")
+                        print("      ja: \(destination.title.text)")
+                        print("      en: \(destination.title.text)")
+                        if let matchedMessageD = destination.matchedMessage {
+                            print("      Type: \(matchedMessageD.type)")
+                            print("      Parent: \(matchedMessageD.parent)")
+                                print("      summaryMessage (EN): \(String(describing: matchedMessageD.summaryMessage?.text))")
+                                print("      arriveMessage (JA): \(String(describing: matchedMessageD.arriveMessages?.count))")
+                                print("      startMessage (JA): \(String(describing: matchedMessageD.startMessage?.text))")
+                        }
+                    }
+                }
+                
+                return tours
+            } catch {
+                print("Error loading or parsing JSON: \(error)")
+                throw MetadataError.contentLoadError
+            }
+        
+    }
+    
+    
+
+    // MARK: - Private Static Methods
+    private static func parseTours(from tourDicts: [[String: Any]]) throws -> [TourFromJSON] {
+        return try tourDicts.compactMap { tourDict in
+            guard let id = tourDict["tour_id"] as? String else {
+                return nil
+            }
+
+            let title = parseTitleFromTourDict(tourDict)
+            let destinations = parseDestinationsFromTourDict(tourDict)
+            let defaultVar = tourDict["default_var"] as? String
+
+            return TourFromJSON(
+                title: title,
+                id: id,
+                destinationsJSON: destinations,
+                defaultVar: defaultVar
+            )
+        }
+    }
+
+    private static func parseTitleFromTourDict(_ tourDict: [String: Any]) -> I18NText {
+        var titleDict: [String: String] = [:]
+        
+        if let titleJa = tourDict["title-ja"] as? String {
+            titleDict["ja"] = titleJa
+        }
+        
+        if let titleEn = tourDict["title-en"] as? String {
+            titleDict["en"] = titleEn
+        }
+
+        return I18NText(text: titleDict, pron: [:])
+    }
+
+    private static func parseDestinationsFromTourDict(_ tourDict: [String: Any]) -> [DestinationJSON] {
+        guard let destinationsArray = tourDict["destinations"] as? [[String: Any]] else {
+            return []
+        }
+        
+        return destinationsArray.compactMap { dict -> DestinationJSON? in
+            guard let ref = dict["ref"] as? String,
+                  let refTitle = dict["#ref"] as? String else {
+                return nil
+            }
+            return DestinationJSON(ref: ref, refTitle: refTitle, title: I18NText(text: [:], pron: [:]))
+        }
+    }
+
+    private static func getTourDataJSON() -> URL {
+        guard let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            fatalError("Could not find the document directory.")
+        }
+        return path
+    }
+
+    // MARK: - Coding Keys
+    enum CodingKeys: String, CodingKey {
+        case id = "tour_id"
+        case destinations
+        case defaultVar = "default_var"
+    }
+
+    private enum TitleCodingKeys: String, CodingKey {
+        case titleJa = "title-ja"
+        case titleEn = "title-en"
+    }
+}
+class Feature: Decodable, Hashable {
+    let ent1Node: String
+    let nameJa: String
+    let nameEn: String
+
+    init(ent1Node: String, nameJa: String, nameEn: String) {
+        self.ent1Node = ent1Node
+        self.nameJa = nameJa
+        self.nameEn = nameEn
+    }
+
+    static func == (lhs: Feature, rhs: Feature) -> Bool {
+        return lhs.ent1Node == rhs.ent1Node
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(ent1Node)
+    }
+    
+    class func loadFromJSON() throws -> [Feature] {
+        do {
+            let featrueJsonFileName = "app-resource/features.json"
+            let fileURL = getFacilityDataJSON().appendingPathComponent(featrueJsonFileName)
+            
+            print("Loading JSON from URL: \(fileURL)")
+            
+            let data = try Data(contentsOf: fileURL)
+            print("JSON Data loaded successfully: \(data.count) bytes")
+            
+            let jsonObject = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+            
+            guard let jsonArray = jsonObject as? [[String: Any]] else {
+                print("Error: JSON structure does not match expected format")
+                throw MetadataError.contentLoadError
+            }
+            
+            return try parseFeatures(from: jsonArray)
+        } catch {
+            print("Error loading or parsing JSON: \(error)")
+            throw MetadataError.contentLoadError
+        }
+    }
+    
+    private static func parseFeatures(from jsonArray: [[String: Any]]) throws -> [Feature] {
+        var features: [Feature] = []
+        
+        for jsonDict in jsonArray {
+            guard let geometry = jsonDict["geometry"] as? [String: Any],
+                  let type = geometry["type"] as? String, type == "Point",
+                  let properties = jsonDict["properties"] as? [String: Any],
+                  let ent1Node = properties["ent1_node"] as? String,
+                  let nameJaEscaped = properties["name_ja"] as? String,
+                  let nameEn = properties["name_en"] as? String else {
+                continue
+            }
+            
+            let nameJa = nameJaEscaped.removingPercentEncoding ?? nameJaEscaped
+            let feature = Feature(ent1Node: ent1Node, nameJa: nameJa, nameEn: nameEn)
+            features.append(feature)
+            
+            print("Feature loaded: ent1_node: \(ent1Node), name_ja: \(nameJa), name_en: \(nameEn)")
+        }
+        
+        return features
+    }
+    
+    private static func getFacilityDataJSON() -> URL {
+        guard let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            fatalError("Could not find the document directory.")
+        }
+        return path
+    }
+}
+
 
 class ResourceManager {
     public static let shared: ResourceManager = ResourceManager(preview: false)

@@ -31,12 +31,12 @@ struct DestinationDetailView: View {
     var body: some View {
         Form {
             Section(header: Text(destination.title.text)) {
-                if let startMessage =  destination.startMessage?.content {
-                    Text(startMessage)
+                if destination.startMessage != "" {
+                    Text(destination.startMessage)
                 }
                 if let arriveMessages = destination.arriveMessages{
                     ForEach(arriveMessages, id: \.self) { arriveMessage in
-                        Text(arriveMessage.content!)
+                        Text(arriveMessage)
                     }
                 }
                 if let url = destination.content?.url {

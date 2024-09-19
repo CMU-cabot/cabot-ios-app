@@ -50,6 +50,11 @@ class TourManager: TourProtocol {
             return _destinations.count > 0 || _currentDestination != nil
         }
     }
+    var hasDestinationFromJSON: Bool {
+        get {
+            return _destinationsFromJSON.count > 0 || _currentDestination != nil
+        }
+    }
     var nextDestination: Destination? {
         get {
             return _destinations.first
@@ -75,6 +80,7 @@ class TourManager: TourProtocol {
     }
 
     private var _destinations: [Destination]
+    private var _destinationsFromJSON: [String]
     private var _currentDestination: Destination?
     private var _arrivedDestination: Destination?
     private var _subtours: [Tour]
@@ -84,6 +90,7 @@ class TourManager: TourProtocol {
 
     init(setting: NavigationSettingProtocol) {
         _destinations = []
+        _destinationsFromJSON = []
         _subtours = []
         _defaultNavigationSetting = setting
     }
@@ -103,6 +110,7 @@ class TourManager: TourProtocol {
     }
 
     func set(tour: Tour) {
+        tour.debugDestinations() // デバッグ情報を表示
         _destinations.removeAll()
         _currentDestination = nil
         _arrivedDestination = nil
@@ -114,7 +122,52 @@ class TourManager: TourProtocol {
         delegate?.tourUpdated(manager: self)
         delegate?.tour(manager: self, destinationChanged: nil)
     }
+    
+    func setFromJSON(tour: TourFromJSON) {
+       
+        _destinations.removeAll()
+        _currentDestination = nil
+        _arrivedDestination = nil
+        //_tempNavigationSetting = tour.setting
+        self.title = tour.title
+        SetDestination(tour:tour)
+        delegate?.tourUpdated(manager: self)
+        delegate?.tour(manager: self, destinationChanged: nil)
+    }
 
+    func SetDestination(tour: TourFromJSON)
+    {
+        for d in tour.destinationsJSON {
+            let destination = Destination(
+                title: d.title,
+                value: d.matchedDestinationD?.value,
+                pron: "porn",
+                file: nil,
+                summaryMessage: d.matchedMessage?.summaryMessage?.text ?? "",
+                startMessage: d.matchedMessage?.startMessage?.text ?? "",
+                arriveMessages: d.matchedMessage?.arriveMessages?.map { $0.text } ?? [],
+                content: nil,
+                waitingDestination: nil,
+                subtour: nil
+            )
+           
+            _destinations.append(destination)
+        }
+        
+        for (index, destination) in destinations.enumerated() {
+            print("Destination \(index + 1):")
+            print("  Title: \(destination.title.text)")
+            print("  Value: \(destination.value ?? "nil")")
+            print("  file: \(destination.file?.src ?? "nil")")
+            print("  StartMessage: \(destination.startMessage )")
+            print("  SummaryMessage: \(destination.summaryMessage )")
+            print("  ref: \(destination.ref?.value ?? "nil")")
+            print("  refDest: \(destination.refDest?.title.text ?? "nil")")
+            print("  content: \(destination.content?.content ?? "nil")")
+            // Add any other properties you want to debug
+        }
+    }
+    
     func cannotStartCurrent() {
         if let cd = _currentDestination {
             addToFirst(destination: cd)

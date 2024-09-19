@@ -518,7 +518,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             updateNetworkConfig()
         }
     }
-    let socketPort: String = "5000"
+    let socketPort: String = "5001"
     let rosPort: String = "9091"
     @Published var menuDebug: Bool = false {
         didSet {
@@ -1062,6 +1062,11 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         self.share(user_info: SharedInfo(type: .OverrideTour, value: tour.id))
         userInfo.clear()
     }
+    
+    func shareFromJSON(tour: TourFromJSON) {
+        self.share(user_info: SharedInfo(type: .OverrideTour, value: tour.id))
+        userInfo.clear()
+    }
 
     func share(destination: Destination, clear: Bool = true) {
         if let value = destination.value {
@@ -1109,7 +1114,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                     DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                         self.willSpeakArriveMessage = true
                         let announce = CustomLocalizedString("Going to %@", lang: self.resourceLang, dest.title.pron)
-                            + (dest.startMessage?.content ?? "")
+                            + (dest.startMessage ?? "")
                         self.tts.speak(announce, forceSelfvoice: false, force: true, callback: {code in }, progress: {range in
                             if range.location == 0{
                                 self.willSpeakArriveMessage = true
@@ -1255,7 +1260,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 var announce = CustomLocalizedString("You have arrived at %@. ", lang: self.resourceLang, cd.title.pron)
                 if let count = cd.arriveMessages?.count {
                     for i in 0 ..< count{
-                        announce += cd.arriveMessages?[i].content ?? ""
+                        announce += cd.arriveMessages?[i] ?? ""
                     }
                 } else{
                     if let _ = cd.content?.content,

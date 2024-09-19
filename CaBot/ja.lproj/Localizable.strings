@@ -106,6 +106,7 @@
 "START_CONVERSATION"="対話を開始";
 "SELECT_DESTINATION"="行き先を選択";
 "SELECT_TOUR"="ツアーを選択";
+"SELECT_TOUR_FROM_JSON"="JSONからツアーを選択";
 "Others"="その他";
 
 "Status"="ステータス";

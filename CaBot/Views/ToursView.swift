@@ -46,6 +46,41 @@ struct ToursView: View {
     }
 }
 
+struct ToursViewFromJSON: View {
+    @EnvironmentObject var modelData: CaBotAppModel
+    @State private var tours: [TourFromJSON] = []
+    
+    var body: some View {
+        Form {
+            Section(header: Text("SELECT_TOUR")) {
+                ForEach(tours, id: \.id) { tour in
+                    NavigationLink(
+                        destination: StaticTourDetailFromJSONView(tour: tour),
+                        label: {
+                            Text(tour.title.text)
+                        })
+                }
+            }
+        }
+        .listStyle(PlainListStyle())
+        .onAppear {
+            loadTours()
+           
+        }
+    }
+    
+    private func loadTours() {
+        do {
+            tours = try TourFromJSON.loadFromJSON()
+            print("Debug: Loaded \(tours.count) tours")
+        } catch {
+            print("Error loading tours: \(error)")
+        }
+    }
+    
+   
+}
+
 struct ToursView_Previews: PreviewProvider {
     static var previews: some View {
         let modelData = CaBotAppModel()
