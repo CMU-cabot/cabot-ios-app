@@ -244,7 +244,7 @@ struct ArrivedActionMenus: View {
                 .disabled(!modelData.suitcaseConnected && !modelData.menuDebug)
             }
             if let count = ad.arriveMessages?.count {
-                if let text = ad.arriveMessages?[count-1].content {
+                if let text = ad.arriveMessages?[count-1] {
                     Button(action: {
                         modelData.speak(text) {}
                     }) {

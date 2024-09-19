@@ -37,7 +37,7 @@ struct DestinationDetailView: View {
                 }
                 if let arriveMessages = destination.arriveMessages{
                     ForEach(arriveMessages, id: \.self) { arriveMessage in
-                        Text(arriveMessage.content!)
+                        Text(arriveMessage)
                     }
                 }
                 if let url = destination.content?.url {
