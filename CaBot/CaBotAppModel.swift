@@ -1109,7 +1109,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                     DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                         self.willSpeakArriveMessage = true
                         let announce = CustomLocalizedString("Going to %@", lang: self.resourceLang, dest.title.pron)
-                            + (dest.startMessage?.content ?? "")
+                        + (dest.startMessage )
                         self.tts.speak(announce, forceSelfvoice: false, force: true, callback: {code in }, progress: {range in
                             if range.location == 0{
                                 self.willSpeakArriveMessage = true
@@ -1255,7 +1255,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 var announce = CustomLocalizedString("You have arrived at %@. ", lang: self.resourceLang, cd.title.pron)
                 if let count = cd.arriveMessages?.count {
                     for i in 0 ..< count{
-                        announce += cd.arriveMessages?[i].content ?? ""
+                        announce += cd.arriveMessages?[i] ?? ""
                     }
                 } else{
                     if let _ = cd.content?.content,
@@ -1408,18 +1408,16 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             return
         }
         if userInfo.type == .OverrideTour {
-            if let src = resource?.toursSource {
-                do {
-                    let tours = try Tour.load(at: src)
-                    for tour in tours {
-                        if tour.id == userInfo.value {
-                            tourManager.set(tour: tour)
-                            needToStartAnnounce(wait: true)
-                        }
+            do {
+                let tours = try Tour.load()
+                for tour in tours {
+                    if tour.id == userInfo.value {
+                        tourManager.set(tour: tour)
+                        needToStartAnnounce(wait: true)
                     }
-                } catch {
-                    NSLog("\(src) cannot be loaded")
                 }
+            } catch {
+                NSLog("cannot be loaded")
             }
         }
         if userInfo.type == .OverrideDestination {

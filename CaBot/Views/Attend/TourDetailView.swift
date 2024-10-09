@@ -26,17 +26,19 @@ struct StaticTourDetailView: View {
     @EnvironmentObject var modelData: CaBotAppModel
     @State private var isConfirming = false
     @State private var targetTour: Tour?
-
+    
     var tour: Tour
 
     var body: some View {
         let hasError = tour.destinations.first(where: {d in d.error != nil}) != nil
-
+        let tourManager = modelData.tourManager
+        
         Form {
             Section(header: Text("Actions")) {
                 Button(action: {
                     targetTour = tour
                     isConfirming = true
+                   
                 }) {
                     Label{
                         Text("SEND_TOUR")
@@ -58,22 +60,11 @@ struct StaticTourDetailView: View {
                 } message: { detail in
                     let message = LocalizedStringKey("SEND_TOUR_MESSAGE \(detail.title.text)")
                     Text(message)
-                }                
+                }
             }
             Section(header: Text(tour.title.text)) {
-                if let cd = tour.currentDestination {
-                    Label(cd.title.text, systemImage: "arrow.triangle.turn.up.right.diamond")
-                }
-
-                ForEach(tour.destinations, id: \.self) { dest in
-                    if let error = dest.error {
-                        HStack{
-                            Text(dest.title.text)
-                            Text(error).font(.system(size: 11))
-                        }.foregroundColor(Color.red)
-                    } else {
-                        Label(dest.title.text, systemImage: "mappin.and.ellipse")
-                    }
+                ForEach(tour.destinationsJSON, id: \.ref) { dest in
+                    Label(dest.title.text, systemImage: "mappin.and.ellipse")
                 }
             }
         }
@@ -146,7 +137,7 @@ struct TourDetailView_Previews: PreviewProvider {
         modelData.modeType = .Advanced
 
         let resource = modelData.resourceManager.resource(by: "Test data")!
-        let tours = try! Tour.load(at: resource.toursSource!)
+        let tours = try! Tour.load()
 
         return DynamicTourDetailView(tour: tours[0])
             .environmentObject(modelData)
@@ -158,7 +149,7 @@ struct TourDetailView_Previews: PreviewProvider {
         modelData.modeType = .Normal
 
         let resource = modelData.resourceManager.resource(by: "Test data")!
-        let tours = try! Tour.load(at: resource.toursSource!)
+        let tours = try! Tour.load()
 
         return DynamicTourDetailView(tour: tours[0])
             .environmentObject(modelData)
@@ -170,7 +161,7 @@ struct TourDetailView_Previews: PreviewProvider {
         modelData.modeType = .Advanced
 
         let resource = modelData.resourceManager.resource(by: "Test data")!
-        let tours = try! Tour.load(at: resource.toursSource!)
+        let tours = try! Tour.load()
 
         return StaticTourDetailView(tour: tours[0])
             .environmentObject(modelData)
@@ -182,7 +173,7 @@ struct TourDetailView_Previews: PreviewProvider {
         modelData.modeType = .Normal
 
         let resource = modelData.resourceManager.resource(by: "Test data")!
-        let tours = try! Tour.load(at: resource.toursSource!)
+        let tours = try! Tour.load()
 
         return StaticTourDetailView(tour: tours[1])
             .environmentObject(modelData)

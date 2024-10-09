@@ -24,17 +24,12 @@ import SwiftUI
 
 struct ToursView: View {
     @EnvironmentObject var modelData: CaBotAppModel
+    @State private var tours: [Tour] = []
     
-    var src:Source
-
     var body: some View {
-        let tours = try! Tour.load(at: src)
-        let filteredTours = tours.filter{
-            tour in (modelData.modeType == .Debug || !tour.debug)}
-
         Form {
             Section(header: Text("SELECT_TOUR")) {
-                ForEach(filteredTours, id: \.self) { tour in
+                ForEach(tours, id: \.id) { tour in
                     NavigationLink(
                         destination: StaticTourDetailView(tour: tour),
                         label: {
@@ -42,8 +37,22 @@ struct ToursView: View {
                         })
                 }
             }
-        }.listStyle(PlainListStyle())
+        }
+        .listStyle(PlainListStyle())
+        .onAppear {
+            loadTours()
+           
+        }
     }
+    
+    private func loadTours() {
+        do {
+            tours = try Tour.load()
+        } catch {
+            NSLog("Error loading tours: \(error)")
+        }
+    }
+
 }
 
 struct ToursView_Previews: PreviewProvider {
@@ -53,7 +62,7 @@ struct ToursView_Previews: PreviewProvider {
         let resource = modelData.resourceManager.resource(by: "Test data")!
         let tours = resource.toursSource!
 
-        return ToursView(src: tours)
+        return ToursView()
             .environmentObject(modelData)
     }
 }

@@ -53,7 +53,7 @@ struct ConversationView: UIViewControllerRepresentable {
                    let destination = destinations.first(where: { $0.value == toID }) {
                     owner.modelData.tourManager.addToLast(destination: destination)
                 } else {
-                    owner.modelData.tourManager.addToLast(destination: Destination(title: title, value: toID, pron: pron, file: nil, summaryMessage: nil, startMessage: nil, content: nil, waitingDestination: nil, subtour: nil))
+                    owner.modelData.tourManager.addToLast(destination: Destination(title: I18NText(text: ["en": title, "ja": title], pron: [:]), value: toID, pron: pron, file: nil, summaryMessage: "nil", startMessage: "nil", arriveMessages: [],content: nil, waitingDestination: nil, subtour: nil))
                 }
                 
                 owner.modelData.needToStartAnnounce(wait: true)
