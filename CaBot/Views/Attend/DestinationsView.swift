@@ -71,8 +71,8 @@ struct DestinationsView: View {
                                         .accessibilityLabel(destination.title.pron)
                                         .multilineTextAlignment(.leading)
                                         .accessibilityHint(Text("DOUBLETAP_TO_ADD_A_DESTINATION"))
-                                    if let summaryMessage = destination.summaryMessage?.content{
-                                        Text(summaryMessage)
+                                    if destination.summaryMessage != ""{
+                                        Text(destination.summaryMessage)
                                             .font(.caption)
                                             .multilineTextAlignment(.leading)
                                     }
@@ -107,7 +107,7 @@ struct DestinationsView: View {
                                 Text(message)
                             }
                             Spacer()
-                            if let _ = destination.startMessage {
+                            if destination.startMessage != "" {
                                 ZStack{
                                     Image(systemName: "info.circle")
                                         .accessibilityLabel(Text("Details"))

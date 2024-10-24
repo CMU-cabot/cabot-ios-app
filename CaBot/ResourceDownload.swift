@@ -186,7 +186,7 @@ class ResourceDownload {
             }
             // Thawing process
             try fileManager.createDirectory(at: destinaltionURL, withIntermediateDirectories: true, attributes: nil)
-            try fileManager.unzipItem(at: sourceURL, to: destinaltionURL)
+            try fileManager.unzipItem(at: sourceURL, to: unzipedFilePath)
             NSLog("Unzipping completed！\(destinaltionURL)")
             // Delete the ZIP file if it exists after unzipping it
             if FileManager.default.fileExists(atPath: sourceURL.path) {

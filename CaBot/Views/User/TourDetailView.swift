@@ -31,8 +31,7 @@ struct StaticTourDetailView: View {
 
     var body: some View {
         let tourManager = modelData.tourManager
-        let hasError = tour.destinations.first(where: {d in d.error != nil}) != nil
-
+        
         Form {
             Section(header: Text("Actions")) {
                 Button(action: {
@@ -45,13 +44,12 @@ struct StaticTourDetailView: View {
                         NavigationUtil.popToRootView()
                     }
                 }) {
-                    Label{
-                        Text("SET_TOUR")
+                    Label {
+                        Text("SEND_TOUR")
                     } icon: {
                         Image(systemName: "arrow.triangle.turn.up.right.diamond")
                     }
                 }
-                .disabled(hasError)
                 .confirmationDialog(Text("ADD_TOUR"), isPresented: $isConfirming) {
                     Button {
                         if let tour = targetTour {
@@ -70,19 +68,8 @@ struct StaticTourDetailView: View {
                 }
             }
             Section(header: Text(tour.title.text)) {
-                if let cd = tour.currentDestination {
-                    Label(cd.title.text, systemImage: "arrow.triangle.turn.up.right.diamond")
-                }
-
-                ForEach(tour.destinations, id: \.self) { dest in
-                    if let error = dest.error {
-                        HStack{
-                            Text(dest.title.text)
-                            Text(error).font(.system(size: 11))
-                        }.foregroundColor(Color.red)
-                    } else {
-                        Label(dest.title.text, systemImage: "mappin.and.ellipse")
-                    }
+                ForEach(tour.destinations, id: \.ref) { dest in
+                    Label(dest.title.text, systemImage: "mappin.and.ellipse")
                 }
             }
         }
@@ -155,9 +142,9 @@ struct TourDetailView_Previews: PreviewProvider {
         modelData.modeType = .Advanced
 
         let resource = modelData.resourceManager.resource(by: "Test data")!
-        let tours = try! Tour.load(at: resource.toursSource!)
+        let tours = try! Tour.load()
 
-        return DynamicTourDetailView(tour: tours[0])
+        return DynamicTourDetailView(tour: tours[0] as! TourProtocol)
             .environmentObject(modelData)
             .previewDisplayName("Dynamic Advanced")
     }
@@ -167,9 +154,9 @@ struct TourDetailView_Previews: PreviewProvider {
         modelData.modeType = .Normal
 
         let resource = modelData.resourceManager.resource(by: "Test data")!
-        let tours = try! Tour.load(at: resource.toursSource!)
+        let tours = try! Tour.load()
 
-        return DynamicTourDetailView(tour: tours[0])
+        return DynamicTourDetailView(tour: tours[0] as! TourProtocol)
             .environmentObject(modelData)
             .previewDisplayName("Dynamic Normal")
     }
@@ -179,7 +166,7 @@ struct TourDetailView_Previews: PreviewProvider {
         modelData.modeType = .Advanced
 
         let resource = modelData.resourceManager.resource(by: "Test data")!
-        let tours = try! Tour.load(at: resource.toursSource!)
+        let tours = try! Tour.load()
 
         return StaticTourDetailView(tour: tours[0])
             .environmentObject(modelData)
@@ -191,7 +178,7 @@ struct TourDetailView_Previews: PreviewProvider {
         modelData.modeType = .Normal
 
         let resource = modelData.resourceManager.resource(by: "Test data")!
-        let tours = try! Tour.load(at: resource.toursSource!)
+        let tours = try! Tour.load()
 
         return StaticTourDetailView(tour: tours[1])
             .environmentObject(modelData)

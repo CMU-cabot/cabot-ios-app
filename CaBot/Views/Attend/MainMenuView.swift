@@ -40,8 +40,8 @@ struct MainMenuView: View {
                 ActionMenus()
                     .environmentObject(modelData)
             }
-            DestinationMenus()
-                .environmentObject(modelData)
+            //DestinationMenus()
+                //.environmentObject(modelData)
             MainMenus()
                 .environmentObject(modelData)
                 .disabled(!modelData.suitcaseConnected && !modelData.menuDebug)
@@ -276,7 +276,7 @@ struct ArrivedActionMenus: View {
                 .disabled(!modelData.suitcaseConnected && !modelData.menuDebug)
             }
             if let count = ad.arriveMessages?.count {
-                if let text = ad.arriveMessages?[count-1].content {
+                if let text = ad.arriveMessages?[count-1] {
                     Button(action: {
                         modelData.speak(text) {}
                     }) {
@@ -414,7 +414,7 @@ struct MainMenus: View {
                 //if modelData.modeType == .Debug{
                     if let src = cm.toursSource {
                         NavigationLink(
-                            destination: ToursView(src: src)
+                            destination: ToursView()
                                 .environmentObject(modelData),
                             label: {
                                 Text("SELECT_TOUR")
@@ -785,7 +785,7 @@ struct ContentView_Previews: PreviewProvider {
         if let r = modelData.resourceManager.resource(by: "place0") {
             modelData.resource = r
             if let url = r.toursSource {
-                if let tours = try? Tour.load(at: url) {
+                if let tours = try? Tour.load() {
                     modelData.tourManager.set(tour: tours[0])
                     _ = modelData.tourManager.proceedToNextDestination()
                 }
@@ -802,8 +802,8 @@ struct ContentView_Previews: PreviewProvider {
 
         if let r = modelData.resourceManager.resource(by: "place0") {
             modelData.resource = r
-            if let url = r.toursSource {
-                if let tours = try? Tour.load(at: url) {
+            if r.toursSource != nil {
+                if let tours = try? Tour.load(){
                     modelData.tourManager.set(tour: tours[0])
                 }
             }
@@ -820,7 +820,7 @@ struct ContentView_Previews: PreviewProvider {
         if let r = modelData.resourceManager.resource(by: "place0") {
             modelData.resource = r
             if let url = r.toursSource {
-                if let tours = try? Tour.load(at: url) {
+                if let tours = try? Tour.load() {
                     modelData.tourManager.set(tour: tours[1])
                 }
             }
@@ -837,7 +837,7 @@ struct ContentView_Previews: PreviewProvider {
         if let r = modelData.resourceManager.resource(by: "place0") {
             modelData.resource = r
             if let url = r.toursSource {
-                if let tours = try? Tour.load(at: url) {
+                if let tours = try? Tour.load(){
                     modelData.tourManager.set(tour: tours[1])
                 }
             }
