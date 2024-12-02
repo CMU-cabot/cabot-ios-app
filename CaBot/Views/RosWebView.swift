@@ -34,7 +34,7 @@ struct RosWebView: View, LocalizationStatusDelegate {
                                    didReceive message: WKScriptMessage,
                                    replyHandler: @escaping (Any?, String?) -> Void) {
             if let status = message.body as? Int {
-                NSLog("RosWebView.Handler: \(status)")
+                NSLog("<RosLib LocalizeStatus topic: \(status)>")
                 delegate?.updated(status: status)
             }
         }
@@ -163,7 +163,7 @@ extension LocalWebView {
 
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
             if message.name == "callbackHandler" {
-                NSLog("\(message.body)")
+                NSLog("<RosLib on: \(message.body)>")
                 if let body = message.body as? String {
                     if body.contains("connection closed") {
                     }

@@ -37,6 +37,10 @@ class CaBotServiceTCP: NSObject {
     private var connected: Bool = true
     private var primaryIP = true
     private var connectTimer: Timer?
+    private let cabotVersionLogPack = LogPack(title:"<Socket on: cabot_version>", threshold:3.0, maxPacking:20)
+    private let deviceStatusLogPack = LogPack(title:"<Socket on: device_status>", threshold:7.0, maxPacking:4)
+    private let systemStatusLogPack = LogPack(title:"<Socket on: system_status>", threshold:7.0, maxPacking:4)
+    private let touchLogPack = LogPack(title:"<Socket on: touch>", threshold:3.0, maxPacking:80)
 
     var delegate:CaBotServiceDelegate?
 
@@ -127,6 +131,7 @@ class CaBotServiceTCP: NSObject {
             guard let weakself = self else { return }
             guard let socket = weakself.socket else { return }
             guard let delegate = weakself.delegate else { return }
+            NSLog("<Socket: connected>")
             DispatchQueue.main.async {
                 weakself.connected = true
                 delegate.caBot(service: weakself, centralConnected: weakself.connected)
@@ -136,12 +141,14 @@ class CaBotServiceTCP: NSObject {
         }
         socket.on(clientEvent: .error){[weak self] data, ack in
             guard let weakself = self else { return }
+            NSLog("<Socket: error>")
             DispatchQueue.main.async {
                 weakself.stop()
             }
         }
         socket.on(clientEvent: .disconnect){[weak self] data, ack in
             guard let weakself = self else { return }
+            NSLog("<Socket on: disconnect>")
             DispatchQueue.main.async {
                 weakself.stop()
             }
@@ -149,6 +156,7 @@ class CaBotServiceTCP: NSObject {
         socket.on("cabot_version"){[weak self] data, ack in
             guard let text = data[0] as? String else { return }
             guard let weakself = self else { return }
+            weakself.cabotVersionLogPack.log(text:text)
             guard let delegate = weakself.delegate else { return }
             DispatchQueue.main.async {
                 delegate.caBot(service: weakself, versionMatched: text == weakself.version, with: text)
@@ -159,9 +167,16 @@ class CaBotServiceTCP: NSObject {
             guard let text = dt[0] as? String else { return }
             guard let data = String(text).data(using:.utf8) else { return }
             guard let weakself = self else { return }
+            weakself.deviceStatusLogPack.log(text:text)
             guard let delegate = weakself.delegate else { return }
             do {
-                let status = try JSONDecoder().decode(DeviceStatus.self, from: data)
+                var status = try JSONDecoder().decode(DeviceStatus.self, from: data)
+                let levelOrder: [DeviceStatusLevel] = [.Error, .Unknown, .OK]
+                status.devices.sort {
+                    let index0 = levelOrder.firstIndex(of: $0.level) ?? levelOrder.count
+                    let index1 = levelOrder.firstIndex(of: $1.level) ?? levelOrder.count
+                    return index0 < index1
+                }
                 DispatchQueue.main.async {
                     delegate.cabot(service: weakself, deviceStatus: status)
                 }
@@ -174,6 +189,7 @@ class CaBotServiceTCP: NSObject {
             guard let text = dt[0] as? String else { return }
             guard let data = String(text).data(using:.utf8) else { return }
             guard let weakself = self else { return }
+            weakself.systemStatusLogPack.log(text:text)
             guard let delegate = weakself.delegate else { return }
             do {
                 let status = try JSONDecoder().decode(SystemStatus.self, from: data)
@@ -189,6 +205,7 @@ class CaBotServiceTCP: NSObject {
             guard let text = dt[0] as? String else { return }
             guard let data = String(text).data(using:.utf8) else { return }
             guard let weakself = self else { return }
+            NSLog("<Socket on: battery_status>")
             guard let delegate = weakself.delegate else { return }
             do {
                 let status = try JSONDecoder().decode(BatteryStatus.self, from: data)
@@ -204,6 +221,7 @@ class CaBotServiceTCP: NSObject {
             guard let text = dt[0] as? String else { return }
             guard let data = String(text).data(using:.utf8) else { return }
             guard let weakself = self else { return }
+            weakself.touchLogPack.log(text:text)
             guard let delegate = weakself.delegate else { return }
             do {
                 let status = try JSONDecoder().decode(TouchStatus.self, from: data)
@@ -219,6 +237,7 @@ class CaBotServiceTCP: NSObject {
             guard let text = dt[0] as? String else { return }
             guard let data = String(text).data(using:.utf8) else { return }
             guard let weakself = self else { return }
+            NSLog("<Socket on: speak>")
             guard let delegate = weakself.delegate else { return }
             do {
                 let request = try JSONDecoder().decode(SpeakRequest.self, from: data)
@@ -235,9 +254,11 @@ class CaBotServiceTCP: NSObject {
             guard let delegate = weakself.delegate else { return }
             do {
                 let request = try JSONDecoder().decode(NavigationEventRequest.self, from: data)
+                NSLog("<Socket on: navigate> \(request.type)")
                 weakself.actions.handle(service: weakself, delegate: delegate, request: request)
             } catch {
                 print(text)
+                NSLog("<Socket on: navigate> json parse error")
                 NSLog(error.localizedDescription)
             }
         }
@@ -245,6 +266,7 @@ class CaBotServiceTCP: NSObject {
             guard let text = dt[0] as? String else { return }
             guard let data = String(text).data(using:.utf8) else { return }
             guard let weakself = self else { return }
+            NSLog("<Socket on: log_response>")
             guard let delegate = weakself.delegate else { return }
             do {
                 let response = try JSONDecoder().decode(LogResponse.self, from: data)
@@ -261,9 +283,11 @@ class CaBotServiceTCP: NSObject {
             guard let delegate = weakself.delegate else { return }
             do {
                 let decodedData = try JSONDecoder().decode(SharedInfo.self, from: data)
+                NSLog("<Socket on: share> \(decodedData.type)")
                 weakself.actions.handle(service: weakself, delegate: delegate, user_info: decodedData)
             } catch {
                 print(text)
+                NSLog("<Socket on: share> json parse error")
                 NSLog(error.localizedDescription)
             }
         }

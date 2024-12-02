@@ -570,3 +570,97 @@ class CaBotServiceActions {
         }
     }
 }
+
+actor LogPack {
+    private let title :String
+    private let threshold :TimeInterval
+    private let maxPacking : Int
+    private let isLogWithText : Bool
+    private var last :(at:Date,text:String?)? = nil
+    private var packingCount : Int = 0
+    
+    init( title:String, threshold:TimeInterval, isLogWithText:Bool = false, maxPacking:Int = 10 ) {
+        self.title = title
+        self.threshold = threshold
+        self.isLogWithText = isLogWithText
+        self.maxPacking = maxPacking
+    }
+    
+    nonisolated func log( text:String? = nil ) {
+        Task {
+            await _log( text:text )
+        }
+    }
+    
+    private func _log( text:String? = nil ) {
+        let now = Date()
+        
+        if let (lastAt,lastText) = self.last {
+            if (text != lastText)
+                || (now.timeIntervalSince(lastAt) >= threshold) {
+                _packlog(lastText)
+                _log( now, text )
+            }
+            else {
+                packingCount += 1
+                if packingCount >= maxPacking {
+                    _packlog(lastText)
+                }
+            }
+        }
+        else {
+            _log( now, text )
+        }
+        self.last = (now, text)
+    }
+    
+    private func _log( _ date:Date, _ text:String? ) {
+        var output = self.title
+        if let text, isLogWithText {
+            output = "\(self.title): \(text)"
+        }
+        NSLog(output)
+    }
+    
+    private func _packlog( _ text:String? ) {
+        guard packingCount > 0
+            else { return }
+        var output = self.title
+        if let text, isLogWithText {
+            output = "\(self.title): \(text)"
+        }
+        NSLog("\(output)  x \(packingCount)")
+        packingCount = 0
+    }
+}
+
+
+struct HeartbeatViewModifier: ViewModifier {
+    let label :String
+    let period :UInt64
+    @State var isAppeare:Bool = true
+
+    func body(content: Content) -> some View {
+        return content
+            .task {
+                isAppeare = true
+                NSLog("<[\(label)] appear>")
+                while !Task.isCancelled {
+                    try? await Task.sleep(nanoseconds:period)
+                    if isAppeare && (UIApplication.shared.applicationState != .background) {
+                        NSLog("<[\(label)] showing>")
+                    }
+                }
+            }
+            .onDisappear() {
+                isAppeare = false
+                NSLog("<[\(label)] disappear>")
+            }
+    }
+}
+
+extension View {
+    func heartbeat( _ label:String, period sec:Double = 3.0 ) -> some View {
+        modifier(HeartbeatViewModifier(label:label, period:UInt64(sec * 1_000_000_000)))
+    }
+}

@@ -44,7 +44,7 @@ struct DestinationsView: View {
                     } else if let src = destination.file {
                         NavigationLink(
                             destination: DestinationsView(src: src, destination: destination)
-                                .environmentObject(modelData),
+                                .environmentObject(modelData).heartbeat("DestinationsView(\(destination.title.text))"),
                             label: {
                                 Text(destination.title.text)
                                     .accessibilityLabel(destination.title.pron)
@@ -125,7 +125,7 @@ struct DestinationsView: View {
                                         .accessibilityHint(Text("DOUBLETAP_TO_VIEW_DETAILS"))
                                         .foregroundColor(.blue)
                                     NavigationLink(
-                                        destination: DestinationDetailView(destination: destination).environmentObject(modelData)
+                                        destination: DestinationDetailView(destination: destination).environmentObject(modelData).heartbeat("DestinationDetailView")
                                     ){EmptyView()}
                                     .frame(width: 0, height: 0)
                                     .opacity(0)

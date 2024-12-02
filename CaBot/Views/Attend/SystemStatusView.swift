@@ -41,7 +41,7 @@ struct SystemStatusView: View {
                         ForEach (modelData.systemStatus.components.keys, id:\.self) { key in
                             let component = modelData.systemStatus.components[key]!
                             NavigationLink(destination: SystemStatusDetailView(key: key)
-                                .environmentObject(modelData),
+                                .environmentObject(modelData).heartbeat("SystemStatusDetailView"),
                                            label: {
                                 HStack {
                                     Label(component.name, systemImage: component.level.icon)

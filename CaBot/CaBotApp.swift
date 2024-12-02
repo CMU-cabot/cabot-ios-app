@@ -31,9 +31,47 @@ public func NSLog(_ format: String, _ args: CVarArg...) {
     withVaList(args) { NavNSLogv(format, $0) }
 }
 
+struct SuitcaseStatusView: View {
+    @EnvironmentObject var modelData: CaBotAppModel
+    var body: some View {
+        HStack {
+            Image("AISuitcaseHandle.left", bundle: Bundle.main)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 34, height: 34)
+                .padding(7)
+                .background(Color.white)
+                .foregroundColor(modelData.suitcaseConnected ? Color.blue : Color.gray)
+                .clipShape(Circle())
+                .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+            if modelData.suitcaseConnected {
+                Image(systemName: "suitcase.rolling")
+                    .font(.title2)
+                    .padding(12)
+                    .background(Color.white)
+                    .foregroundColor(Color.blue)
+                    .clipShape(Circle())
+                    .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+                    .padding(.trailing, 8)
+            } else {
+                Image("suitcase.rolling.slash", bundle: Bundle.main)
+                    .font(.title2)
+                    .padding(12)
+                    .background(Color.white)
+                    .foregroundColor(Color.red)
+                    .clipShape(Circle())
+                    .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+                    .padding(.trailing, 8)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+    }
+}
+
 @main
 struct CaBotApp: App {
     @Environment(\.scenePhase) var scenePhase
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     #if ATTEND
     var modelData: CaBotAppModel = CaBotAppModel(preview: false, mode: .Advanced)
@@ -48,8 +86,11 @@ struct CaBotApp: App {
         WindowGroup {
             RootView()
                 .environmentObject(modelData)
-                .environment(\.locale, modelData.resource?.locale ?? .current)
+#if ATTEND
+                .overlay(SuitcaseStatusView().environmentObject(modelData), alignment: .topTrailing)
+#endif
         }.onChange(of: scenePhase) { newScenePhase in
+            NSLog( "<ScenePhase to \(newScenePhase)>" )
 
             modelData.onChange(of: newScenePhase)
 
@@ -63,12 +104,33 @@ struct CaBotApp: App {
                 if isVoiceOverRunning {
                     modelData.stopSpeak()
                 }
-                Logging.stopLog()
-                Logging.startLog(true)
                 break
             @unknown default:
                 break
             }
         }
+    }
+}
+
+
+class AppDelegate: UIResponder, UIApplicationDelegate {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        Logging.startLog(true)
+        let versionNo = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
+        let buildNo = Bundle.main.infoDictionary!["CFBundleVersion"] as! String
+        let commitHash = Bundle.main.infoDictionary!["GitCommitHash"] as! String
+        NSLog( "<Launched> Version: \(versionNo) (\(buildNo)) \(commitHash) - \(CaBotServiceBLE.CABOT_BLE_VERSION)")
+        
+        NSSetUncaughtExceptionHandler { exception in
+            let stacktrace = exception.callStackSymbols.joined(separator:"\n")
+            NSLog( "<UncaughtException> \n\(exception)\n\(stacktrace)")
+        }
+        
+        return true
+    }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        NSLog( "<Terminate>" )
+        Logging.stopLog()
     }
 }

@@ -41,7 +41,7 @@ struct DestinationsView: View {
                     if let src = destination.file {
                         NavigationLink(
                             destination: DestinationsView(src: src, destination: destination)
-                                .environmentObject(modelData),
+                                .environmentObject(modelData).heartbeat("DestinationsView(\(destination.title.text))"),
                             label: {
                                 Text(destination.title.text)
                                     .accessibilityLabel(destination.title.pron)
@@ -49,8 +49,15 @@ struct DestinationsView: View {
                     } else {
                         HStack {
                             Button(action: {
-                                targetDestination = destination
-                                isConfirming = true
+                                if (modelData.userInfo.destinations.count > 0) {
+                                    targetDestination = destination
+                                    isConfirming = true
+                                } else {
+                                    // if there is no destination, start immediately
+                                    modelData.share(destination: destination, clear: false)
+                                    modelData.needToStartAnnounce(wait: true)
+                                    NavigationUtil.popToRootView()
+                                }
                             }){
                                 VStack(alignment: .leading) {
                                     Text(destination.title.text)
@@ -70,27 +77,36 @@ struct DestinationsView: View {
                             detail in
                                 Button {
                                     if let destination = targetDestination {
-                                        modelData.share(destination: destination, clear: false)
-                                        NavigationUtil.popToRootView()
-                                        targetDestination = nil
-                                    }
-                                } label: {
-                                    Text("ADD_DESTINATION")
-                                }
-                                Button {
-                                    if let destination = targetDestination {
                                         modelData.share(destination: destination)
                                         NavigationUtil.popToRootView()
                                         targetDestination = nil
                                     }
                                 } label: {
-                                    Text("CLEAR_AND_ADD_DESTINATION")
+                                    Text("CLEAR_ALL_THEN_ADD")
+                                }
+                                Button {
+                                    if let destination = targetDestination {
+                                        modelData.share(destination: destination, clear: false, addFirst: true)
+                                        NavigationUtil.popToRootView()
+                                        targetDestination = nil
+                                    }
+                                } label: {
+                                    Text("ADD_TO_FIRST")
+                                }
+                                Button {
+                                    if let destination = targetDestination {
+                                        modelData.share(destination: destination, clear: false)
+                                        NavigationUtil.popToRootView()
+                                        targetDestination = nil
+                                    }
+                                } label: {
+                                    Text("ADD_TO_LAST")
                                 }
                                 Button("Cancel", role: .cancel) {
                                     targetDestination = nil
                                 }
                             } message: { detail in
-                                let message = LocalizedStringKey("SEND_DESTINATION_MESSAGE \(detail.title.text)")
+                                let message = LocalizedStringKey("ADD_A_DESTINATION_MESSAGE \(modelData.userInfo.destinations.count, specifier: "%d")")
                                 Text(message)
                             }
                             Spacer()
@@ -103,7 +119,7 @@ struct DestinationsView: View {
                                         .accessibilityHint(Text("DOUBLETAP_TO_VIEW_DETAILS"))
                                         .foregroundColor(.blue)
                                     NavigationLink(
-                                        destination: DestinationDetailView(destination: destination).environmentObject(modelData)
+                                        destination: DestinationDetailView(destination: destination).environmentObject(modelData).heartbeat("DestinationsView(\(destination.title.text))")
                                     ){EmptyView()}
                                     .frame(width: 0, height: 0)
                                     .opacity(0)

@@ -30,6 +30,7 @@
 // CaBotAppModel
 "SELECT_RESOURCE"="リソースの選択";
 "MAIN_MENU"="メインメニュー";
+"ATTEND_MENU"="アテンドメニュー";
 
 /// func summon
 "Sending the command to the suitcase"="スーツケースに指示を送っています。ハンドルから手を離してください。";
@@ -126,7 +127,7 @@
 "Details"="詳細";
 "Reboot"="リブート";
 "Suitcase Connected"="スーツケース接続あり";
-"Suitcase Not Connected"="スーツケース接続なし";
+"Suitcase Not Connected"="スーツケースに接続されていません";
 "Reboot Computer"="コンピュータをリブート";
 "The app will be disconnected."="スーツケースとの接続が解除されます";
 "Power off"="電源オフ";
@@ -291,6 +292,8 @@
 
 "User App Info"="ユーザーアプリ情報";
 "CUSTOMIZED_TOUR"="カスタムツアー";
+"USER_APP_NOT_CONNECTED"="ユーザーアプリが接続されていません";
+"ATTEND_APP_NOT_CONNECTED"="アテンドアプリが接続されていません";
 
 // ROS Web View
 "Reload"="リロード";

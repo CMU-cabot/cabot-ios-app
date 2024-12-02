@@ -599,12 +599,12 @@ struct FloorSection: Decodable {
 
 struct Item: Decodable {
     let title: I18NText
-    let content: Content?
+    let content: ItemsContent?
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         title = I18NText.decode(decoder: decoder, baseKey: "title")
-        content = try container.decodeIfPresent(Content.self, forKey: .content)
+        content = try container.decodeIfPresent(ItemsContent.self, forKey: .content)
     }
     
     private enum CodingKeys: String, CodingKey {
@@ -612,7 +612,7 @@ struct Item: Decodable {
     }
 }
 
-struct Content: Decodable {
+struct ItemsContent: Decodable {
     let sections: [NestedSection]
     let showSectionIndex: Bool
     
@@ -930,6 +930,18 @@ protocol TourProtocol {
     var id: String { get }
     var destinations: [Destination] { get }
     var currentDestination: Destination? { get }
+}
+
+struct TourSaveData: Codable {
+    var id: String
+    var destinations: [String]
+    var currentDestination: String
+    
+    init(){
+        self.id = ""
+        self.destinations = []
+        self.currentDestination = ""
+    }
 }
 
 protocol NavigationSettingProtocol {

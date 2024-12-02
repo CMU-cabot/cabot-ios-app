@@ -43,16 +43,18 @@ enum DisplayedScene {
     case ResourceSelect
     case App
 
-    var text: Text {
-        get {
-            switch self {
-            case .Onboard:
-                return Text("")
-            case .ResourceSelect:
-                return Text("SELECT_RESOURCE")
-            case .App:
-                return Text("MAIN_MENU")
-            }
+    func text(lang: String) -> Text {
+        switch self {
+        case .Onboard:
+            return Text(CustomLocalizedString("", lang: lang))
+        case .ResourceSelect:
+            return Text(CustomLocalizedString("SELECT_RESOURCE", lang: lang))
+        case .App:
+            #if ATTEND
+            return Text(CustomLocalizedString("ATTEND_MENU", lang: lang))
+            #elseif USER
+            return Text(CustomLocalizedString("MAIN_MENU", lang: lang))
+            #endif
         }
     }
 }
@@ -348,6 +350,8 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 UserDefaults.standard.synchronize()
                 
                 _ = self.fallbackService.manage(command: .lang, param: resource.lang)
+                self.updateVoice()
+                self.updateTTS()
             }
         }
     }
@@ -518,7 +522,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             updateNetworkConfig()
         }
     }
-    let socketPort: String = "5000"
+    let socketPort: String = "5001"
     let rosPort: String = "9091"
     @Published var menuDebug: Bool = false {
         didSet {
@@ -545,7 +549,14 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     @Published var contentURL: URL? = nil
     @Published var tourUpdated: Bool = false
 
-    @Published var deviceStatus: DeviceStatus = DeviceStatus()
+    @Published var deviceStatus: DeviceStatus = DeviceStatus(){
+        didSet{
+            isUserAppConnected = deviceStatus.devices.contains { device in
+                    device.type == "User App" && device.level == .OK
+            }
+        }
+    }
+    @Published var isUserAppConnected: Bool = false
     @Published var showingDeviceStatusNotification: Bool = false
     @Published var showingDeviceStatusMenu: Bool = false
     @Published var systemStatus: SystemStatusData = SystemStatusData()
@@ -569,7 +580,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     let logList: LogReportModel = LogReportModel()
     let preview: Bool
     let resourceManager: ResourceManager
-    let tourManager: TourManager
+    var tourManager: TourManager
     let dialogViewHelper: DialogViewHelper
     private let feedbackGenerator = UINotificationFeedbackGenerator()
     let notificationCenter = UNUserNotificationCenter.current()
@@ -961,6 +972,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         guard tourManager.hasDestination else { return }
 
         let skip = tourManager.skipDestination()
+        tourManager.save()
         self.stopSpeak()
         let announce = CustomLocalizedString("Skip Message %@", lang: self.resourceLang, skip.title.pron)
         self.tts.speak(announce){
@@ -1063,9 +1075,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         userInfo.clear()
     }
 
-    func share(destination: Destination, clear: Bool = true) {
+    func share(destination: Destination, clear: Bool = true, addFirst: Bool = false) {
         if let value = destination.value {
-            self.share(user_info: SharedInfo(type: .OverrideDestination, value: value, flag1: clear))
+            self.share(user_info: SharedInfo(type: .OverrideDestination, value: value, flag1: clear, flag2: addFirst))
             userInfo.clear()
         }
     }
@@ -1086,7 +1098,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         self.tourManager.clearAllDestinations()
     }
 
-    func tour(manager: TourManager, destinationChanged destination: Destination?) {
+    func tour(manager: TourManager, destinationChanged destination: Destination?, isStartMessageSpeaking: Bool = true) {
         if let dest = destination {
             if let dest_id = dest.value {
                 if !send(destination: dest_id) {
@@ -1109,12 +1121,14 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                     DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                         self.willSpeakArriveMessage = true
                         let announce = CustomLocalizedString("Going to %@", lang: self.resourceLang, dest.title.pron)
-                        + (dest.startMessage )
-                        self.tts.speak(announce, forceSelfvoice: false, force: true, callback: {code in }, progress: {range in
-                            if range.location == 0{
-                                self.willSpeakArriveMessage = true
-                            }
-                        })
+                        + (dest.startMessage)
+                        if(isStartMessageSpeaking){
+                            self.tts.speak(announce, forceSelfvoice: false, force: true, callback: {code in }, progress: {range in
+                                if range.location == 0{
+                                    self.willSpeakArriveMessage = true
+                                }
+                            })
+                        }
                     }
                 }
                 self.activityLog(category: "destination-text", text: dest.title.text, memo: dest.title.pron)
@@ -1181,7 +1195,15 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             
             if self.suitcaseConnected {
                 if self.modeType != .Normal{
-                    self.share(user_info: SharedInfo(type: .RequestUserInfo, value: ""))
+                    self.share(user_info: SharedInfo(type: .RequestUserInfo, value: "", flag1: false)) // do not speak
+                }
+                else if self.modeType == .Normal{
+                    tourManager.tourDataLoad(model: self)
+                    self.share(user_info: SharedInfo(type: .Tour, value: self.tourManager.title.text))
+                    self.share(user_info: SharedInfo(type: .CurrentDestination, value: self.tourManager.currentDestination?.title.text ?? ""))
+                    self.share(user_info: SharedInfo(type: .NextDestination, value: self.tourManager.nextDestination?.title.text ?? ""))
+                    self.share(user_info: SharedInfo(type: .Destinations, value: self.tourManager.destinations.map { $0.title.text }.joined(separator: ",")))
+                    self.share(user_info: SharedInfo(type: .ChangeLanguage, value: self.resourceLang))
                 }
                 DispatchQueue.main.async {
                     _ = self.fallbackService.manage(command: .lang, param: self.resourceLang)
@@ -1435,8 +1457,14 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                                     needToStartAnnounce(wait: true)
                                     return
                                 }
-                            } else if let src = dest.file {
-                                traverseDest(src: src)
+                                if userInfo.flag2 {
+                                    tourManager.addToFirst(destination: dest)
+                                }
+                                else {
+                                    tourManager.addToLast(destination: dest)
+                                }
+                                needToStartAnnounce(wait: true)
+                                return
                             }
                         }
                     }
@@ -1457,8 +1485,8 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             self.share(user_info: SharedInfo(type: .NextDestination, value: self.tourManager.nextDestination?.title.text ?? ""))
             self.share(user_info: SharedInfo(type: .Destinations, value: self.tourManager.destinations.map { $0.title.text }.joined(separator: ",")))
             self.share(user_info: SharedInfo(type: .ChangeLanguage, value: self.resourceLang))
-            self.share(user_info: SharedInfo(type: .ChangeUserVoiceType, value: "\(self.userVoice?.id ?? "")"))
-            self.share(user_info: SharedInfo(type: .ChangeUserVoiceRate, value: "\(self.userSpeechRate)"))
+            self.share(user_info: SharedInfo(type: .ChangeUserVoiceType, value: "\(self.userVoice?.id ?? "")", flag1: userInfo.flag1))
+            self.share(user_info: SharedInfo(type: .ChangeUserVoiceRate, value: "\(self.userSpeechRate)", flag1: userInfo.flag1))
         }
         if userInfo.type == .ClearDestinations {
             self.clearAll()
@@ -1466,14 +1494,21 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         if userInfo.type == .ChangeLanguage {
             self.resource?.lang = userInfo.value
             self.updateVoice()
+            self.updateTTS()
         }
         if userInfo.type == .ChangeUserVoiceRate {
             self.userSpeechRate = Double(userInfo.value) ?? 0.5
             self.updateTTS()
+            if userInfo.flag1 {
+                self.playSample(mode: .User)
+            }
         }
         if userInfo.type == .ChangeUserVoiceType {
             self.userVoice = TTSHelper.getVoice(by: userInfo.value)
             self.updateTTS()
+            if userInfo.flag1 {
+                self.playSample(mode: .User)
+            }
         }
     }
 
@@ -1549,6 +1584,12 @@ class SystemStatusData: NSObject, ObservableObject {
     func update(with status: SystemStatus) {
         self.level = status.level
         self.components = OrderedDictionary<String,ComponentData>()
+        let levelOrder: [DiagnosticLevel] = [.Stale, .Error, .Warning, .OK]
+        let sortedDiagnostics = status.diagnostics.sorted {
+            let index0 = levelOrder.firstIndex(of: $0.level) ?? levelOrder.count
+            let index1 = levelOrder.firstIndex(of: $1.level) ?? levelOrder.count
+            return index0 < index1
+        }
         var allKeys = Set(self.components.keys)
         var max_level: Int = -1
         for diagnostic in status.diagnostics {
@@ -1568,7 +1609,7 @@ class SystemStatusData: NSObject, ObservableObject {
                 self.summary = summary
             }
         }
-        for diagnostic in status.diagnostics {
+        for diagnostic in sortedDiagnostics {
             if let root = diagnostic.rootName {
                 if let data = components[root] {
                     data.update(detail: diagnostic)
