@@ -24,18 +24,33 @@ import Foundation
 
 
 class ChatConfiguration : ObservableObject {
-    @Published public var scheme : String
-    @Published public var host : String
-    @Published public var port : Int
-    @Published public var apiKey : String
-    @Published public var historySize : Int
-    
-    init(scheme: String = "", host: String = "", port: Int = 8080, apiKey: String = "", historySize : Int = 20) {
-        self.scheme = scheme
+    @Published public var host : String {
+        didSet {
+            setToUserDefaults()
+        }
+    }
+    @Published public var apiKey : String {
+        didSet {
+            setToUserDefaults()
+        }
+    }
+    @Published public var model : String {
+        didSet {
+            setToUserDefaults()
+        }
+    }
+    @Published public var historySize : Int {
+        didSet {
+            setToUserDefaults()
+        }
+    }
+
+    init(host: String = "", apiKey: String = "", model: String = "", historySize : Int = 20) {
         self.host = host
-        self.port = port
         self.apiKey = apiKey
+        self.model = model
         self.historySize = historySize
+        loadFromUserDefaults()
     }
 }
 
@@ -43,9 +58,8 @@ class ChatConfiguration : ObservableObject {
 
 extension ChatConfiguration {
     enum Settings : String {
-        case scheme
         case host
-        case port
+        case model
         case apiKey
         
         var key :String { "config_\(self.rawValue)" }
@@ -57,23 +71,20 @@ extension ChatConfiguration {
     
     @discardableResult
     func loadFromUserDefaults() -> Self {
-        self.scheme = Settings.scheme.get(default:"")
-        self.host = Settings.host.get(default:"")
-        self.port = Settings.port.get()
+        self.host = Settings.host.get(default:"http://localhost:8080/v1")
+        self.model = Settings.host.get(default:"ollama/llama3.2")
         self.apiKey = Settings.apiKey.get(default:"")
         return self
     }
     
     @discardableResult
     func setToUserDefaults() -> Self {
-        Settings.scheme.set( scheme )
         Settings.host.set( host )
-        Settings.port.set( port )
         Settings.apiKey.set( apiKey )
         return self
     }
     
     var isValid : Bool {
-        !host.isEmpty && port > 0 && !scheme.isEmpty && !apiKey.isEmpty
+        !host.isEmpty && !apiKey.isEmpty
     }
 }

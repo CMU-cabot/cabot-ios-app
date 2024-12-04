@@ -127,6 +127,12 @@ struct SettingView: View {
                     TextField("PLACEHOLDER_IP_ADDRESS", text:
                                 $modelData.secondaryAddr)
                 }
+                NavigationLink {
+                    ChatSettingsView().environmentObject(modelData)
+                } label: {
+                    Text("Chat Settings")
+                }
+
             }
         }
     }

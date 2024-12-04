@@ -26,7 +26,7 @@ import ChatView
 import OpenAI
 
 extension Model {
-    static let ollama_llama2 = "ollama/llama2"
+    static let ollama_llama3_2 = "ollama/llama3.2"
 }
 
 class ChatClientOpenAI: ChatClient {
@@ -35,14 +35,15 @@ class ChatClientOpenAI: ChatClient {
     let welcome_text = "Hello"
     var pub: PassthroughSubject<String, Error>?
     var callback_called = Set<String>()
-    let model: Model = .ollama_llama2
+    let model: Model = .ollama_llama3_2
     var history: LimitedArray<ChatItem>
     var queryResultCancellable : AnyCancellable? = nil
     var queryResultCache :String = ""
 
     init(config:ChatConfiguration, callback: @escaping ChatClientCallback) {
         self.callback = callback
-        let url = URL(string: "http://127.0.0.1:8080/v1")!
+        let url = URL(string: config.host)!
+        NSLog("OpenAI Client with \(url)")
         let configuration = OpenAI.Configuration(
             token: "temp-key",
             organizationIdentifier: nil,

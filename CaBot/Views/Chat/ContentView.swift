@@ -25,7 +25,6 @@ import ChatView
 
 public struct ContentView: View {
     @StateObject var model: ChatViewModel
-    @StateObject var chatConfig = ChatConfiguration()
     @State var isShowSettings = false
 
     public var body: some View {
@@ -46,7 +45,7 @@ public struct ContentView: View {
     
     func startChat() {
         model.stt = AppleSTT(state: $model.chatState, tts: PriorityQueueTTSWrapper.shared)
-        model.chat = ChatClientOpenAI(config:chatConfig, callback: model.process)
+        model.chat = ChatClientOpenAI(config:model.config, callback: model.process)
         model.send(message: "")
     }
 }

@@ -33,6 +33,7 @@ class ChatViewModel: ObservableObject  {
 
     var stt: AppleSTT?
     var chat: ChatClient?
+    var config: ChatConfiguration = ChatConfiguration()
     private var map: [String: ChatMessage] = [:]
     private var map2: [String: PassthroughSubject<String, Error>] = [:]
 

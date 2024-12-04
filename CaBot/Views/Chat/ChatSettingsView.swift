@@ -22,75 +22,33 @@
 
 import SwiftUI
 
-struct PermissionItem : Identifiable {
-    let id : Int
-    var flag = false
-}
+struct ChatSettingsView: View {
+    @EnvironmentObject var model: CaBotAppModel
 
-
-struct SettingsView: View {
-    @ObservedObject var config :ChatConfiguration
-    @Binding var dismissFlag : Bool
-    @State var warning :String? = nil
-    @State var permissionItems :[PermissionItem] = []
 
     var body: some View {
-        Text("Settings")
-            .font(.title)
         Form {
             Section("Chat server connection") {
                 VStack(alignment:.leading) {
-                    Text("Scheme:")
-                        .font(.caption).foregroundColor(.secondary)
-                    TextField("like \"https\"", text: $config.scheme)
-                        .autocapitalization(.none)
-                        .keyboardType(.asciiCapable)
-                }
-                VStack(alignment:.leading) {
                     Text("Host:")
                         .font(.caption).foregroundColor(.secondary)
-                    TextField("IP address or Host name", text: $config.host)
+                    TextField("Host name", text: $model.chatModel.config.host)
                         .autocapitalization(.none)
                         .keyboardType(.asciiCapable)
-                }
-                VStack(alignment:.leading) {
-                    Text("Port:")
-                        .font(.caption).foregroundColor(.secondary)
-                    TextField("80", value: $config.port, formatter: NumberFormatter())
-                        .keyboardType(.numberPad)
                 }
                 VStack(alignment:.leading) {
                     Text("Api Key:")
                         .font(.caption).foregroundColor(.secondary)
-                    TextField("", text: $config.apiKey)
+                    TextField("", text: $model.chatModel.config.apiKey)
                         .autocapitalization(.none)
                         .keyboardType(.asciiCapable)
                 }
             }
-        }
-        Button("Done") {
-            config.setToUserDefaults()
-            guard validate() else {
-                return
-            }
-        }
-        
-        .alert( warning ?? "",
-            isPresented: Binding<Bool>( get:{warning != nil}, set:{_ in warning = nil } ))
-        {
-            Text( "OK" )
-        }
-        
-    }
-    
-    func validate() -> Bool {
-        warning = !config.host.isEmpty && !config.scheme.isEmpty && !config.apiKey.isEmpty
-                    // connectionConfig.isValid
-                    ? nil : "no entry or invalid"
-        return warning == nil
+        }.navigationTitle(Text("Settings"))
     }
 }
 
 #Preview {
-    SettingsView(config:ChatConfiguration(), dismissFlag:.constant(false) )
+    let model = CaBotAppModel(preview: true)
+    return ChatSettingsView().environmentObject(model)
 }
