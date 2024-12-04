@@ -97,6 +97,43 @@ struct OnboardGrantAccess: View {
             .padding()
             .disabled(modelData.notificationState != .Init)
             .frame(width:250, alignment: .leading)
+
+
+            Button(action: {
+                userAction = true
+                modelData.requestMicrophoneAuthorization()
+            }) {
+                switch(modelData.recordPermission) {
+                case .undetermined:
+                    Label(LocalizedStringKey("Enable Microphone"), systemImage:"circle")
+                case .granted:
+                    Label(LocalizedStringKey("Microphone Enabled"), systemImage:"checkmark.circle")
+                case .denied:
+                    Label(LocalizedStringKey("Microphone Denied"), systemImage:"multiply.circle")
+                }
+            }
+            .padding()
+            .disabled(modelData.recordPermission != .undetermined)
+            .frame(width:250, alignment: .leading)
+
+            Button(action: {
+                userAction = true
+                modelData.requestSpeechRecoAuthorization()
+            }) {
+                switch(modelData.speechRecoState) {
+                case .notDetermined:
+                    Label(LocalizedStringKey("Enable Speech Reco"), systemImage:"circle")
+                case .authorized:
+                    Label(LocalizedStringKey("Speech Reco Enabled"), systemImage:"checkmark.circle")
+                case .restricted:
+                    Label(LocalizedStringKey("Speech Reco Not Available"), systemImage:"multiply.circle")
+                case .denied:
+                    Label(LocalizedStringKey("Speech Reco Denied"), systemImage:"multiply.circle")
+                }
+            }
+            .padding()
+            .disabled(modelData.speechRecoState != .notDetermined)
+            .frame(width:250, alignment: .leading)
         }
     }
 }

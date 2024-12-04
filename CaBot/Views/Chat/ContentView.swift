@@ -27,7 +27,6 @@ public struct ContentView: View {
     @StateObject var model: ChatViewModel
     @StateObject var chatConfig = ChatConfiguration()
     @State var isShowSettings = false
-    var needPermissions = Permission.needPermissions
 
     public var body: some View {
         ChatView(messages: model.messages)
@@ -41,20 +40,8 @@ public struct ContentView: View {
         }
         .frame(height: 200)
         .onAppear() {
-            guard chatConfig.loadFromUserDefaults().isValid, needPermissions.isEmpty else {
-                isShowSettings = true
-                return
-            }
             startChat()
         }
-        .fullScreenCover(isPresented: $isShowSettings,
-        onDismiss: {
-            if chatConfig.isValid {
-                startChat()
-            }
-        }, content: {
-            SettingsView( permissions:needPermissions, config:chatConfig, dismissFlag:$isShowSettings )
-        })
     }
     
     func startChat() {

@@ -24,13 +24,11 @@ import SwiftUI
 
 struct PermissionItem : Identifiable {
     let id : Int
-    let permission : Permission
     var flag = false
 }
 
 
 struct SettingsView: View {
-    let permissions : [Permission]
     @ObservedObject var config :ChatConfiguration
     @Binding var dismissFlag : Bool
     @State var warning :String? = nil
@@ -40,8 +38,6 @@ struct SettingsView: View {
         Text("Settings")
             .font(.title)
         Form {
-            PermissionRequestSection
-            
             Section("Chat server connection") {
                 VStack(alignment:.leading) {
                     Text("Scheme:")
@@ -77,15 +73,6 @@ struct SettingsView: View {
             guard validate() else {
                 return
             }
-            
-            Task { @MainActor in
-                for item in permissionItems {
-                    if item.flag {
-                        await item.permission.requestPermission()
-                    }
-                }
-                dismissFlag = false
-            }
         }
         
         .alert( warning ?? "",
@@ -93,44 +80,8 @@ struct SettingsView: View {
         {
             Text( "OK" )
         }
-        .onAppear {
-            self.permissionItems = permissions.enumerated().map {
-                PermissionItem( id:$0, permission:$1 )
-            }
-        }
         
     }
-    
-    @ViewBuilder
-    var PermissionRequestSection : some View {
-        if permissionItems.isEmpty {
-            EmptyView()
-        }
-        else {
-            Section("Please allow the app to access below features") {
-                ForEach( $permissionItems ) { $item in
-                    if item.permission.status == .suspend {
-                        Toggle(isOn: $item.flag) {
-                            Text(item.permission.requestLabel)
-                        }
-                    }
-                    else {
-                        HStack {
-                            Text(item.permission.requestLabel)
-                            Spacer()
-                            Button( "Open Setting App" ) {
-                                if  let settingsUrl = URL( string:UIApplication.openSettingsURLString ),
-                                    UIApplication.shared.canOpenURL( settingsUrl ) {
-                                    UIApplication.shared.open( settingsUrl ) { _ in }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     
     func validate() -> Bool {
         warning = !config.host.isEmpty && !config.scheme.isEmpty && !config.apiKey.isEmpty
@@ -141,5 +92,5 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView( permissions:[], config:ChatConfiguration(), dismissFlag:.constant(false) )
+    SettingsView(config:ChatConfiguration(), dismissFlag:.constant(false) )
 }

@@ -43,8 +43,6 @@
 		30AFA5932D00BCD0004AFA98 /* ChatClientOpenAI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5832D00BCD0004AFA98 /* ChatClientOpenAI.swift */; };
 		30AFA5942D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5842D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift */; };
 		30AFA5952D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5842D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift */; };
-		30AFA5962D00BCD0004AFA98 /* Permission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5852D00BCD0004AFA98 /* Permission.swift */; };
-		30AFA5972D00BCD0004AFA98 /* Permission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5852D00BCD0004AFA98 /* Permission.swift */; };
 		30AFA5982D00BCD0004AFA98 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5862D00BCD0004AFA98 /* SettingsView.swift */; };
 		30AFA5992D00BCD0004AFA98 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5862D00BCD0004AFA98 /* SettingsView.swift */; };
 		30AFA59A2D00BCD0004AFA98 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5872D00BCD0004AFA98 /* SpeechRecognizer.swift */; };
@@ -204,7 +202,6 @@
 		30AFA5822D00BCD0004AFA98 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		30AFA5832D00BCD0004AFA98 /* ChatClientOpenAI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatClientOpenAI.swift; sourceTree = "<group>"; };
 		30AFA5842D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PriorityQueueTTSWrapper.swift; sourceTree = "<group>"; };
-		30AFA5852D00BCD0004AFA98 /* Permission.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Permission.swift; sourceTree = "<group>"; };
 		30AFA5862D00BCD0004AFA98 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		30AFA5872D00BCD0004AFA98 /* SpeechRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
 		30C3059D26B9036A00A1383A /* DestinationDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationDetailView.swift; sourceTree = "<group>"; };
@@ -352,7 +349,6 @@
 				30AFA57E2D00BCD0004AFA98 /* ChatViewModel.swift */,
 				30AFA5822D00BCD0004AFA98 /* ContentView.swift */,
 				30AFA5802D00BCD0004AFA98 /* LimitedArray.swift */,
-				30AFA5852D00BCD0004AFA98 /* Permission.swift */,
 				30AFA5842D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift */,
 				30AFA5862D00BCD0004AFA98 /* SettingsView.swift */,
 				30AFA5872D00BCD0004AFA98 /* SpeechRecognizer.swift */,
@@ -794,7 +790,6 @@
 				7E9690C329EAF25C0062DEBD /* DetailSettingView.swift in Sources */,
 				30AFA58A2D00BCD0004AFA98 /* AppleSTT.swift in Sources */,
 				30E50DE226A0BA5200729ABD /* DestinationsView.swift in Sources */,
-				30AFA5962D00BCD0004AFA98 /* Permission.swift in Sources */,
 				30AFA5982D00BCD0004AFA98 /* SettingsView.swift in Sources */,
 				3099132D26603B10000C1BFE /* LocalConversation.swift in Sources */,
 				30E50DE826A0BBE900729ABD /* ToursView.swift in Sources */,
@@ -884,7 +879,6 @@
 				30AFA59B2D00BCD0004AFA98 /* SpeechRecognizer.swift in Sources */,
 				D7CC04FC2BFB352700C0B10A /* JSHelper.swift in Sources */,
 				D7CC04FD2BFB352700C0B10A /* CaBotApp.swift in Sources */,
-				30AFA5972D00BCD0004AFA98 /* Permission.swift in Sources */,
 				D7CC04FF2BFB352700C0B10A /* ResourceManager.swift in Sources */,
 				D7CC05002BFB352700C0B10A /* Extension.swift in Sources */,
 				D7CC05012BFB352700C0B10A /* WebContentView.swift in Sources */,

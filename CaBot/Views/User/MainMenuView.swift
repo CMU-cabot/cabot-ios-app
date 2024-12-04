@@ -356,6 +356,11 @@ struct MainMenus: View {
     var body: some View {
         if let cm = modelData.resource {
             Section(header: Text("Navigation")) {
+                NavigationLink(
+                    destination: ContentView(model: modelData.chatModel),
+                    label: {
+                    Text("START_CONVERSATION")
+                })
                 if let src = cm.destinationsSource {
                     NavigationLink(
                         destination: DestinationsView(src: src)
