@@ -29,6 +29,30 @@
 		3096BF1826A5D0990066F256 /* TTSHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3096BF1726A5D0990066F256 /* TTSHelper.swift */; };
 		3099132B265DE50A000C1BFE /* Resource in Resources */ = {isa = PBXBuildFile; fileRef = 3099132A265DE50A000C1BFE /* Resource */; };
 		3099132D26603B10000C1BFE /* LocalConversation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3099132C26603B10000C1BFE /* LocalConversation.swift */; };
+		30AFA5882D00BCD0004AFA98 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA57E2D00BCD0004AFA98 /* ChatViewModel.swift */; };
+		30AFA5892D00BCD0004AFA98 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA57E2D00BCD0004AFA98 /* ChatViewModel.swift */; };
+		30AFA58A2D00BCD0004AFA98 /* AppleSTT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA57F2D00BCD0004AFA98 /* AppleSTT.swift */; };
+		30AFA58B2D00BCD0004AFA98 /* AppleSTT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA57F2D00BCD0004AFA98 /* AppleSTT.swift */; };
+		30AFA58C2D00BCD0004AFA98 /* LimitedArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5802D00BCD0004AFA98 /* LimitedArray.swift */; };
+		30AFA58D2D00BCD0004AFA98 /* LimitedArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5802D00BCD0004AFA98 /* LimitedArray.swift */; };
+		30AFA58E2D00BCD0004AFA98 /* ChatConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5812D00BCD0004AFA98 /* ChatConfiguration.swift */; };
+		30AFA58F2D00BCD0004AFA98 /* ChatConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5812D00BCD0004AFA98 /* ChatConfiguration.swift */; };
+		30AFA5902D00BCD0004AFA98 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5822D00BCD0004AFA98 /* ContentView.swift */; };
+		30AFA5912D00BCD0004AFA98 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5822D00BCD0004AFA98 /* ContentView.swift */; };
+		30AFA5922D00BCD0004AFA98 /* ChatClientOpenAI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5832D00BCD0004AFA98 /* ChatClientOpenAI.swift */; };
+		30AFA5932D00BCD0004AFA98 /* ChatClientOpenAI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5832D00BCD0004AFA98 /* ChatClientOpenAI.swift */; };
+		30AFA5942D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5842D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift */; };
+		30AFA5952D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5842D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift */; };
+		30AFA5962D00BCD0004AFA98 /* Permission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5852D00BCD0004AFA98 /* Permission.swift */; };
+		30AFA5972D00BCD0004AFA98 /* Permission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5852D00BCD0004AFA98 /* Permission.swift */; };
+		30AFA5982D00BCD0004AFA98 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5862D00BCD0004AFA98 /* SettingsView.swift */; };
+		30AFA5992D00BCD0004AFA98 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5862D00BCD0004AFA98 /* SettingsView.swift */; };
+		30AFA59A2D00BCD0004AFA98 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5872D00BCD0004AFA98 /* SpeechRecognizer.swift */; };
+		30AFA59B2D00BCD0004AFA98 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5872D00BCD0004AFA98 /* SpeechRecognizer.swift */; };
+		30AFA59E2D00BD4E004AFA98 /* ChatView in Frameworks */ = {isa = PBXBuildFile; productRef = 30AFA59D2D00BD4E004AFA98 /* ChatView */; };
+		30AFA5A02D00BD73004AFA98 /* ChatView in Frameworks */ = {isa = PBXBuildFile; productRef = 30AFA59F2D00BD73004AFA98 /* ChatView */; };
+		30AFA5A32D00BDAB004AFA98 /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 30AFA5A22D00BDAB004AFA98 /* OpenAI */; };
+		30AFA5A52D00BDB4004AFA98 /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 30AFA5A42D00BDB4004AFA98 /* OpenAI */; };
 		30C3059E26B9036A00A1383A /* DestinationDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30C3059D26B9036A00A1383A /* DestinationDetailView.swift */; };
 		30E50DCC269F672800729ABD /* TourManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E50DCB269F672800729ABD /* TourManager.swift */; };
 		30E50DCE269F75DB00729ABD /* CaBotApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E50DCD269F75DB00729ABD /* CaBotApp.swift */; };
@@ -173,6 +197,16 @@
 		3096BF1726A5D0990066F256 /* TTSHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TTSHelper.swift; sourceTree = "<group>"; };
 		3099132A265DE50A000C1BFE /* Resource */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resource; sourceTree = "<group>"; };
 		3099132C26603B10000C1BFE /* LocalConversation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalConversation.swift; sourceTree = "<group>"; };
+		30AFA57E2D00BCD0004AFA98 /* ChatViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		30AFA57F2D00BCD0004AFA98 /* AppleSTT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppleSTT.swift; sourceTree = "<group>"; };
+		30AFA5802D00BCD0004AFA98 /* LimitedArray.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LimitedArray.swift; sourceTree = "<group>"; };
+		30AFA5812D00BCD0004AFA98 /* ChatConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatConfiguration.swift; sourceTree = "<group>"; };
+		30AFA5822D00BCD0004AFA98 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		30AFA5832D00BCD0004AFA98 /* ChatClientOpenAI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatClientOpenAI.swift; sourceTree = "<group>"; };
+		30AFA5842D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PriorityQueueTTSWrapper.swift; sourceTree = "<group>"; };
+		30AFA5852D00BCD0004AFA98 /* Permission.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Permission.swift; sourceTree = "<group>"; };
+		30AFA5862D00BCD0004AFA98 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		30AFA5872D00BCD0004AFA98 /* SpeechRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
 		30C3059D26B9036A00A1383A /* DestinationDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationDetailView.swift; sourceTree = "<group>"; };
 		30E50DCB269F672800729ABD /* TourManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TourManager.swift; sourceTree = "<group>"; };
 		30E50DCD269F75DB00729ABD /* CaBotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaBotApp.swift; sourceTree = "<group>"; };
@@ -236,9 +270,11 @@
 				308FCE2327D9014E009FCC7B /* Collections in Frameworks */,
 				A97F30DF2CDDC9FA00BE5C43 /* PriorityQueueTTS in Frameworks */,
 				306C7F6C265D435100E5928E /* Yams in Frameworks */,
+				30AFA59E2D00BD4E004AFA98 /* ChatView in Frameworks */,
 				306069B429A5E45D001FB5DB /* NavigationBackport in Frameworks */,
 				308FCE2A27E12844009FCC7B /* Gzip in Frameworks */,
 				0967677F29371BA0005CFA58 /* SocketIO in Frameworks */,
+				30AFA5A32D00BDAB004AFA98 /* OpenAI in Frameworks */,
 				3009AC3126AA3F4000370873 /* HLPDialog in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -273,9 +309,11 @@
 				D7CC051B2BFB352700C0B10A /* Collections in Frameworks */,
 				A97F30E12CDDCA0D00BE5C43 /* PriorityQueueTTS in Frameworks */,
 				D7CC051C2BFB352700C0B10A /* Yams in Frameworks */,
+				30AFA5A02D00BD73004AFA98 /* ChatView in Frameworks */,
 				D7CC051D2BFB352700C0B10A /* NavigationBackport in Frameworks */,
 				D7CC051E2BFB352700C0B10A /* Gzip in Frameworks */,
 				D7CC051F2BFB352700C0B10A /* SocketIO in Frameworks */,
+				30AFA5A52D00BDB4004AFA98 /* OpenAI in Frameworks */,
 				D7CC05202BFB352700C0B10A /* HLPDialog in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -305,12 +343,30 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		30AFA57D2D00BC93004AFA98 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				30AFA57F2D00BCD0004AFA98 /* AppleSTT.swift */,
+				30AFA5832D00BCD0004AFA98 /* ChatClientOpenAI.swift */,
+				30AFA5812D00BCD0004AFA98 /* ChatConfiguration.swift */,
+				30AFA57E2D00BCD0004AFA98 /* ChatViewModel.swift */,
+				30AFA5822D00BCD0004AFA98 /* ContentView.swift */,
+				30AFA5802D00BCD0004AFA98 /* LimitedArray.swift */,
+				30AFA5852D00BCD0004AFA98 /* Permission.swift */,
+				30AFA5842D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift */,
+				30AFA5862D00BCD0004AFA98 /* SettingsView.swift */,
+				30AFA5872D00BCD0004AFA98 /* SpeechRecognizer.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
 		30E50DD2269F77BE00729ABD /* Views */ = {
 			isa = PBXGroup;
 			children = (
 				3013613E26A0BE7E0050CF9E /* Preview Content */,
 				D7CC05302BFB3ADE00C0B10A /* Attend */,
 				D7CC05312BFB3B1A00C0B10A /* User */,
+				30AFA57D2D00BC93004AFA98 /* Chat */,
 				30E50DD3269F77CE00729ABD /* RootView.swift */,
 				30E50DD5269F784A00729ABD /* OnboardGrantAccess.swift */,
 				30E50DDC269FCBC200729ABD /* ResourceSelectView.swift */,
@@ -489,6 +545,8 @@
 				0967677E29371BA0005CFA58 /* SocketIO */,
 				306069B329A5E45D001FB5DB /* NavigationBackport */,
 				A97F30DE2CDDC9FA00BE5C43 /* PriorityQueueTTS */,
+				30AFA59D2D00BD4E004AFA98 /* ChatView */,
+				30AFA5A22D00BDAB004AFA98 /* OpenAI */,
 			);
 			productName = CaBot;
 			productReference = 7E29F009228B548100CA7DD6 /* CaBot-Attend.app */;
@@ -573,6 +631,8 @@
 				D7CC04EF2BFB352700C0B10A /* SocketIO */,
 				D7CC04F12BFB352700C0B10A /* NavigationBackport */,
 				A97F30E02CDDCA0D00BE5C43 /* PriorityQueueTTS */,
+				30AFA59F2D00BD73004AFA98 /* ChatView */,
+				30AFA5A42D00BDB4004AFA98 /* OpenAI */,
 			);
 			productName = CaBot;
 			productReference = D7CC052B2BFB352700C0B10A /* CaBot-User.app */;
@@ -624,6 +684,8 @@
 				306069B229A5E45D001FB5DB /* XCRemoteSwiftPackageReference "NavigationBackport" */,
 				7EDE7C9229B5733D00A65829 /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
 				A97F30DD2CDDC9FA00BE5C43 /* XCRemoteSwiftPackageReference "PriorityQueueTTS" */,
+				30AFA59C2D00BD4E004AFA98 /* XCRemoteSwiftPackageReference "ChatView" */,
+				30AFA5A12D00BDAB004AFA98 /* XCRemoteSwiftPackageReference "OpenAI" */,
 			);
 			productRefGroup = 7E29F00A228B548100CA7DD6 /* Products */;
 			projectDirPath = "";
@@ -726,15 +788,20 @@
 			files = (
 				09725B0A24FE4AC300012D42 /* DialogViewControllerCabot.swift in Sources */,
 				458B54392A970B4A00AD9D10 /* LogFilesView.swift in Sources */,
+				30AFA58E2D00BCD0004AFA98 /* ChatConfiguration.swift in Sources */,
 				30E50DD0269F76F000729ABD /* CaBotAppModel.swift in Sources */,
 				30E50DD7269F784A00729ABD /* OnboardGrantAccess.swift in Sources */,
 				7E9690C329EAF25C0062DEBD /* DetailSettingView.swift in Sources */,
+				30AFA58A2D00BCD0004AFA98 /* AppleSTT.swift in Sources */,
 				30E50DE226A0BA5200729ABD /* DestinationsView.swift in Sources */,
+				30AFA5962D00BCD0004AFA98 /* Permission.swift in Sources */,
+				30AFA5982D00BCD0004AFA98 /* SettingsView.swift in Sources */,
 				3099132D26603B10000C1BFE /* LocalConversation.swift in Sources */,
 				30E50DE826A0BBE900729ABD /* ToursView.swift in Sources */,
 				30E99D94266A92EA001ACAAA /* JSHelper.swift in Sources */,
 				30E50DCE269F75DB00729ABD /* CaBotApp.swift in Sources */,
 				308FCE1B27D8F4C8009FCC7B /* DeviceStatusView.swift in Sources */,
+				30AFA5942D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift in Sources */,
 				30E99D9226681097001ACAAA /* ResourceManager.swift in Sources */,
 				30E99D96266A993E001ACAAA /* Extension.swift in Sources */,
 				7ECCFD872CFB93BC00894970 /* SuitcaseFeatures.swift in Sources */,
@@ -742,21 +809,26 @@
 				7E29F06D228B55C000CA7DD6 /* NavDeviceTTS.m in Sources */,
 				3013614326A0F8E10050CF9E /* TourDetailView.swift in Sources */,
 				7E51C3902AABA88C0095945F /* Logging.m in Sources */,
+				30AFA5882D00BCD0004AFA98 /* ChatViewModel.swift in Sources */,
 				30E50DD4269F77CE00729ABD /* RootView.swift in Sources */,
 				7EF5F1EA228DB07100788987 /* NavUtil.m in Sources */,
 				30E50DDF26A0B21200729ABD /* ConversationView.swift in Sources */,
 				3096BF1426A5C29F0066F256 /* SettingView.swift in Sources */,
 				E561455F2A6E02A8005CF82F /* RosWebView.swift in Sources */,
 				30E50DD8269F784A00729ABD /* MainMenuView.swift in Sources */,
+				30AFA58C2D00BCD0004AFA98 /* LimitedArray.swift in Sources */,
+				30AFA5922D00BCD0004AFA98 /* ChatClientOpenAI.swift in Sources */,
 				7EDF3C4229D4776D00AD1115 /* I18NExtension.swift in Sources */,
 				3096BF1826A5D0990066F256 /* TTSHelper.swift in Sources */,
 				308FCE1D27D8F4D3009FCC7B /* SystemStatusView.swift in Sources */,
 				30E50DDB269F7E3800729ABD /* CaBot.xcdatamodeld in Sources */,
 				306069B629A686D9001FB5DB /* CaBotServiceCommon.swift in Sources */,
 				308FCE2C27E42B7B009FCC7B /* SystemStatusDetailView.swift in Sources */,
+				30AFA5902D00BCD0004AFA98 /* ContentView.swift in Sources */,
 				7E8F5A202BA4D33800E5D547 /* SpokenTextView.swift in Sources */,
 				30E50DDD269FCBC200729ABD /* ResourceSelectView.swift in Sources */,
 				7E29F072228B55FC00CA7DD6 /* CaBotServiceBLE.swift in Sources */,
+				30AFA59A2D00BCD0004AFA98 /* SpeechRecognizer.swift in Sources */,
 				30E50DCC269F672800729ABD /* TourManager.swift in Sources */,
 				308FCE2E27E62B30009FCC7B /* BatteryStatusView.swift in Sources */,
 				30E99DA4266B2216001ACAAA /* BeaconSampler.swift in Sources */,
@@ -797,7 +869,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				7ECCFD882CFB940100894970 /* SuitcaseFeatures.swift in Sources */,
+				30AFA5992D00BCD0004AFA98 /* SettingsView.swift in Sources */,
 				D7E54B522C0CD03A002FE3C4 /* MainMenuView.swift in Sources */,
+				30AFA5912D00BCD0004AFA98 /* ContentView.swift in Sources */,
 				D7CC04F42BFB352700C0B10A /* DialogViewControllerCabot.swift in Sources */,
 				D7CC04F52BFB352700C0B10A /* LogFilesView.swift in Sources */,
 				D7CC04F62BFB352700C0B10A /* CaBotAppModel.swift in Sources */,
@@ -807,8 +881,10 @@
 				D7CC04FA2BFB352700C0B10A /* LocalConversation.swift in Sources */,
 				D7CC05352BFB419900C0B10A /* DestinationsView.swift in Sources */,
 				D7CC04FB2BFB352700C0B10A /* ToursView.swift in Sources */,
+				30AFA59B2D00BCD0004AFA98 /* SpeechRecognizer.swift in Sources */,
 				D7CC04FC2BFB352700C0B10A /* JSHelper.swift in Sources */,
 				D7CC04FD2BFB352700C0B10A /* CaBotApp.swift in Sources */,
+				30AFA5972D00BCD0004AFA98 /* Permission.swift in Sources */,
 				D7CC04FF2BFB352700C0B10A /* ResourceManager.swift in Sources */,
 				D7CC05002BFB352700C0B10A /* Extension.swift in Sources */,
 				D7CC05012BFB352700C0B10A /* WebContentView.swift in Sources */,
@@ -818,21 +894,27 @@
 				D7CC05062BFB352700C0B10A /* NavUtil.m in Sources */,
 				D7CC05072BFB352700C0B10A /* ConversationView.swift in Sources */,
 				D7D7A6FB2BFECB490072ADF6 /* TourDetailView.swift in Sources */,
+				30AFA58B2D00BCD0004AFA98 /* AppleSTT.swift in Sources */,
 				D7F6BE6E2C2A57C300CD8258 /* SettingView.swift in Sources */,
 				D7CC05092BFB352700C0B10A /* RosWebView.swift in Sources */,
 				D7CC050B2BFB352700C0B10A /* I18NExtension.swift in Sources */,
 				D7CC050C2BFB352700C0B10A /* TTSHelper.swift in Sources */,
 				D7CC050E2BFB352700C0B10A /* CaBot.xcdatamodeld in Sources */,
 				D7CC050F2BFB352700C0B10A /* CaBotServiceCommon.swift in Sources */,
+				30AFA58F2D00BCD0004AFA98 /* ChatConfiguration.swift in Sources */,
 				D7CC05102BFB352700C0B10A /* SystemStatusDetailView.swift in Sources */,
 				D7CC05112BFB352700C0B10A /* SpokenTextView.swift in Sources */,
+				30AFA5892D00BCD0004AFA98 /* ChatViewModel.swift in Sources */,
 				D7CC05122BFB352700C0B10A /* ResourceSelectView.swift in Sources */,
 				D7CC05132BFB352700C0B10A /* CaBotServiceBLE.swift in Sources */,
 				D7CC05142BFB352700C0B10A /* TourManager.swift in Sources */,
 				D7CC05152BFB352700C0B10A /* BatteryStatusView.swift in Sources */,
+				30AFA58D2D00BCD0004AFA98 /* LimitedArray.swift in Sources */,
 				D7CC05162BFB352700C0B10A /* BeaconSampler.swift in Sources */,
 				D7CC05172BFB352700C0B10A /* StatusLabelStyle.swift in Sources */,
 				D7CC05182BFB352700C0B10A /* CaBotServiceTCP.swift in Sources */,
+				30AFA5932D00BCD0004AFA98 /* ChatClientOpenAI.swift in Sources */,
+				30AFA5952D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1023,7 +1105,7 @@
 				GCC_PREFIX_HEADER = $PROJECT_DIR/FromNavCog/NavCog3.pch;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = CaBot/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1055,7 +1137,7 @@
 				GCC_PREFIX_HEADER = $PROJECT_DIR/FromNavCog/NavCog3.pch;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = CaBot/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1201,7 +1283,7 @@
 				GCC_PREFIX_HEADER = $PROJECT_DIR/FromNavCog/NavCog3.pch;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = CaBot/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1233,7 +1315,7 @@
 				GCC_PREFIX_HEADER = $PROJECT_DIR/FromNavCog/NavCog3.pch;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = CaBot/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1358,6 +1440,22 @@
 				version = 5.1.1;
 			};
 		};
+		30AFA59C2D00BD4E004AFA98 /* XCRemoteSwiftPackageReference "ChatView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/CMU-cabot/ChatView";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		30AFA5A12D00BDAB004AFA98 /* XCRemoteSwiftPackageReference "OpenAI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/udostm/OpenAI";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		7EDE7C9229B5733D00A65829 /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-argument-parser.git";
@@ -1454,6 +1552,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 308FCE2827E12844009FCC7B /* XCRemoteSwiftPackageReference "GzipSwift" */;
 			productName = Gzip;
+		};
+		30AFA59D2D00BD4E004AFA98 /* ChatView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 30AFA59C2D00BD4E004AFA98 /* XCRemoteSwiftPackageReference "ChatView" */;
+			productName = ChatView;
+		};
+		30AFA59F2D00BD73004AFA98 /* ChatView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 30AFA59C2D00BD4E004AFA98 /* XCRemoteSwiftPackageReference "ChatView" */;
+			productName = ChatView;
+		};
+		30AFA5A22D00BDAB004AFA98 /* OpenAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 30AFA5A12D00BDAB004AFA98 /* XCRemoteSwiftPackageReference "OpenAI" */;
+			productName = OpenAI;
+		};
+		30AFA5A42D00BDB4004AFA98 /* OpenAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 30AFA5A12D00BDAB004AFA98 /* XCRemoteSwiftPackageReference "OpenAI" */;
+			productName = OpenAI;
 		};
 		7EDE7C9529B5737C00A65829 /* ArgumentParser */ = {
 			isa = XCSwiftPackageProductDependency;
