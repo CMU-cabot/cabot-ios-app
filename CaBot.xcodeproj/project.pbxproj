@@ -1444,7 +1444,7 @@
 		};
 		30AFA5A12D00BDAB004AFA98 /* XCRemoteSwiftPackageReference "OpenAI" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/udostm/OpenAI";
+			repositoryURL = "https://github.com/cmu-cabot/OpenAI";
 			requirement = {
 				branch = main;
 				kind = branch;

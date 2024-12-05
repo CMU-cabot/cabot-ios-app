@@ -65,7 +65,13 @@ class ChatClientOpenAI: ChatClient {
                 messages: [
                     .init(role: .system, content: "Please greet to the user in 20 words.", name: "System")!
                 ],
-                model: model
+                model: model,
+                metadata: [
+                    "request_id": "dummy",
+                    "conversation_id": "dummy",
+                    "terminal_id": "dummy",
+                    "suitcase_id": "dummy",
+                ]
             )
         }
         print(query)
