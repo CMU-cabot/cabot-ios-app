@@ -1,0 +1,68 @@
+{
+    "sections": [
+        {
+            "title": "Search by Floor",
+            "items": [
+                {
+                    "title": "5F",
+                    "content": {
+                        "sections": [
+                            {
+                                "title": "5",
+                                "items": [
+                                    {
+                                        "subtitle": "Others - 5F",
+                                        "titlePron": "Destination1",
+                                        "subtitlePron": "Others - 5F",
+                                        "title": "Destination1",
+                                        "nodeID": "EDITOR_node_1659492104858",
+                                        "forDemonstration": "false"
+                                    }
+                                ]
+                            },
+                            {
+                                "title": "P",
+                                "items": [
+                                    {
+                                        "subtitle": "Others - 5F",
+                                        "titlePron": "Planetary Crisis",
+                                        "subtitlePron": "Others - 5F",
+                                        "title": "Planetary Crisis",
+                                        "nodeID": "EDITOR_node_1627895015467",
+                                        "forDemonstration": "false"
+                                    }
+                                ]
+                            },
+                            {
+                                "title": "T",
+                                "items": [
+                                    {
+                                        "subtitle": "Others - 5F",
+                                        "titlePron": "The Advancing Climate Change",
+                                        "subtitlePron": "Others - 5F",
+                                        "title": "The Advancing Climate Change",
+                                        "nodeID": "EDITOR_node_1701421047574",
+                                        "forDemonstration": "true"
+                                    },
+                                    {
+                                        "subtitle": "Others - 5F",
+                                        "titlePron": "The Cause is Us",
+                                        "subtitlePron": "Others - 5F",
+                                        "title": "The Cause is Us",
+                                        "nodeID": "EDITOR_node_1701421243697",
+                                        "forDemonstration": "true"
+                                    }
+                                ]
+                            }
+                        ],
+                        "showSectionIndex": true
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Nearby Facility"
+        }
+    ],
+    "showSectionIndex": false
+}

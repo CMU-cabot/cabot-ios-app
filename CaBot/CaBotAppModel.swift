@@ -1560,7 +1560,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         // only User
         if userInfo.type == .OverrideTour {
             do {
-                let tours = try Tour.load()
+                let tours = try Tour.load(from: self.resourceManager.getResourceRoot())
                 for tour in tours {
                     if tour.id == userInfo.value {
                         tourManager.set(tour: tour)

@@ -131,52 +131,82 @@ struct TourDetailView_Previews: PreviewProvider {
         preview2
         preview1
     }
-    
+
+    static func loadTours() -> [Tour] {
+        let modelData = CaBotAppModel()
+        do {
+            return try Tour.load(from: modelData.resourceManager.getResourceRoot())
+        } catch {
+            print("Failed to load tours: \(error)")
+            return []
+        }
+    }
+
     static var preview4: some View {
         let modelData = CaBotAppModel()
         modelData.modeType = .Advanced
+        let tours = loadTours()
 
-        let resource = modelData.resourceManager.resource(by: "Test data")!
-        let tours = try! Tour.load()
-
-        return DynamicTourDetailView(tour: tours[0] as! TourProtocol)
-            .environmentObject(modelData)
-            .previewDisplayName("Dynamic Advanced")
+        return Group {
+            if tours.indices.contains(3) {
+                DynamicTourDetailView(tour: tours[3] as! TourProtocol)
+                    .environmentObject(modelData)
+                    .previewDisplayName("Dynamic Advanced")
+            } else {
+                EmptyView()
+                    .previewDisplayName("No Tour 4")
+            }
+        }
     }
 
     static var preview3: some View {
         let modelData = CaBotAppModel()
         modelData.modeType = .Normal
+        let tours = loadTours()
 
-        let resource = modelData.resourceManager.resource(by: "Test data")!
-        let tours = try! Tour.load()
-
-        return DynamicTourDetailView(tour: tours[0] as! TourProtocol)
-            .environmentObject(modelData)
-            .previewDisplayName("Dynamic Normal")
+        return Group {
+            if tours.indices.contains(2) {
+                DynamicTourDetailView(tour: tours[2] as! TourProtocol)
+                    .environmentObject(modelData)
+                    .previewDisplayName("Dynamic Normal")
+            } else {
+                EmptyView()
+                    .previewDisplayName("No Tour 3")
+            }
+        }
     }
 
     static var preview2: some View {
         let modelData = CaBotAppModel()
         modelData.modeType = .Advanced
+        let tours = loadTours()
 
-        let resource = modelData.resourceManager.resource(by: "Test data")!
-        let tours = try! Tour.load()
-
-        return StaticTourDetailView(tour: tours[0])
-            .environmentObject(modelData)
-            .previewDisplayName("Advanced")
+        return Group {
+            if tours.indices.contains(1) {
+                StaticTourDetailView(tour: tours[1])
+                    .environmentObject(modelData)
+                    .previewDisplayName("Advanced")
+            } else {
+                EmptyView()
+                    .previewDisplayName("No Tour 2")
+            }
+        }
     }
 
     static var preview1: some View {
         let modelData = CaBotAppModel()
         modelData.modeType = .Normal
+        let tours = loadTours()
 
-        let resource = modelData.resourceManager.resource(by: "Test data")!
-        let tours = try! Tour.load()
-
-        return StaticTourDetailView(tour: tours[1])
-            .environmentObject(modelData)
-            .previewDisplayName("Normal")
+        return Group {
+            if tours.indices.contains(0) {
+                StaticTourDetailView(tour: tours[0])
+                    .environmentObject(modelData)
+                    .previewDisplayName("Normal")
+            } else {
+                EmptyView()
+                    .previewDisplayName("No Tour 1")
+            }
+        }
     }
 }

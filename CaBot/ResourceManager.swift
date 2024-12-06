@@ -677,7 +677,18 @@ func downloadDirectoryJson(modelData: CaBotAppModel) throws -> [FloorDestination
     }
     let fileConfigURL = documentsDirectory.appendingPathComponent(fileConfigName)
     
-    let configUrlString =  URL(string: "http://\(modelData.getCurrentAddress()):9090/map/api/config")
+    var configUrlString: URL?
+    if modelData.resourceManager.preview {
+        guard let url = URL(string: "\(modelData.resourceManager.getResourceRoot())\(fileConfigName)") else {
+            throw MetadataError.contentLoadError
+        }
+        configUrlString = url
+    } else {
+        guard let url = URL(string: "http://\(modelData.getCurrentAddress()):9090/map/api/config") else {
+            throw MetadataError.contentLoadError
+        }
+        configUrlString = url
+    }
    
     guard let url = configUrlString else {
         throw MetadataError.contentLoadError
@@ -736,7 +747,19 @@ func downloadDirectoryJson(modelData: CaBotAppModel) throws -> [FloorDestination
         let fileDirectoryFileName = "directory.json"
         
         let fileDirectoryURL = documentsDirectory.appendingPathComponent(fileDirectoryFileName)
-        let directoryUrlString = URL(string: "http://\(modelData.getCurrentAddress()):9090/query/directory?user=\(user)&lat=\(lat)&lng=\(lng)&dist=\(dist)")
+        var directoryUrlString : URL?
+        if modelData.resourceManager.preview {
+            guard let url = URL(string: "\(modelData.resourceManager.getResourceRoot())/\(fileDirectoryFileName)") else {
+                throw MetadataError.contentLoadError
+            }
+            directoryUrlString = url
+        } else {
+            guard let url = URL(string: "http://\(modelData.getCurrentAddress()):9090/query/directory?user=\(user)&lat=\(lat)&lng=\(lng)&dist=\(dist)") else {
+                throw MetadataError.contentLoadError
+            }
+            directoryUrlString = url
+        }
+        
         guard let directoryUrl = directoryUrlString else {
             throw MetadataError.contentLoadError
         }
@@ -769,8 +792,8 @@ func downloadDirectoryJson(modelData: CaBotAppModel) throws -> [FloorDestination
         let decoder = JSONDecoder()
         let directoryDataDecoded = try decoder.decode(Root.self, from: directoryData)
         
-        let tours = try Tour.load()
-        let features = try Feature.loadFeature()
+        let tours = try Tour.load(from: modelData.resourceManager.getResourceRoot())
+        let features = try Feature.loadFeature(from: modelData.resourceManager.getResourceRoot())
         
         for section in directoryDataDecoded.sections {
             for item in section.items {
@@ -1223,10 +1246,10 @@ class Tour: Decodable, Hashable{
     }
     
     // MARK: - Static Methods
-    static func load() throws -> [Tour] {
+    static func load(from fileURL: URL) throws -> [Tour] {
         do {
-            let fileURL = getTourDataJSON().appendingPathComponent("app-resource/tourdata.json")
-            let data = try Data(contentsOf: fileURL)
+            let tourDataFileURL = fileURL.appendingPathComponent("app-resource/tourdata.json")
+            let data = try Data(contentsOf: tourDataFileURL)
             let root = try JSONDecoder().decode(Root.self, from: data)
             allDestinationsRef = root.destinations
             allMessages = root.messages
@@ -1236,8 +1259,7 @@ class Tour: Decodable, Hashable{
                 tour.matchDestinationsRef()
                 tour.matchMessage()
             }
-            
-            let features = try Feature.loadFeature()
+            let features = try Feature.loadFeature(from: fileURL)
             
             for tourIndex in 0..<root.tours.count {
                 let tour = root.tours[tourIndex]
@@ -1274,12 +1296,6 @@ class Tour: Decodable, Hashable{
         } catch {
             throw MetadataError.contentLoadError
         }
-    }
-    private static func getTourDataJSON() -> URL {
-        guard let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            fatalError("Could not find the document directory.")
-        }
-        return path
     }
 }
 
@@ -1349,23 +1365,16 @@ class Feature : Decodable,  Hashable {
     }
     
     // MARK: - ReadJSON
-    class func loadFeature() throws -> [Feature] {
+    class func loadFeature(from fileURL: URL) throws -> [Feature] {
         do {
-            let featureJsonFileName = "app-resource/features.json"
-            let fileURL = getFacilityDataJSON().appendingPathComponent(featureJsonFileName)
             
-            let data = try Data(contentsOf: fileURL)
+            let featureFileURL = fileURL.appendingPathComponent("app-resource/features.json")
+            let data = try Data(contentsOf: featureFileURL)
             let features = try JSONDecoder().decode([Feature].self, from: data)
             return features
         } catch {
             throw MetadataError.contentLoadError
         }
-    }
-    private static func getFacilityDataJSON() -> URL {
-        guard let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-            fatalError("Could not find the document directory.")
-        }
-        return path
     }
 }
 

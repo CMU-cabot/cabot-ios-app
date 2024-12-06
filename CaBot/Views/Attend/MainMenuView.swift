@@ -416,7 +416,7 @@ struct MainMenus: View {
                 }
                 if let src = cm.destinationsSource {
                     NavigationLink(
-                        destination: DestinationsFloorView(src: src)
+                        destination: DestinationsFloorView()
                             .environmentObject(modelData).heartbeat("DestinationsView"),
                         label: {
                             Text("SELECT_DESTINATION")
@@ -837,7 +837,7 @@ struct ContentView_Previews: PreviewProvider {
         if let r = modelData.resourceManager.resource(by: "place0") {
             modelData.resource = r
             if let url = r.toursSource {
-                if let tours = try? Tour.load() {
+                if let tours = try? Tour.load(from: modelData.resourceManager.getResourceRoot()) {
                     modelData.tourManager.set(tour: tours[0])
                     _ = modelData.tourManager.proceedToNextDestination()
                 }
@@ -855,7 +855,7 @@ struct ContentView_Previews: PreviewProvider {
         if let r = modelData.resourceManager.resource(by: "place0") {
             modelData.resource = r
             if r.toursSource != nil {
-                if let tours = try? Tour.load(){
+                if let tours = try? Tour.load(from: modelData.resourceManager.getResourceRoot()){
                     modelData.tourManager.set(tour: tours[0])
                 }
             }
@@ -872,7 +872,7 @@ struct ContentView_Previews: PreviewProvider {
         if let r = modelData.resourceManager.resource(by: "place0") {
             modelData.resource = r
             if let url = r.toursSource {
-                if let tours = try? Tour.load() {
+                if let tours = try? Tour.load(from: modelData.resourceManager.getResourceRoot()) {
                     modelData.tourManager.set(tour: tours[1])
                 }
             }
@@ -889,7 +889,7 @@ struct ContentView_Previews: PreviewProvider {
         if let r = modelData.resourceManager.resource(by: "place0") {
             modelData.resource = r
             if let url = r.toursSource {
-                if let tours = try? Tour.load(){
+                if let tours = try? Tour.load(from: modelData.resourceManager.getResourceRoot()){
                     modelData.tourManager.set(tour: tours[1])
                 }
             }

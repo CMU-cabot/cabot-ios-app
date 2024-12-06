@@ -320,7 +320,7 @@ class TourManager: TourProtocol {
                     // load tour
                     if let src = model.resource?.toursSource {
                         do {
-                            let tours = try Tour.load()
+                            let tours = try Tour.load(from: model.resourceManager.getResourceRoot())
                             for tour in tours {
                                 if tour.id == decoded.id {
                                     set(tour: tour)

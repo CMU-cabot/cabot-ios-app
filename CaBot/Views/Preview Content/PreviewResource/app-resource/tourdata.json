@@ -1,0 +1,99 @@
+{
+    "destinations": [
+        {
+            "floor": 5,
+            "value": "EDITOR_node_1627895015467",
+            "#title": "プラネタリー・クライシス",
+            "var": "planetary_crisis_tour"
+        },
+        {
+            "floor": 5,
+            "value": "EDITOR_node_1659492104858",
+            "#title": "常設展5階",
+            "var": "planetary_crisis_tour"
+        },
+        {
+            "floor": 5,
+            "value": "EDITOR_node_1701421047574",
+            "#title": "進行する気候変動",
+            "var": "planetary_crisis_tour"
+        },
+        {
+            "floor": 5,
+            "value": "EDITOR_node_1701421243697",
+            "#title": "原因は私たち",
+            "var": "planetary_crisis_tour"
+        }
+    ],
+    "messages": [
+        {
+            "type": "arriveMessage",
+            "text:ja": "正面には、縦幅はひざから頭のあたりまで、横幅は2メートルほどの範囲に展示があります。スーツケースから手を離して一歩前に出て、前に手をのばしてみてください。。。。ネットの袋があり、木でできたたくさんのタマが入っています。袋は上下に３段あり、全部で10あります。。。。袋一つは、ある国や地域で2020年の1年間に出された二酸化炭素の量をあらわしています。袋の中のタマ一つは、その国や地域に住む250まんにんあたりの二酸化炭素排出量です。\n一番大きくて重たい袋を探してみましょう。一番下の段の、左ハシにあります。中国のもので、14億人で109億トンの二酸化炭素を出しています。その右隣はアメリカで、約43億トン。日本は、下から二段目の、左ハシにある直径20センチくらいの袋です。1億３千万人で、約10億トンを出しています。日本の右上、一番うえの段を触ってみてください。少し右にいくと、タマひとつだけの国があります。大きめのタマひとつは、中東の国カタール。その右の小さなタマ一つは、太平洋諸島のしまじまを合わせたものです。どちらも人口は250まんにんほどですが、ずいぶん違います。その国の文化や暮らし方によって、二酸化炭素を出す量が大きく変わることに気がつきます。次のゾーンでは、これまで見てきた気候変動に加えて、環境汚染や、生物多様性が失われることなどの問題と、私たちの生活がどのように結びついているかをみていきます。\nさわり終わったら、スーツケースに戻り、ハンドルの右ボタンを押してください。",
+            "text:en": "In front of you, there’s an exhibit within a range of about knee to head height and 2 meters wide. Please step forward a little, away from the suitcase, and reach out in front of you. You'll find net bags filled with wooden balls. There are 10 bags in total, three tiers up and down. Each bag represents the amount of carbon dioxide emitted in 2020 in a specific country or region. Each wooden ball inside the bag represents the amount of carbon dioxide emissions per 2.5 million people living in there. \nThe largest and heaviest bag is located on the bottom tier, at the far left. It represents China, emitting 10.9 billion tons of carbon dioxide with 1.4 billion people. Next to it is the bag representing the United States, emitting around 4.3 billion tons. Japan's bag is on the second tier from the bottom, at the far left. Japan emitted around 1 billion tons with 130 million people. \nPlease touch the top tier on the right side, just above Japan's bag. As you move slightly to the right, you'll find a country represented by only one ball. The larger ball represents Qatar in the Middle East. The smaller ball next to it represents the Pacific Islands combined. Although both have populations of about 2.5 million, they are very different. You'll notice that the amount of carbon dioxide emitted varies greatly depending on the culture and lifestyle of each country. \nIn the next zone, we'll explore how our lives are connected to issues such as climate change, environmental pollution, and the loss of biodiversity. Once you've finished touching, please return to the suitcase and press the right button on the handle. ",
+            "parent": "EDITOR_node_1701421243697#planetary_crisis_tour"
+        },
+        {
+            "type": "startMessage",
+            "text:ja": "二つ目のゾーンは、変化する地球環境を科学的なデータから知るゾーンです。この中にある二つの展示物を順番にご案内します。一つめは、「進行する気候変動」という展示です。",
+            "text:ja-pron": "二つ目のゾーンは、変化する地球環境を科学的なデータから知るゾーンです。この中にある二つの展示ぶつを順番にご案内します。一つめは、「進行する気候変動」という展示です。",
+            "text:en": "The second zone is where you can learn about the changing global environment through scientific data. I will take you through two exhibits within this area. The first one is called \"Progression of Climate Change.\" ",
+            "parent": "EDITOR_node_1701421047574#planetary_crisis_tour"
+        },
+        {
+            "type": "arriveMessage",
+            "text:ja": "正面の壁には、1850年から現在までの、世界の平均気温の変化をあらわす折れ線グラフがあります。グラフはさわれるようになっているので、スーツケースから手を離して少し前にでて、さわってみてください。壁についている、少し太めの木の棒です。まっすぐではなく、上下にギザギザしています。。。。線が上に向かうと気温があがり、下に向かうと下がったことをあらわしています。\n一番左は1850年ごろです。産業革命が起こったばかりで、人間の活動がまだ活発でない時期です。気温が上がり始める真ん中あたりは、1900年代です。一番右は、2020年代の今で、一番左の1850年ごろと比べて1度ほど上がっています。右にいくほどグラフの傾きが急になることにお気づきでしょうか。たった1度ほどですが、この影響はあちこちに出はじめています。次は、このように気温が上がる原因をさぐっていきましょう。さわり終わったら、スーツケースに戻り、ハンドルの右ボタンを押してください。",
+            "text:en": "On the front wall, there's a graph representing the change in the average global temperature from 1850 to the present. The graph is touchable, so please step forward a little, away from the suitcase, and touch it. It's a slightly thicker wooden stick attached to the wall. It's not straight; it's zigzagged up and down. When the line goes up, it indicates a rise in temperature, and when it goes down, it indicates a decrease. \nThe far left represents around 1850 when the Industrial Revolution had just begun, and human activities were not as active. The middle section, where the temperature starts to rise, is around the 1900s. The far right represents the present, the 2020s, showing a rise of about 1 degree compared to around 1850. You may notice that as you move to the right, the slope of the graph becomes steeper. Although it's just about 1 degree, the impact is beginning to appear in various places. Next, let's explore the reasons for this temperature rise. \nOnce you've finished touching, please return to the suitcase and press the right button on the handle. ",
+            "parent": "EDITOR_node_1701421047574#planetary_crisis_tour"
+        },
+        {
+            "type": "startMessage",
+            "text:ja": "「プラネタリー・クライシス」は、地球環境がテーマです。私たちのいのちやくらしを支える地球の環境が、今、危機に直面していることをご存知でしょうか。この展示では、変化する地球の今に触れ、これからもこの星で暮らしていくための前向きな一歩をさぐります。",
+            "text:en": "\"Planetary Crisis\" focuses on the global environment. Do you know that the environment of our planet, which supports our lives and livelihoods, is currently facing a crisis? In this exhibition, we will explore the present changes on Earth and search positive steps to continue to live on this planet. ",
+            "parent": "EDITOR_node_1627895015467#planetary_crisis_tour"
+        },
+        {
+            "type": "arriveMessage",
+            "text:ja": "この展示は、全体では教室二個分くらいのスペースがあり、大きくよっつのゾーンに分かれています。最初のゾーンは、気候変動の危機にさらされている地域の人々の暮らしを、五感を使って体験するシアターです。シアターの上映時間は11分です。体験を希望する場合は、同行しているアテンダントスタッフにお声がけください。体験せずに次のゾーンに行く場合は、ハンドルの右ボタンを押してください。",
+            "text:en": "The entire exhibit is about the size of two classrooms and is divided into four main zones. The first zone is a theater where you can experience the lives of people in regions facing the crisis of climate change using all five senses. The screening time is 11 minutes. If you wish to experience, please inform the attendant staff accompanying you. To go to the next zone without experiencing it, please press the right button on the handle. ",
+            "parent": "EDITOR_node_1627895015467#planetary_crisis_tour"
+        },
+        {
+            "type": "startMessage",
+            "text:ja": "これから、常設展5階にある「プラネタリー・クライシス」という展示のツアーに出発します。まずはエレベーターに乗って、5階に向かいましょう。",
+            "text:en": "We will now begin our tour to the exhibition called \"Planetary Crisis\" located on the 5th floor of the permanent exhibition. Let's start by taking the elevator to the 5th floor. ",
+            "parent": "EDITOR_node_1659492104858#planetary_crisis_tour"
+        },
+        {
+            "type": "arriveMessage",
+            "text:ja": "5階の常設展のテーマは、「世界をさぐる」です。宇宙、地球環境、生命など、私たちをとりまく世界のしくみを、さまざまなスケールでさぐるゾーンです。右ボタンを押すと、「プラネタリー・クライシス」の展示に向かいます。",
+            "text:en": "The theme of the permanent exhibition on the 5th floor is “Exploring the frontiers”. This zone allows you to explore the world surrounding us on a wide variety of scales. Please press the right button to go to the exhibition \"Planetary Crisis.\"",
+            "parent": "EDITOR_node_1659492104858#planetary_crisis_tour"
+        }
+    ],
+    "tours": [
+        {
+            "tour_id": "tour_1723085764340",
+            "title-ja": "プラネタリークライシスツアー",
+            "destinations": [
+                {
+                    "ref": "EDITOR_node_1659492104858#planetary_crisis_tour",
+                    "#ref": "常設展5階"
+                },
+                {
+                    "ref": "EDITOR_node_1627895015467#planetary_crisis_tour",
+                    "#ref": "プラネタリー・クライシス"
+                },
+                {
+                    "ref": "EDITOR_node_1701421047574#planetary_crisis_tour",
+                    "#ref": "進行する気候変動"
+                },
+                {
+                    "ref": "EDITOR_node_1701421243697#planetary_crisis_tour",
+                    "#ref": "原因は私たち"
+                }
+            ],
+            "default_var": "planetary_crisis_tour",
+            "title-en": "Planetary Crisis Tour"
+        }
+    ]
+}

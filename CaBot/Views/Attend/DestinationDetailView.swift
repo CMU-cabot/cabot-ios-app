@@ -87,7 +87,6 @@ struct DestinationDetailView_Previews: PreviewProvider {
     static var previews: some View {
         let modelData = CaBotAppModel()
 
-        let resource = modelData.resourceManager.resource(by: "Test data")!
         let destinations = try! downloadDirectoryJson(modelData: modelData)
         let destination = destinations[0]
         let destinations2 = try! downloadDirectoryJson(modelData: modelData)

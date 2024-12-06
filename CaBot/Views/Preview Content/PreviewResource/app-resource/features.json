@@ -1,0 +1,130 @@
+[
+    {
+        "geometry": {
+            "coordinates": [
+                139.77644644097848,
+                35.61921296519206
+            ],
+            "type": "Point"
+        },
+        "_id": "EDITOR_facil_1659492122407",
+        "type": "Feature",
+        "properties": {
+            "parking": 99,
+            "escalator": 99,
+            "hulop_file": "EDITOR",
+            "ent1_node": "EDITOR_node_1659492104858",
+            "ent1_lon": 139.7764454351501,
+            "ent1_n": "",
+            "name_ja": "常設展5階",
+            "nursing": 99,
+            "brail_tile": 99,
+            "lon": 139.77644644097848,
+            "facil_id": "EDITOR_facil_1659492122407",
+            "toilet": 99,
+            "elevator": 99,
+            "barrier": 99,
+            "ent1_lat": 35.61921224975465,
+            "ent1_fl": 5,
+            "facil_type": 99,
+            "lat": 35.61921296519206,
+            "name_en": "5th floor permanent exhibition entrance"
+        }
+    },
+    {
+        "geometry": {
+            "coordinates": [
+                139.7766176413507,
+                35.6191908888231
+            ],
+            "type": "Point"
+        },
+        "_id": "EDITOR_facil_1627895203053",
+        "type": "Feature",
+        "properties": {
+            "parking": 99,
+            "escalator": 99,
+            "hulop_file": "EDITOR",
+            "ent1_node": "EDITOR_node_1627895015467",
+            "ent1_lon": 139.7766147883696,
+            "ent1_n": "",
+            "name_ja": "プラネタリー・クライシス",
+            "nursing": 99,
+            "brail_tile": 99,
+            "lon": 139.7766176413507,
+            "facil_id": "EDITOR_facil_1627895203053",
+            "toilet": 99,
+            "elevator": 99,
+            "barrier": 99,
+            "ent1_lat": 35.619189357911196,
+            "ent1_fl": 5,
+            "facil_type": 99,
+            "lat": 35.6191908888231,
+            "name_en": "Planetary Cricis"
+        }
+    },
+    {
+        "geometry": {
+            "coordinates": [
+                139.77663505822417,
+                35.61928871732353
+            ],
+            "type": "Point"
+        },
+        "_id": "EDITOR_facil_1701421050598",
+        "type": "Feature",
+        "properties": {
+            "parking": 99,
+            "escalator": 99,
+            "hulop_file": "EDITOR",
+            "ent1_node": "EDITOR_node_1701421047574",
+            "ent1_lon": 139.7766323760152,
+            "ent1_n": "",
+            "name_ja": "進行する気候変動",
+            "nursing": 99,
+            "brail_tile": 99,
+            "lon": 139.77663505822417,
+            "facil_id": "EDITOR_facil_1701421050598",
+            "toilet": 99,
+            "elevator": 99,
+            "barrier": 99,
+            "ent1_lat": 35.61928408401498,
+            "ent1_fl": 5,
+            "facil_type": 99,
+            "lat": 35.61928871732353,
+            "name_en": "The Advancing Climate Change"
+        }
+    },
+    {
+        "geometry": {
+            "coordinates": [
+                139.77668076055122,
+                35.619307471999846
+            ],
+            "type": "Point"
+        },
+        "_id": "EDITOR_facil_1701421255842",
+        "type": "Feature",
+        "properties": {
+            "parking": 99,
+            "escalator": 99,
+            "hulop_file": "EDITOR",
+            "ent1_node": "EDITOR_node_1701421243697",
+            "ent1_lon": 139.7766800899989,
+            "ent1_n": "",
+            "name_ja": "原因は私たち",
+            "nursing": 99,
+            "brail_tile": 99,
+            "lon": 139.77668076055122,
+            "facil_id": "EDITOR_facil_1701421255842",
+            "toilet": 99,
+            "elevator": 99,
+            "barrier": 99,
+            "ent1_lat": 35.6193070461444,
+            "ent1_fl": 5,
+            "facil_type": 99,
+            "lat": 35.619307471999846,
+            "name_en": "The Cause is Us"
+        }
+    }
+]
