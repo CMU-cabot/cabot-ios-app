@@ -142,7 +142,6 @@ struct TourDetailView_Previews: PreviewProvider {
         do {
             return try Tour.load(from: modelData.resourceManager.getResourceRoot())
         } catch {
-            print("Failed to load tours: \(error)")
             return []
         }
     }
