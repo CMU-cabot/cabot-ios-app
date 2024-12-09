@@ -104,24 +104,14 @@ struct DestinationDetailView_Previews: PreviewProvider {
     static var previews: some View {
         let modelData = CaBotAppModel()
 
-        guard let path = Bundle.main.url(forResource: "PreviewResource", withExtension: nil) else {
-            fatalError("Preview resources not found.")
-        }
-        let fileDirectoryURL = path.appendingPathComponent("directory.json")
         var floorDestinationsForPreviews: [Directory.FloorDestination] = []
         do {
-            let url = modelData.resourceManager.getResourceRoot()
-            let urlString = url.absoluteString
-            floorDestinationsForPreviews = try Directory.downloadDirectoryJsonForPreview(downloadURL: path.absoluteString)
+            floorDestinationsForPreviews = try Directory.downloadDirectoryJsonForPreview()
         } catch {
-            NSLog("Failed to download directory JSON: \(fileDirectoryURL)")
+            NSLog("Failed to download directory JSON")
         }
-
-        if let firstDestination = floorDestinationsForPreviews.first {
-            return DestinationDetailView(destination: firstDestination.destinations[0])
-                .environmentObject(modelData)
-        } else {
-            fatalError("Destinations array is empty\(path)")
-        }
+        
+        return DestinationDetailView(destination: floorDestinationsForPreviews[0].destinations[0])
+            .environmentObject(modelData)
     }
 }

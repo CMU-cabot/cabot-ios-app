@@ -175,31 +175,23 @@ struct DestinationsFloorView: View {
         do {
             floorDestinations = try Directory.downloadDirectoryJson(downloadURL: modelData.getCurrentAddress())
         } catch {
-            floorDestinations = []
+            NSLog("Error loading tours for preview: \(error)")
         }
     }
 }
 
-struct DestinationsFloorView_Previews: PreviewProvider {
+struct DestinationsView_Previews: PreviewProvider {
     
     static var previews: some View {
         let modelData = CaBotAppModel()
 
         var floorDestinationsForPreviews: [Directory.FloorDestination] = []
         do {
-            let url: URL = modelData.resourceManager.getResourceRoot()
-            let urlString = url.absoluteString
-            floorDestinationsForPreviews = try Directory.downloadDirectoryJsonForPreview(downloadURL: urlString)
+            floorDestinationsForPreviews = try Directory.downloadDirectoryJsonForPreview()
         } catch {
             NSLog("Error loading tours for preview: \(error)")
         }
-
-        if let firstDestination = floorDestinationsForPreviews.first?.destinations.first {
-            return DestinationsFloorView(destination: firstDestination)
-                .environmentObject(modelData)
-        } else {
-            return DestinationsFloorView(destination: nil)
-                .environmentObject(modelData)
-        }
+        return DestinationsView(destination: floorDestinationsForPreviews.first?.destinations.first,destinations: floorDestinationsForPreviews.first?.destinations ?? [])
+            .environmentObject(modelData)
     }
 }

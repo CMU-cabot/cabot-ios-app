@@ -139,10 +139,8 @@ struct TourDetailView_Previews: PreviewProvider {
 
     static func loadTours() -> [Tour] {
         let modelData = CaBotAppModel()
-        let url: URL = modelData.resourceManager.getResourceRoot()
-        let urlString = url.absoluteString
         do {
-            return try Tour.loadTourDataPreview(currentAddress: urlString)
+            return try Tour.loadTourDataPreview()
         } catch {
             return []
         }

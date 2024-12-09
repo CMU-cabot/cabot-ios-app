@@ -833,12 +833,10 @@ struct ContentView_Previews: PreviewProvider {
         let modelData = CaBotAppModel()
         modelData.menuDebug = true
         modelData.noSuitcaseDebug = true
-        let url: URL = modelData.resourceManager.getResourceRoot()
-        let urlString = url.absoluteString
         if let r = modelData.resourceManager.resource(by: "place0") {
             modelData.resource = r
             if r.toursSource != nil {
-                if let tours = try? Tour.loadTourDataPreview(currentAddress: urlString) {
+                if let tours = try? Tour.loadTourDataPreview() {
                     modelData.tourManager.set(tour: tours[0])
                     _ = modelData.tourManager.proceedToNextDestination()
                 }
@@ -852,12 +850,10 @@ struct ContentView_Previews: PreviewProvider {
 
     static var preview_tour2: some View {
         let modelData = CaBotAppModel()
-        let url: URL = modelData.resourceManager.getResourceRoot()
-        let urlString = url.absoluteString
         if let r = modelData.resourceManager.resource(by: "place0") {
             modelData.resource = r
             if r.toursSource != nil {
-                if let tours = try? Tour.loadTourDataPreview(currentAddress: urlString) {
+                if let tours = try? Tour.loadTourDataPreview() {
                     modelData.tourManager.set(tour: tours[0])
                 }
             }
@@ -870,12 +866,10 @@ struct ContentView_Previews: PreviewProvider {
 
     static var preview_tour3: some View {
         let modelData = CaBotAppModel()
-        let url: URL = modelData.resourceManager.getResourceRoot()
-        let urlString = url.absoluteString
         if let r = modelData.resourceManager.resource(by: "place0") {
             modelData.resource = r
             if r.toursSource != nil {
-                if let tours = try? Tour.loadTourDataPreview(currentAddress: urlString) {
+                if let tours = try? Tour.loadTourDataPreview() {
                     modelData.tourManager.set(tour: tours[1])
                 }
             }
@@ -888,12 +882,10 @@ struct ContentView_Previews: PreviewProvider {
 
     static var preview_tour4: some View {
         let modelData = CaBotAppModel()
-        let url: URL = modelData.resourceManager.getResourceRoot()
-        let urlString = url.absoluteString
         if let r = modelData.resourceManager.resource(by: "place0") {
             modelData.resource = r
             if r.toursSource != nil {
-                if let tours = try? Tour.loadTourDataPreview(currentAddress: urlString) {
+                if let tours = try? Tour.loadTourDataPreview() {
                     modelData.tourManager.set(tour: tours[1])
                 }
             }

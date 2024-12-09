@@ -174,42 +174,32 @@ struct DestinationsFloorView: View {
         .listStyle(PlainListStyle())
         .onAppear {
             if floorDestinations.isEmpty {
-                loadFloorDestinations()
+                do {
+                    floorDestinations = try Directory.downloadDirectoryJson(downloadURL: modelData.getCurrentAddress())
+                } catch {
+                    floorDestinations = []
+                }
             }
-        }
-    }
-    private func loadFloorDestinations() {
-        do {
-            floorDestinations = try Directory.downloadDirectoryJson(downloadURL: modelData.getCurrentAddress())
-        } catch {
-            floorDestinations = []
         }
     }
 }
 
-struct DestinationsFloorView_Previews: PreviewProvider {
+struct DestinationsView_Previews: PreviewProvider {
 
     static var previews: some View {
         let modelData = CaBotAppModel()
-        guard let path = Bundle.main.url(forResource: "PreviewResource", withExtension: nil) else {
-            fatalError("Preview resources not found.")
-        }
         var floorDestinationsForPreviews: [Directory.FloorDestination] = []
         do {
-            let url: URL = modelData.resourceManager.getResourceRoot()
-            let urlString = url.absoluteString
-            floorDestinationsForPreviews = try Directory.downloadDirectoryJsonForPreview(downloadURL: urlString)
+            floorDestinationsForPreviews = try Directory.downloadDirectoryJsonForPreview()
         } catch {
             NSLog("Error loading tours for preview: \(error)")
         }
 
-        if let firstDestination = floorDestinationsForPreviews.first?.destinations.first {
-            return DestinationsFloorView(destination: firstDestination)
-                .environmentObject(modelData)
-        } else {
-            return DestinationsFloorView(destination: nil)
-                .environmentObject(modelData)
-        }
+        return DestinationsView(
+            destination: floorDestinationsForPreviews.first?.destinations.first,
+            destinations: floorDestinationsForPreviews.first?.destinations ?? []
+        )
+        .environmentObject(modelData)
     }
 }
 

@@ -802,27 +802,14 @@ class Directory {
         return destination
     }
 
-    static func downloadDirectoryJsonForPreview(downloadURL: String) throws -> [FloorDestination] {
-        let fileDirectoryName = "directory.json"
-        let fileDirectoryURL = URL(fileURLWithPath: downloadURL).appendingPathComponent(fileDirectoryName)
-
-        var dataReceived: Data?
-        let semaphore = DispatchSemaphore(value: 0)
-
-        let task = URLSession.shared.dataTask(with: fileDirectoryURL) { data, response, error in
-            if let error = error {
-                NSLog("Error fetching data: \(error.localizedDescription)")
-                semaphore.signal()
-                return
-            }
-            dataReceived = data
-            semaphore.signal()
-        }
-
-        task.resume()
-        semaphore.wait()
-
-        guard let data = dataReceived else {
+    static func downloadDirectoryJsonForPreview() throws -> [FloorDestination] {
+        let path = Bundle.main.resourceURL!.appendingPathComponent("PreviewResource")
+        let fileDirectoryURL = path.appendingPathComponent("directory.json")
+        let data: Data
+        do {
+            data = try Data(contentsOf: fileDirectoryURL)
+        } catch {
+            NSLog("Failed to read file: \(error.localizedDescription)")
             throw MetadataError.contentLoadError
         }
         let directoryDataDecoded: DirectoryRoot
@@ -839,8 +826,8 @@ class Directory {
         let features: [Feature]
 
         do {
-            tours = try Tour.loadTourDataPreview(currentAddress: downloadURL)
-            features = try Feature.loadFeaturePreview(currentAddress: downloadURL)
+            tours = try Tour.loadTourDataPreview()
+            features = try Feature.loadFeaturePreview()
         } catch {
             NSLog("Failed to load tour or feature data: \(error)")
             throw MetadataError.contentLoadError
@@ -1337,29 +1324,11 @@ class Tour: Decodable, Hashable{
         }
     }
 
-    static func loadTourDataPreview(currentAddress: String) throws -> [Tour] {
+    static func loadTourDataPreview() throws -> [Tour] {
         do {
-            let url = URL(string: "\(currentAddress)tourdata.json")!
-            var dataReceived: Data?
-            let semaphore = DispatchSemaphore(value: 0)
-
-            let task = URLSession.shared.dataTask(with: url) { data, response, error in
-                if let error = error {
-                    NSLog("Error fetching data: \(error.localizedDescription)")
-                    semaphore.signal()
-                    return
-                }
-                dataReceived = data
-                semaphore.signal()
-            }
-
-            task.resume()
-            semaphore.wait()
-
-            guard let data = dataReceived else {
-                throw MetadataError.contentLoadError
-            }
-
+            let path = Bundle.main.resourceURL!.appendingPathComponent("PreviewResource")
+            let fileURL = path.appendingPathComponent("tourdata.json")
+            let data = try Data(contentsOf: fileURL)
             let root = try JSONDecoder().decode(Root.self, from: data)
             allDestinationsRef = root.destinations
             allMessages = root.messages
@@ -1369,7 +1338,7 @@ class Tour: Decodable, Hashable{
                 tour.matchMessage()
             }
 
-            let features = try Feature.loadFeature(currentAddress:currentAddress)
+            let features = try Feature.loadFeaturePreview()
 
             for tourIndex in 0..<root.tours.count {
                 let tour = root.tours[tourIndex]
@@ -1514,30 +1483,11 @@ class Feature : Decodable,  Hashable {
         }
     }
 
-    class func loadFeaturePreview(currentAddress: String) throws -> [Feature] {
+    class func loadFeaturePreview() throws -> [Feature] {
         do {
-            let url = URL(string: "\(currentAddress)features.json")!
-
-            var dataReceived: Data?
-            let semaphore = DispatchSemaphore(value: 0)
-
-            let task = URLSession.shared.dataTask(with: url) { data, response, error in
-                if let error = error {
-                    NSLog("Error fetching data: \(error.localizedDescription)")
-                    semaphore.signal()
-                    return
-                }
-                dataReceived = data
-                semaphore.signal()
-            }
-
-            task.resume()
-            semaphore.wait()
-
-            guard let data = dataReceived else {
-                throw MetadataError.contentLoadError
-            }
-
+            let path = Bundle.main.resourceURL!.appendingPathComponent("PreviewResource")
+            let fileURL = path.appendingPathComponent("features.json")
+            let data = try Data(contentsOf: fileURL)
             let features = try JSONDecoder().decode([Feature].self, from: data)
             return features
         } catch {
