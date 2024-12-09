@@ -47,7 +47,7 @@ struct ToursView: View {
     
     private func loadTours() {
         do {
-            tours = try Tour.load(from: modelData.resourceManager.getResourceRoot())
+            tours = try Tour.load(currentAddress: modelData.getCurrentAddress())
         } catch {
             NSLog("Error loading tours: \(error)")
         }
@@ -58,9 +58,11 @@ struct ToursView: View {
 struct ToursView_Previews: PreviewProvider {
     static var previews: some View {
           let modelData = CaBotAppModel()
+        let url: URL = modelData.resourceManager.getResourceRoot()
+        let urlString = url.absoluteString
           var previewTours: [Tour] = []
           do {
-              previewTours = try Tour.load(from: modelData.resourceManager.getResourceRoot())
+              previewTours = try Tour.loadTourDataPreview(currentAddress: urlString)
           } catch {
               NSLog("Error loading tours for preview: \(error)")
           }

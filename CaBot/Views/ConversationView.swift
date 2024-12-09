@@ -48,14 +48,34 @@ struct ConversationView: UIViewControllerRepresentable {
                 let title = note.userInfo?["title"] as? String ?? "From Conversation"
                 let pron = note.userInfo?["pron"] as? String
                 
-                if let src = owner.dsrc,
-                   let floorDestinations = try? downloadDirectoryJson(modelData: owner.modelData),
-                   let matchedDestination = floorDestinations
-                        .flatMap({ $0.destinations })
-                        .first(where: { $0.value == toID }) {
-                    owner.modelData.tourManager.addToLast(destination: matchedDestination)
-                } else {
-                    owner.modelData.tourManager.addToLast(destination: Destination(floorTitle: I18NText(text: ["en": title, "ja": title], pron: [:]),title: I18NText(text: ["en": title, "ja": title], pron: [:]), value: toID, pron: pron, file: nil, summaryMessage: I18NText(text: ["en": title, "ja": title], pron: [:]), startMessage: I18NText(text: ["en": title, "ja": title], pron: [:]), arriveMessages: [],content: nil, waitingDestination: nil, subtour: nil,forDemonstration: false))
+                if let src = owner.dsrc {
+                    do {
+                        let floorDestinations = try Directory.downloadDirectoryJson(downloadURL: owner.modelData.getCurrentAddress())
+                        if let matchedDestination = floorDestinations
+                            .flatMap({ $0.destinations })
+                            .first(where: { $0.value == toID }) {
+                            owner.modelData.tourManager.addToLast(destination: matchedDestination)
+                        } else {
+                            owner.modelData.tourManager.addToLast(
+                                destination: Destination(
+                                    floorTitle: I18NText(text: ["en": title, "ja": title], pron: [:]),
+                                    title: I18NText(text: ["en": title, "ja": title], pron: [:]),
+                                    value: toID,
+                                    pron: pron,
+                                    file: nil,
+                                    summaryMessage: I18NText(text: ["en": title, "ja": title], pron: [:]),
+                                    startMessage: I18NText(text: ["en": title, "ja": title], pron: [:]),
+                                    arriveMessages: [],
+                                    content: nil,
+                                    waitingDestination: nil,
+                                    subtour: nil,
+                                    forDemonstration: false
+                                )
+                            )
+                        }
+                    } catch {
+                        NSLog("Error loading destinations: \(error)")
+                    }
                 }
                 
                 owner.modelData.needToStartAnnounce(wait: true)

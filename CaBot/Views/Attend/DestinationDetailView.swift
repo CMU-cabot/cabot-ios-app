@@ -86,12 +86,21 @@ struct DestinationDetailView: View {
 struct DestinationDetailView_Previews: PreviewProvider {
     static var previews: some View {
         let modelData = CaBotAppModel()
-
-        let destinations = try! downloadDirectoryJson(modelData: modelData)
-        let destination = destinations[0]
-        let destinations2 = try! downloadDirectoryJson(modelData: modelData)
-
-        DestinationDetailView(destination: destinations2[0].destinations[0])
-            .environmentObject(modelData)
+        let url: URL = modelData.resourceManager.getResourceRoot()
+        let urlString = url.absoluteString
+        let fileDirectoryName = "directory.json"
+        let fileDirectoryURL = URL(fileURLWithPath: urlString).appendingPathComponent(fileDirectoryName)
+        do {
+            let destinations = try Directory.downloadDirectoryJsonForPreview(downloadURL: urlString)
+            if let firstDestination = destinations.first {
+                return DestinationDetailView(destination: firstDestination.destinations[0])
+                    .environmentObject(modelData)
+            } else {
+                fatalError("Destinations array is empty")
+            }
+        } catch {
+            print("Failed to download directory JSON: \(fileDirectoryURL)")
+            fatalError("Failed to download directory JSON for preview\(fileDirectoryURL)")
+        }
     }
 }

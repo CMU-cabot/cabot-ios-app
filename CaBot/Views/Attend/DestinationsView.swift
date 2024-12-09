@@ -137,14 +137,14 @@ struct DestinationsFloorView: View {
     @EnvironmentObject var modelData: CaBotAppModel
     @State private var isConfirming = false
     @State private var targetDestination: Destination?
-    @State private var floorDestinations: [FloorDestination] = []
+    @State private var floorDestinations: [Directory.FloorDestination] = []
 
     var destination: Destination?
 
     var body: some View {
         var header: Text?
         header = Text("SELECT_DESTINATION")
-        
+
         return Form {
             Section(
                 header: header
@@ -167,8 +167,15 @@ struct DestinationsFloorView: View {
         .listStyle(PlainListStyle())
         .onAppear {
             if floorDestinations.isEmpty {
-                floorDestinations = try! downloadDirectoryJson(modelData: modelData)
+                loadFloorDestinations()
             }
+        }
+    }
+    private func loadFloorDestinations() {
+        do {
+            floorDestinations = try Directory.downloadDirectoryJson(downloadURL: modelData.getCurrentAddress())
+        } catch {
+            floorDestinations = []
         }
     }
 }
@@ -178,9 +185,11 @@ struct DestinationsFloorView_Previews: PreviewProvider {
     static var previews: some View {
         let modelData = CaBotAppModel()
 
-        var floorDestinationsForPreviews: [FloorDestination] = []
+        var floorDestinationsForPreviews: [Directory.FloorDestination] = []
         do {
-            floorDestinationsForPreviews = try downloadDirectoryJson(modelData: modelData)
+            let url: URL = modelData.resourceManager.getResourceRoot()
+            let urlString = url.absoluteString
+            floorDestinationsForPreviews = try Directory.downloadDirectoryJsonForPreview(downloadURL: urlString)
         } catch {
             NSLog("Error loading tours for preview: \(error)")
         }

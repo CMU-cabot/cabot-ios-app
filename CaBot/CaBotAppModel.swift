@@ -1560,7 +1560,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         // only User
         if userInfo.type == .OverrideTour {
             do {
-                let tours = try Tour.load(from: self.resourceManager.getResourceRoot())
+                let tours = try Tour.load(currentAddress: self.getCurrentAddress())
                 for tour in tours {
                     if tour.id == userInfo.value {
                         tourManager.set(tour: tour)
@@ -1574,26 +1574,22 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         if userInfo.type == .OverrideDestination {
             func traverseDest(src: Source) {
                 do {
-                    let floorDestinations = try downloadDirectoryJson(modelData: self)
+                    let floorDestinations = try Directory.downloadDirectoryJson(downloadURL: self.getCurrentAddress())
                     for floorDest in floorDestinations {
                         for dest in floorDest.destinations {
                             if let value = dest.value {
                                 if value == userInfo.value {
                                     if userInfo.flag1 {
                                         self.clearAll()
+                                        tourManager.addToLast(destination: dest)
+                                    }else if userInfo.flag2 {
+                                        tourManager.addToFirst(destination: dest)
+                                    } else {
+                                        tourManager.addToLast(destination: dest)
                                     }
-                                    tourManager.addToLast(destination: dest)
                                     needToStartAnnounce(wait: true)
                                     return
                                 }
-                                if userInfo.flag2 {
-                                    tourManager.addToFirst(destination: dest)
-                                }
-                                else {
-                                    tourManager.addToLast(destination: dest)
-                                }
-                                needToStartAnnounce(wait: true)
-                                return
                             }
                         }
                     }

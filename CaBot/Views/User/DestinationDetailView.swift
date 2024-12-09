@@ -58,7 +58,7 @@ struct DestinationDetailView: View {
                     }
                 }
                 .confirmationDialog(Text("ADD_A_DESTINATION"), isPresented: $isConfirming, presenting: targetDestination) {
-                detail in
+                    detail in
                     Button {
                         if let dest = targetDestination {
                             modelData.clearAll()
@@ -104,11 +104,24 @@ struct DestinationDetailView_Previews: PreviewProvider {
     static var previews: some View {
         let modelData = CaBotAppModel()
 
-        let destinations = try! downloadDirectoryJson(modelData: modelData)
-        let destination = destinations[0]
-        let destinations2 = try! downloadDirectoryJson(modelData: modelData)
+        guard let path = Bundle.main.url(forResource: "PreviewResource", withExtension: nil) else {
+            fatalError("Preview resources not found.")
+        }
+        let fileDirectoryURL = path.appendingPathComponent("directory.json")
+        var floorDestinationsForPreviews: [Directory.FloorDestination] = []
+        do {
+            let url = modelData.resourceManager.getResourceRoot()
+            let urlString = url.absoluteString
+            floorDestinationsForPreviews = try Directory.downloadDirectoryJsonForPreview(downloadURL: path.absoluteString)
+        } catch {
+            NSLog("Failed to download directory JSON: \(fileDirectoryURL)")
+        }
 
-        DestinationDetailView(destination: destinations2[0].destinations[0])
-            .environmentObject(modelData)
+        if let firstDestination = floorDestinationsForPreviews.first {
+            return DestinationDetailView(destination: firstDestination.destinations[0])
+                .environmentObject(modelData)
+        } else {
+            fatalError("Destinations array is empty\(path)")
+        }
     }
 }
