@@ -315,8 +315,7 @@ class TourManager: TourProtocol {
                                 model.needToStartAnnounce(wait: true)
                             }
                         } catch {
-                            print("Error loading destinations: \(error)")
-                            // 必要に応じてデフォルトの処理を追加
+                            NSLog("Error loading destinations: \(error)")
                         }
                     }
                 }

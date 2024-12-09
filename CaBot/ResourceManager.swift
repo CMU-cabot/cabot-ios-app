@@ -1446,11 +1446,38 @@ class Feature : Decodable,  Hashable {
     // MARK: - ReadJSON
     class func loadFeature(currentAddress: String) throws -> [Feature] {
         do {
-            let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-            var url: URL
-            url = URL(string: "http://\(currentAddress):9090/map/cabot/app-resource/features.json")!
-            //test
-            url = URL(string: "\(documentsDirectory)/app-resource/features.json")!
+            let fileConfigName = "config.json"
+            guard let documentsFeature = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+                throw MetadataError.contentLoadError
+            }
+
+            let configData = try Directory.fetchData(from: "config", currentAddress:currentAddress , isConfig: true)
+
+            struct InitialLocation: Codable {
+                let lat: Double
+                let lng: Double
+                let floor: Int
+            }
+
+            struct Config: Codable {
+                let DO_NOT_USE_SAVED_CENTER: String
+                let INITIAL_LOCATION: InitialLocation
+                let MAP_SERVICE: String
+                let MAP_SERVICE_USE_HTTP: String
+            }
+
+            let config = try JSONDecoder().decode(Config.self, from: configData)
+            let lat = config.INITIAL_LOCATION.lat
+            let lng = config.INITIAL_LOCATION.lng
+            let dist = 2000
+            let user = "vender_identifier"
+
+            let baseURL = "http://\(currentAddress):9090/map/routesearch?action=features&lat=\(lat)&lng=\(lng)&user=\(user)&dist=\(dist)"
+            guard let url = URL(string: baseURL) else {
+                throw MetadataError.contentLoadError
+            }
+
+            NSLog("FeatureURLAAAAA=\(baseURL)")
 
             var dataReceived: Data?
             let semaphore = DispatchSemaphore(value: 0)
@@ -1473,7 +1500,7 @@ class Feature : Decodable,  Hashable {
             }
 
 
-            let featuresFileURL = documentsDirectory.appendingPathComponent("features.json")
+            let featuresFileURL = documentsFeature.appendingPathComponent("features.json")
             try data.write(to: featuresFileURL)
 
             let features = try JSONDecoder().decode([Feature].self, from: data)
