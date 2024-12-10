@@ -739,31 +739,9 @@ class Directory {
     }
 
     static func processDirectoryData(_ directoryDataDecoded: DirectoryRoot, currentAddress: String) throws -> [FloorDestination] {
-        var downloadedFloorDestinations: [FloorDestination] = []
         let tours = try Tour.load(currentAddress:currentAddress)
         let features = try Feature.loadFeature(currentAddress:currentAddress)
-
-        for section in directoryDataDecoded.sections {
-            for item in section.items {
-                var destinations: [Destination] = []
-                if let content = item.content {
-                    for subSection in content.sections {
-                        for subItem in subSection.items {
-                            if let destination = try createDestination(from: subItem, itemTitle: item.title, tours: tours, features: features) {
-                                destinations.append(destination)
-                            }
-                        }
-                    }
-                }
-
-                if !destinations.isEmpty {
-                    let floorDestination = FloorDestination(floorTitle: item.title, destinations: destinations)
-                    downloadedFloorDestinations.append(floorDestination)
-                }
-            }
-        }
-
-        return downloadedFloorDestinations
+        return try extractFloorDestinations(directoryDataDecoded: directoryDataDecoded, tours: tours, features: features)
     }
 
     static func createDestination(from subItem: NestedItem, itemTitle: I18NText, tours: [Tour], features: [Feature]) throws -> Destination? {
@@ -820,7 +798,6 @@ class Directory {
             throw MetadataError.contentLoadError
         }
 
-        var downloadedFloorDestinations: [FloorDestination] = []
 
         let tours: [Tour]
         let features: [Feature]
@@ -833,6 +810,12 @@ class Directory {
             throw MetadataError.contentLoadError
         }
 
+        return try extractFloorDestinations(directoryDataDecoded: directoryDataDecoded, tours: tours, features: features)
+    }
+
+    private static func extractFloorDestinations(directoryDataDecoded: DirectoryRoot, tours: [Tour], features: [Feature]) throws -> [FloorDestination] {
+        var downloadedFloorDestinations: [FloorDestination] = []
+
         for section in directoryDataDecoded.sections {
             for item in section.items {
                 var destinations: [Destination] = []
@@ -840,12 +823,8 @@ class Directory {
                 if let content = item.content {
                     for subSection in content.sections {
                         for subItem in subSection.items {
-                            do {
-                                if let destination = try createDestination(from: subItem, itemTitle: item.title, tours: tours, features: features) {
-                                    destinations.append(destination)
-                                }
-                            } catch {
-                                NSLog("Failed to create destination for item: \(item.title), error: \(error)")
+                            if let destination = try createDestination(from: subItem, itemTitle: item.title, tours: tours, features: features) {
+                                destinations.append(destination)
                             }
                         }
                     }
@@ -1286,38 +1265,7 @@ class Tour: Decodable, Hashable{
                 tour.matchMessage()
             }
             let features = try Feature.loadFeature(currentAddress:currentAddress)
-
-            for tourIndex in 0..<root.tours.count {
-                let tour = root.tours[tourIndex]
-                for destIndex in 0..<tour.destinations.count {
-                    var destination = tour.destinations[destIndex]
-                    if let matchedD = destination.matchedDestinationRef {
-                        if let matchedFeature = features.first(where: { $0.properties.ent1Node == matchedD.value }) {
-                            _ = I18NText(
-                                text: matchedFeature.properties.names,
-                                pron: [:]
-                            )
-                            destination.title = I18NText(text: matchedFeature.properties.names, pron: [:])
-                            root.tours[tourIndex].destinations[destIndex] = destination
-                        } else {
-                            NSLog("No matching Feature found")
-                        }
-                    } else {
-                        NSLog("No matched DestinationD found")
-                        let refParts = destination.ref.split(separator: "#")
-                        let refToUse = refParts.count > 1 ? String(refParts[0]) : destination.ref
-                        if let matchedFeature = features.first(where: { $0.properties.ent1Node == refToUse })
-                        {
-                            _ = I18NText(
-                                text: matchedFeature.properties.names,
-                                pron: [:]
-                            )
-                            destination.title = I18NText(text: matchedFeature.properties.names, pron: [:])
-                            root.tours[tourIndex].destinations[destIndex] = destination
-                        }
-                    }
-                }
-            }
+            processTours(root: root, features: features)
             return root.tours
         } catch {
             throw MetadataError.contentLoadError
@@ -1339,41 +1287,34 @@ class Tour: Decodable, Hashable{
             }
 
             let features = try Feature.loadFeaturePreview()
-
-            for tourIndex in 0..<root.tours.count {
-                let tour = root.tours[tourIndex]
-                for destIndex in 0..<tour.destinations.count {
-                    var destination = tour.destinations[destIndex]
-                    if let matchedD = destination.matchedDestinationRef {
-                        if let matchedFeature = features.first(where: { $0.properties.ent1Node == matchedD.value }) {
-                            _ = I18NText(
-                                text: matchedFeature.properties.names,
-                                pron: [:]
-                            )
-                            destination.title = I18NText(text: matchedFeature.properties.names, pron: [:])
-                            root.tours[tourIndex].destinations[destIndex] = destination
-                        } else {
-                            NSLog("No matching Feature found")
-                        }
-                    } else {
-                        NSLog("No matched DestinationD found")
-                        let refParts = destination.ref.split(separator: "#")
-                        let refToUse = refParts.count > 1 ? String(refParts[0]) : destination.ref
-                        if let matchedFeature = features.first(where: { $0.properties.ent1Node == refToUse })
-                        {
-                            _ = I18NText(
-                                text: matchedFeature.properties.names,
-                                pron: [:]
-                            )
-                            destination.title = I18NText(text: matchedFeature.properties.names, pron: [:])
-                            root.tours[tourIndex].destinations[destIndex] = destination
-                        }
-                    }
-                }
-            }
+            processTours(root: root, features: features)
             return root.tours
         } catch {
             throw MetadataError.contentLoadError
+        }
+    }
+
+    private static func processTours(root: Root, features: [Feature]) {
+        for tourIndex in 0..<root.tours.count {
+            let tour = root.tours[tourIndex]
+            for destIndex in 0..<tour.destinations.count {
+                var destination = tour.destinations[destIndex]
+                if let matchedD = destination.matchedDestinationRef {
+                    if let matchedFeature = features.first(where: { $0.properties.ent1Node == matchedD.value }) {
+                        destination.title = I18NText(text: matchedFeature.properties.names, pron: [:])
+                    } else {
+                        NSLog("No matching Feature found")
+                    }
+                } else {
+                    NSLog("No matched DestinationD found")
+                    let refParts = destination.ref.split(separator: "#")
+                    let refToUse = refParts.count > 1 ? String(refParts[0]) : destination.ref
+                    if let matchedFeature = features.first(where: { $0.properties.ent1Node == refToUse }) {
+                        destination.title = I18NText(text: matchedFeature.properties.names, pron: [:])
+                    }
+                }
+                root.tours[tourIndex].destinations[destIndex] = destination
+            }
         }
     }
 }
@@ -1477,7 +1418,6 @@ class Feature : Decodable,  Hashable {
                 throw MetadataError.contentLoadError
             }
 
-            NSLog("FeatureURLAAAAA=\(baseURL)")
 
             var dataReceived: Data?
             let semaphore = DispatchSemaphore(value: 0)
