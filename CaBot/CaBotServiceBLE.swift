@@ -243,9 +243,9 @@ extension CaBotServiceBLE: CaBotServiceProtocol {
         }
     }
     
-    public func log_request(request: Dictionary<String, String>) -> Bool {
+    public func log_request(request: Dictionary<String, Any>) -> Bool {
         NSLog("log_request \(request)")
-        if let jsonData = try? JSONEncoder().encode(request) {
+        if let jsonData = try? JSONSerialization.data(withJSONObject: request, options: .prettyPrinted) {
             return self.logRequestChar.notify(data: jsonData)
         }
         return false

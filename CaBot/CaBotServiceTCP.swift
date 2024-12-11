@@ -383,10 +383,10 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
         }
     }
 
-    func log_request(request: Dictionary<String, String>) -> Bool {
+    func log_request(request: Dictionary<String, Any>) -> Bool {
         NSLog("log_request \(request)")
-        if let jsonString = try? JSONEncoder().encode(request) {
-            self.emit("log_request", jsonString)
+        if let jsonData = try? JSONSerialization.data(withJSONObject: request, options: .prettyPrinted) {
+            self.emit("log_request", jsonData)
             return true
         }
         return false
