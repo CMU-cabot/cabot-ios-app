@@ -1065,7 +1065,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         if(self.modeType == .Normal){
             self.tts.rate = self.userSpeechRate
             self.tts.voice = self.userVoice?.AVvoice
-            self.tts.speak(CustomLocalizedString("Hello Suitcase!", lang: self.resourceLang), force:true, priority:priority ?? .High, timeout:sec, tag: .Sample(erase:true)) {_, _ in
+            self.tts.speak(CustomLocalizedString("Hello Suitcase!", lang: self.resourceLang), force:false, priority:priority ?? .Required, timeout:sec, tag: .Sample(erase:true)) {_, _ in
             }
         } else {
             if(mode == .User){
@@ -1075,7 +1075,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 self.tts.rate = self.attendSpeechRate
                 self.tts.voice = self.attendVoice?.AVvoice
             }
-            self.tts.speakForAdvanced(CustomLocalizedString("Hello Suitcase!", lang: self.resourceLang), force:true, tag: .Sample(erase:true)) {_, _ in
+            self.tts.speakForAdvanced(CustomLocalizedString("Hello Suitcase!", lang: self.resourceLang), force:false, tag: .Sample(erase:true)) {_, _ in
             }
         }
 
