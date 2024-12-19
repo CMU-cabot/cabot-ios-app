@@ -1,0 +1,258 @@
+[
+    {
+        "geometry": {
+            "coordinates": [
+                1234,
+                1234
+            ],
+            "type": "Point"
+        },
+        "_id": "Node_ID_FOR_A",
+        "type": "Feature",
+        "properties": {
+            "parking": 99,
+            "escalator": 99,
+            "hulop_file": "EDITOR",
+            "ent1_node": "Node_ID_FOR_A3",
+            "ent1_lon": 139,
+            "ent1_n": "",
+            "name_ja": "ポイント1",
+            "nursing": 99,
+            "brail_tile": 99,
+            "lon": 139,
+            "facil_id": "Node_ID_FOR_A3",
+            "toilet": 99,
+            "elevator": 99,
+            "barrier": 99,
+            "ent1_lat": 35,
+            "ent1_fl": 5,
+            "facil_type": 99,
+            "lat": 35,
+            "name_en": "point1"
+        }
+    },
+    {
+        "geometry": {
+            "coordinates": [
+                139,
+                35
+            ],
+            "type": "Point"
+        },
+        "_id": "Node_ID_FOR_B",
+        "type": "Feature",
+        "properties": {
+            "parking": 99,
+            "escalator": 99,
+            "hulop_file": "EDITOR",
+            "ent1_node": "Node_ID_FOR_B3",
+            "ent1_lon": 139,
+            "ent1_n": "",
+            "name_ja": "ポイント2",
+            "nursing": 99,
+            "brail_tile": 99,
+            "lon": 139,
+            "facil_id": "Node_ID_FOR_B3",
+            "toilet": 99,
+            "elevator": 99,
+            "barrier": 99,
+            "ent1_lat": 35,
+            "ent1_fl": 5,
+            "facil_type": 99,
+            "lat": 35,
+            "name_en": "point2"
+        }
+    },
+    {
+        "geometry": {
+            "coordinates": [
+                139,
+                35
+            ],
+            "type": "Point"
+        },
+        "_id": "Node_ID_FOR_C",
+        "type": "Feature",
+        "properties": {
+            "parking": 99,
+            "escalator": 99,
+            "hulop_file": "EDITOR",
+            "ent1_node": "Node_ID_FOR_C3",
+            "ent1_lon": 139,
+            "ent1_n": "",
+            "name_ja": "ポイント3",
+            "nursing": 99,
+            "brail_tile": 99,
+            "lon": 139,
+            "facil_id": "Node_ID_FOR_C3",
+            "toilet": 99,
+            "elevator": 99,
+            "barrier": 99,
+            "ent1_lat": 35,
+            "ent1_fl": 5,
+            "facil_type": 99,
+            "lat": 35,
+            "name_en": "point3"
+        }
+    },
+    {
+        "geometry": {
+            "coordinates": [
+                139,
+                35
+            ],
+            "type": "Point"
+        },
+        "_id": "Node_ID_FOR_D",
+        "type": "Feature",
+        "properties": {
+            "parking": 99,
+            "escalator": 99,
+            "hulop_file": "EDITOR",
+            "ent1_node": "Node_ID_FOR_D3",
+            "ent1_lon": 139,
+            "ent1_n": "",
+            "name_ja": "ポイント4",
+            "nursing": 99,
+            "brail_tile": 99,
+            "lon": 139,
+            "facil_id": "Node_ID_FOR_D3",
+            "toilet": 99,
+            "elevator": 99,
+            "barrier": 99,
+            "ent1_lat": 35,
+            "ent1_fl": 5,
+            "facil_type": 99,
+            "lat": 35,
+            "name_en": "point4"
+        }
+    },
+    {
+        "geometry": {
+            "coordinates": [
+                1234,
+                1234
+            ],
+            "type": "Point"
+        },
+        "_id": "Node_ID_FOR_A",
+        "type": "Feature",
+        "properties": {
+            "parking": 99,
+            "escalator": 99,
+            "hulop_file": "EDITOR",
+            "ent1_node": "Node_ID_FOR_A",
+            "ent1_lon": 139,
+            "ent1_n": "",
+            "name_ja": "ポイント1",
+            "nursing": 99,
+            "brail_tile": 99,
+            "lon": 139,
+            "facil_id": "Node_ID_FOR_A",
+            "toilet": 99,
+            "elevator": 99,
+            "barrier": 99,
+            "ent1_lat": 35,
+            "ent1_fl": 5,
+            "facil_type": 99,
+            "lat": 35,
+            "name_en": "point1"
+        }
+    },
+    {
+        "geometry": {
+            "coordinates": [
+                139,
+                35
+            ],
+            "type": "Point"
+        },
+        "_id": "Node_ID_FOR_B",
+        "type": "Feature",
+        "properties": {
+            "parking": 99,
+            "escalator": 99,
+            "hulop_file": "EDITOR",
+            "ent1_node": "Node_ID_FOR_B",
+            "ent1_lon": 139,
+            "ent1_n": "",
+            "name_ja": "ポイント2",
+            "nursing": 99,
+            "brail_tile": 99,
+            "lon": 139,
+            "facil_id": "Node_ID_FOR_B",
+            "toilet": 99,
+            "elevator": 99,
+            "barrier": 99,
+            "ent1_lat": 35,
+            "ent1_fl": 5,
+            "facil_type": 99,
+            "lat": 35,
+            "name_en": "point2"
+        }
+    },
+    {
+        "geometry": {
+            "coordinates": [
+                139,
+                35
+            ],
+            "type": "Point"
+        },
+        "_id": "Node_ID_FOR_C",
+        "type": "Feature",
+        "properties": {
+            "parking": 99,
+            "escalator": 99,
+            "hulop_file": "EDITOR",
+            "ent1_node": "Node_ID_FOR_C",
+            "ent1_lon": 139,
+            "ent1_n": "",
+            "name_ja": "ポイント3",
+            "nursing": 99,
+            "brail_tile": 99,
+            "lon": 139,
+            "facil_id": "Node_ID_FOR_C",
+            "toilet": 99,
+            "elevator": 99,
+            "barrier": 99,
+            "ent1_lat": 35,
+            "ent1_fl": 5,
+            "facil_type": 99,
+            "lat": 35,
+            "name_en": "point3"
+        }
+    },
+    {
+        "geometry": {
+            "coordinates": [
+                139,
+                35
+            ],
+            "type": "Point"
+        },
+        "_id": "Node_ID_FOR_D",
+        "type": "Feature",
+        "properties": {
+            "parking": 99,
+            "escalator": 99,
+            "hulop_file": "EDITOR",
+            "ent1_node": "Node_ID_FOR_D",
+            "ent1_lon": 139,
+            "ent1_n": "",
+            "name_ja": "ポイント4",
+            "nursing": 99,
+            "brail_tile": 99,
+            "lon": 139,
+            "facil_id": "Node_ID_FOR_D",
+            "toilet": 99,
+            "elevator": 99,
+            "barrier": 99,
+            "ent1_lat": 35,
+            "ent1_fl": 5,
+            "facil_type": 99,
+            "lat": 35,
+            "name_en": "point4"
+        }
+    }
+]

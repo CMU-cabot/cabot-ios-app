@@ -40,15 +40,12 @@ enum GrantState {
 
 enum DisplayedScene {
     case Onboard
-    case ResourceSelect
     case App
 
     func text(lang: String) -> Text {
         switch self {
         case .Onboard:
             return Text(CustomLocalizedString("", lang: lang))
-        case .ResourceSelect:
-            return Text(CustomLocalizedString("SELECT_RESOURCE", lang: lang))
         case .App:
 #if ATTEND
             return Text(CustomLocalizedString("ATTEND_MENU", lang: lang))
@@ -318,53 +315,45 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         {
             if authRequestedByUser {
                 withAnimation() {
-                    self.displayedScene = .ResourceSelect
+                    self.displayedScene = .App
                 }
             } else {
-                self.displayedScene = .ResourceSelect
-            }
-        }
-        if self.displayedScene == .ResourceSelect {
-            guard let value = UserDefaults.standard.value(forKey: ResourceSelectView.resourceSelectedKey) as? Bool else { return }
-            if value {
-                displayedScene = .App
+                self.displayedScene = .App
             }
         }
     }
     @Published var displayedScene: DisplayedScene = .Onboard
     var authRequestedByUser: Bool = false
 
-    @Published var resource: Resource? = nil {
-        didSet {
-            if let resource = resource {
-                NSLog("resource.identifier = \(resource.identifier)")
-                UserDefaults.standard.setValue(resource.identifier, forKey: selectedResourceKey)
-                UserDefaults.standard.synchronize()
-                updateVoice()
-            }
-        }
-    }
-
     @Published var selectedLanguage: String = "en" {
         willSet {
             if silentForChange == false {
                 share(user_info: SharedInfo(type: .ChangeLanguage, value: newValue))
             }
+            ResourceManager.shared.invalidate()
+            self.loadFromServer()
             silentForChange = false
         }
         didSet {
-            self.resource?.lang = selectedLanguage
             NSLog("selectedLanguage = \(selectedLanguage)")
             UserDefaults.standard.setValue(selectedLanguage, forKey: selectedResourceLangKey)
-            _ = self.fallbackService.manage(command: .lang, param: resource?.lang)
-            self.tts.lang = resource?.lang
+            _ = self.fallbackService.manage(command: .lang, param: selectedLanguage)
+            I18N.shared.set(lang: selectedLanguage)
+            self.tts.lang = selectedLanguage
             self.updateVoice()
+        }
+    }
+    var languages: [String] = ["en", "ja"]
+
+    var selectedLocale: Locale {
+        get {
+            Locale(identifier: self.selectedLanguage)
         }
     }
 
     var resourceLang: String {
         get {
-            resource?.lang ?? DEFAULT_LANG
+            return selectedLanguage
         }
     }
 
@@ -378,7 +367,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     @Published var attendVoice: Voice? = nil {
         didSet {
             if let id = attendVoice?.AVvoice.identifier {
-                let key = "\(selectedVoiceKey)_\(resource?.locale.identifier ?? "en-US")"
+                let key = "\(selectedVoiceKey)_\(selectedLanguage)"
                 UserDefaults.standard.setValue(id, forKey: key)
                 UserDefaults.standard.synchronize()
             }
@@ -405,7 +394,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         }
         didSet {
             if let id = userVoice?.AVvoice.identifier {
-                let key = "\(selectedVoiceKey)_\(resource?.locale.identifier ?? "en-US")"
+                let key = "\(selectedVoiceKey)_\(selectedLanguage)"
                 UserDefaults.standard.setValue(id, forKey: key)
                 UserDefaults.standard.synchronize()
                 self.updateTTS()
@@ -428,6 +417,15 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             self.updateTTS()
         }
     }
+
+    enum ServerStatus {
+        case Init
+        case NotReady
+        case Loading
+        case Ready
+    }
+
+    @Published var serverIsReady: ServerStatus = .Init
 
     var suitcaseFeatures: SuitcaseFeatures = SuitcaseFeatures()
 
@@ -463,22 +461,36 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     }
 #endif
 
+    func initTTS()
+    {
+        let key = "\(selectedVoiceKey)_\(selectedLanguage)"
+        if let id = UserDefaults.standard.value(forKey: key) as? String {
+            self.userVoice = TTSHelper.getVoice(by: id)
+        } else {
+            self.userVoice = TTSHelper.getVoices(by: selectedLocale)[0]
+        }
+        if let id = UserDefaults.standard.value(forKey: key) as? String {
+            self.attendVoice = TTSHelper.getVoice(by: id)
+        } else {
+            self.attendVoice = TTSHelper.getVoices(by: selectedLocale)[0]
+        }
+
+        self.updateTTS()
+    }
+
     func updateVoice() {
-        if let resource = self.resource {
-            let key = "\(selectedVoiceKey)_\(resource.locale.identifier)"
-            self.silentForChange = true
-            if(voiceSetting == .User){
-                if let id = UserDefaults.standard.value(forKey: key) as? String {
-                    self.userVoice = TTSHelper.getVoice(by: id)
-                } else {
-                    self.userVoice = TTSHelper.getVoices(by: resource.locale)[0]
-                }
-            } else if(voiceSetting == .Attend) {
-                if let id = UserDefaults.standard.value(forKey: key) as? String {
-                    self.attendVoice = TTSHelper.getVoice(by: id)
-                } else {
-                    self.attendVoice = TTSHelper.getVoices(by: resource.locale)[0]
-                }
+        let key = "\(selectedVoiceKey)_\(selectedLanguage)"
+        if(voiceSetting == .User){
+            if let id = UserDefaults.standard.value(forKey: key) as? String {
+                self.userVoice = TTSHelper.getVoice(by: id)
+            } else {
+                self.userVoice = TTSHelper.getVoices(by: selectedLocale)[0]
+            }
+        } else if(voiceSetting == .Attend) {
+            if let id = UserDefaults.standard.value(forKey: key) as? String {
+                self.attendVoice = TTSHelper.getVoice(by: id)
+            } else {
+                self.attendVoice = TTSHelper.getVoices(by: selectedLocale)[0]
             }
         }
     }
@@ -572,6 +584,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         didSet {
             UserDefaults.standard.setValue(modeType.rawValue, forKey: modeTypeKey)
             UserDefaults.standard.synchronize()
+            ResourceManager.shared.modeType = modeType
         }
     }
 
@@ -609,7 +622,6 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     private var lastUpdated: Int64 = 0
     let logList: LogReportModel = LogReportModel()
     let preview: Bool
-    let resourceManager: ResourceManager
     var tourManager: TourManager
     let dialogViewHelper: DialogViewHelper
     private let feedbackGenerator = UINotificationFeedbackGenerator()
@@ -634,7 +646,6 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         self.bleService = bleService
         self.tcpService = tcpService
         self.fallbackService = FallbackService(services: [bleService, tcpService])
-        self.resourceManager = ResourceManager(preview: preview)
         self.tourManager = TourManager(setting: self.detailSettingModel)
         self.dialogViewHelper = DialogViewHelper()
         self.locationManager =  CLLocationManager()
@@ -654,13 +665,12 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         self.connectionType = connectionType
         self.addressCandidate = AddressCandidate(addresses: [""])  // dummy
         super.init()
+        ResourceManager.shared.set(addressCandidate: self.addressCandidate)
+        ResourceManager.shared.set(modeType: self.modeType)
 
         self.tts.delegate = self
         self.logList.delegate = self
 
-        if let selectedIdentifier = UserDefaults.standard.value(forKey: selectedResourceKey) as? String {
-            self.resource = resourceManager.resource(by: selectedIdentifier)
-        }
         if let selectedLanguage = UserDefaults.standard.value(forKey: selectedResourceLangKey) as? String {
             self.silentForChange = true
             self.selectedLanguage = selectedLanguage
@@ -743,13 +753,14 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         })
     }
 
+
     func updateNetworkConfig() {
-        NSLog("updateNetworkConfig \([primaryAddr, secondaryAddr])")
+        NSLog("updateNetworkConfig \([self.primaryAddr, self.secondaryAddr])")
         let current = self.addressCandidate.getCurrent()
-        if current != primaryAddr && current != secondaryAddr {
+        if current != self.primaryAddr && current != self.secondaryAddr {
             self.tcpService.stop()
         }
-        self.addressCandidate.update(addresses: [primaryAddr, secondaryAddr])
+        self.addressCandidate.update(addresses: [self.primaryAddr, self.secondaryAddr])
     }
 
     func getCurrentAddress() -> String {
@@ -1137,11 +1148,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         userInfo.clear()
     }
 
-    func share(destination: Destination, clear: Bool = true, addFirst: Bool = false) {
-        if let value = destination.value {
-            self.share(user_info: SharedInfo(type: .OverrideDestination, value: value, flag1: clear, flag2: addFirst))
-            userInfo.clear()
-        }
+    func share(destination: any Destination, clear: Bool = true, addFirst: Bool = false) {
+        self.share(user_info: SharedInfo(type: .OverrideDestination, value: destination.value, flag1: clear, flag2: addFirst))
+        userInfo.clear()
     }
 
     // MARK: TourManagerDelegate
@@ -1149,10 +1158,8 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         tourUpdated = true
         UIApplication.shared.isIdleTimerDisabled = manager.hasDestination
         self.activityLog(category: "tour-text", text: manager.title.text, memo: manager.title.pron)
-        self.share(user_info: SharedInfo(type: .Tour, value: manager.title.text))
-        self.share(user_info: SharedInfo(type: .CurrentDestination, value: manager.currentDestination?.title.text ?? ""))
-        self.share(user_info: SharedInfo(type: .NextDestination, value: manager.nextDestination?.title.text ?? ""))
-        self.share(user_info: SharedInfo(type: .Destinations, value: manager.destinations.map { $0.title.text }.joined(separator: ",")))
+        let data = manager.getTourSaveData()
+        self.share(user_info: SharedInfo(type: .Tour, value: data.toJsonString()))
     }
 
     func clearAll(){
@@ -1160,41 +1167,40 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         self.tourManager.clearAllDestinations()
     }
 
-    func tour(manager: TourManager, destinationChanged destination: Destination?, isStartMessageSpeaking: Bool = true) {
+    func tour(manager: TourManager, destinationChanged destination: (any Destination)?, isStartMessageSpeaking: Bool = true) {
         if let dest = destination {
-            if let dest_id = dest.value {
-                if !send(destination: dest_id) {
-                    manager.cannotStartCurrent()
-                } else {
-                    // cancel all announcement
-                    var delay = self.tts.isSpeaking ? 1.0 : 0
+            let dest_id = dest.value
+            if !send(destination: dest_id) {
+                manager.cannotStartCurrent()
+            } else {
+                // cancel all announcement
+                var delay = self.tts.isSpeaking ? 1.0 : 0
 
-                    self.stopSpeak()
-                    if self.isContentPresenting {
-                        self.isContentPresenting = false
-                        delay = self.detailSettingModel.browserCloseDelay
-                    }
-                    if UIAccessibility.isVoiceOverRunning {
-                        delay = 3
-                    }
-                    // wait at least 1.0 seconds if tts was speaking
-                    // wait 1.0 ~ 2.0 seconds if browser was open.
-                    // hopefully closing browser and reading the content by voice over will be ended by then
-                    DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                        self.willSpeakArriveMessage = true
-                        let announce = CustomLocalizedString("Going to %@", lang: self.resourceLang, dest.title.pron)
-                        + (dest.startMessage?.content ?? "")
-                        if(isStartMessageSpeaking){
-                            self.tts.speak(announce, forceSelfvoice: false, force: true, priority: .High, timeout: nil, tag: .Next(erase:true), callback: {_, _ in }, progress: {range in
-                                if range.location == 0{
-                                    self.willSpeakArriveMessage = true
-                                }
-                            })
-                        }
+                self.stopSpeak()
+                if self.isContentPresenting {
+                    self.isContentPresenting = false
+                    delay = self.detailSettingModel.browserCloseDelay
+                }
+                if UIAccessibility.isVoiceOverRunning {
+                    delay = 3
+                }
+                // wait at least 1.0 seconds if tts was speaking
+                // wait 1.0 ~ 2.0 seconds if browser was open.
+                // hopefully closing browser and reading the content by voice over will be ended by then
+                DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                    self.willSpeakArriveMessage = true
+                    let announce = CustomLocalizedString("Going to %@", lang: self.resourceLang, dest.title.pron)
+                    + (dest.startMessage?.text ?? "")
+                    if(isStartMessageSpeaking){
+                        self.tts.speak(announce, forceSelfvoice: false, force: true, priority: .High, timeout: nil, tag: .Next(erase:true), callback: {_, _ in }, progress: {range in
+                            if range.location == 0{
+                                self.willSpeakArriveMessage = true
+                            }
+                        })
                     }
                 }
-                self.activityLog(category: "destination-text", text: dest.title.text, memo: dest.title.pron)
             }
+            self.activityLog(category: "destination-text", text: dest.title.text, memo: dest.title.pron)
         } else {
             _ = send(destination: "__cancel__")
         }
@@ -1238,6 +1244,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     }
 
     // MARK: CaBotServiceDelegate
+    private var backgroundQueue: DispatchQueue?
 
     func caBot(service: any CaBotTransportProtocol, centralConnected: Bool) {
         guard self.preview == false else {return}
@@ -1256,16 +1263,39 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             self.tts.speak(text, force: true, priority:.Normal) { _, _ in }
 
             if self.suitcaseConnected {
-                if self.modeType != .Normal{
-                    self.share(user_info: SharedInfo(type: .RequestUserInfo, value: "", flag1: false)) // do not speak
-                }
-                else if self.modeType == .Normal{
-                    tourManager.tourDataLoad(model: self)
-                    shareAllUserConfig()
+                loadFromServer() {
+                    if self.modeType != .Normal{
+                        self.share(user_info: SharedInfo(type: .RequestUserInfo, value: "", flag1: false)) // do not speak
+                    }
+                    else if self.modeType == .Normal{
+                        self.tourManager.tourDataLoad()
+                        self.shareAllUserConfig()
+                    }
                 }
                 DispatchQueue.main.async {
                     _ = self.fallbackService.manage(command: .lang, param: self.resourceLang)
                     _ = self.fallbackService.manage(command: .reqfeatures)
+                }
+            }
+        }
+    }
+
+    func loadFromServer(callback: (() -> Void)? = nil) {
+        DispatchQueue.main.async {
+            self.serverIsReady = .Loading
+        }
+        if backgroundQueue == nil {
+            backgroundQueue = DispatchQueue.init(label: "Network Queue")
+        }
+        backgroundQueue?.async {
+            if let _ = try? ResourceManager.shared.load() {
+                DispatchQueue.main.async {
+                    self.serverIsReady = .Ready
+                    callback?()
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.serverIsReady = .NotReady
                 }
             }
         }
@@ -1337,10 +1367,10 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 var announce = ""
                 if let count = cd.arriveMessages?.count {
                     for i in 0 ..< count{
-                        announce += cd.arriveMessages?[i].content ?? ""
+                        announce += cd.arriveMessages?[i].text ?? ""
                     }
                 } else{
-                    if let _ = cd.content?.content,
+                    if let _ = cd.content,
                        tourManager.setting.showContentWhenArrive {
                         announce += CustomLocalizedString("You can check detail of %@ on the phone. ", lang: self.resourceLang, cd.title.pron)
                     }
@@ -1367,7 +1397,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                         guard code != .Paused else { return }
                         // if user pressed the next button while reading announce, skip open content
                         if self.tourManager.currentDestination == nil {
-                            if let contentURL = cd.content?.url,
+                            if let contentURL = cd.content,
                                self.tourManager.setting.showContentWhenArrive {
                                 self.open(content: contentURL)
                             }
@@ -1525,6 +1555,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         // Only Attend
         if modeType != .Normal {
             self.userInfo.update(userInfo: userInfo)
+            objectWillChange.send()
             if userInfo.type == .Speak {
                 print("Speak share \(userInfo)")
                 if isTTSEnabledForAdvanced {
@@ -1544,49 +1575,32 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
 
         // only User
         if userInfo.type == .OverrideTour {
-            if let src = resource?.toursSource {
-                do {
-                    let tours = try Tour.load(at: src)
-                    for tour in tours {
-                        if tour.id == userInfo.value {
-                            tourManager.set(tour: tour)
-                            needToStartAnnounce(wait: true)
-                        }
-                    }
-                } catch {
-                    NSLog("\(src) cannot be loaded")
+            do {
+                //let _ = try ResourceManager.shared.load()
+                if let tour = TourData.getTour(by: userInfo.value) {
+                    tourManager.set(tour: tour)
+                    needToStartAnnounce(wait: true)
                 }
+            } catch {
+                NSLog("cannot be loaded")
             }
         }
         if userInfo.type == .OverrideDestination {
-            func traverseDest(src: Source) {
-                do {
-                    let dests = try Destination.load(at: src)
-                    for dest in dests {
-                        if let value = dest.value {
-                            if value == userInfo.value {
-                                if userInfo.flag1 { // clear and add
-                                    self.clearAll()
-                                }
-                                if userInfo.flag2 {
-                                    tourManager.addToFirst(destination: dest)
-                                }
-                                else {
-                                    tourManager.addToLast(destination: dest)
-                                }
-                                needToStartAnnounce(wait: true)
-                                return
-                            }
-                        } else if let src = dest.file {
-                            traverseDest(src: src)
-                        }
+            do {
+                //let _ = try ResourceManager.shared.load()
+                if let dest = Directory.getDestination(by: userInfo.value) {
+                    if userInfo.flag1 {
+                        self.clearAll()
+                        tourManager.addToLast(destination: dest)
+                    }else if userInfo.flag2 {
+                        tourManager.addToFirst(destination: dest)
+                    } else {
+                        tourManager.addToLast(destination: dest)
                     }
-                } catch {
-                    NSLog("\(src) cannot be loaded")
+                    needToStartAnnounce(wait: true)
                 }
-            }
-            if let src = resource?.destinationsSource {
-                traverseDest(src: src)
+            } catch {
+                NSLog("cannot be loaded")
             }
         }
         if userInfo.type == .Skip {
@@ -1601,10 +1615,8 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     }
 
     func shareAllUserConfig() {
-        self.share(user_info: SharedInfo(type: .Tour, value: self.tourManager.title.text))
-        self.share(user_info: SharedInfo(type: .CurrentDestination, value: self.tourManager.currentDestination?.title.text ?? ""))
-        self.share(user_info: SharedInfo(type: .NextDestination, value: self.tourManager.nextDestination?.title.text ?? ""))
-        self.share(user_info: SharedInfo(type: .Destinations, value: self.tourManager.destinations.map { $0.title.text }.joined(separator: ",")))
+        let data = tourManager.getTourSaveData()
+        self.share(user_info: SharedInfo(type: .Tour, value: data.toJsonString()))
         self.share(user_info: SharedInfo(type: .ChangeLanguage, value: self.resourceLang))
         self.share(user_info: SharedInfo(type: .ChangeUserVoiceType, value: "\(self.userVoice?.id ?? "")", flag1: false))
         self.share(user_info: SharedInfo(type: .ChangeUserVoiceRate, value: "\(self.userSpeechRate)", flag1: false))
@@ -1890,10 +1902,10 @@ class SpeakingText: Hashable, ObservableObject {
 }
 
 class UserInfoBuffer {
-    var selectedTour: String = ""
-    var currentDestination: String = ""
-    var nextDestination: String = ""
-    var destinations: [String] = []
+    var selectedTour: Tour? = nil
+    var currentDestination: (any Destination)? = nil
+    var nextDestination: (any Destination)? = nil
+    var destinations: [any Destination] = []
     var speakingText: [SpeakingText] = []
     var speakingIndex = -1
     weak var modelData: CaBotAppModel?
@@ -1903,9 +1915,10 @@ class UserInfoBuffer {
     }
 
     func clear() {
-        selectedTour = ""
-        currentDestination = ""
-        nextDestination = ""
+        selectedTour = nil
+        currentDestination = nil
+        nextDestination = nil
+        destinations = []
         speakingText = []
     }
 
@@ -1938,16 +1951,29 @@ class UserInfoBuffer {
             }
             break
         case .Tour:
-            selectedTour = userInfo.value
+            clear()
+            if let data = userInfo.value.data(using: .utf8) {
+                if let saveData = try? JSONDecoder().decode(TourSaveData.self, from: data) {
+                    do {
+                        //let _ = try ResourceManager.shared.load()
+                        selectedTour = TourData.getTour(by: saveData.id)
+                        currentDestination = ResourceManager.shared.getDestination(by: saveData.currentDestination)
+                        var first = true
+                        for destination in saveData.destinations {
+                            if let dest = ResourceManager.shared.getDestination(by: destination) {
+                                if first {
+                                    first = false
+                                    nextDestination = dest
+                                }
+                                destinations.append(dest)
+                            }
+                        }
+                    } catch {
+                        print("user share .Tour got Error")
+                    }
+                }
+            }
             break
-        case .CurrentDestination:
-            currentDestination = userInfo.value
-            break
-        case .NextDestination:
-            nextDestination = userInfo.value
-            break
-        case .Destinations:
-            destinations = userInfo.value.split(separator: ",").map(String.init)
         default:
             break
         }

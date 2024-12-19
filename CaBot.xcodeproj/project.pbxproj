@@ -38,8 +38,6 @@
 		30E50DD7269F784A00729ABD /* OnboardGrantAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E50DD5269F784A00729ABD /* OnboardGrantAccess.swift */; };
 		30E50DD8269F784A00729ABD /* MainMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E50DD6269F784A00729ABD /* MainMenuView.swift */; };
 		30E50DDB269F7E3800729ABD /* CaBot.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 30E50DD9269F7E3800729ABD /* CaBot.xcdatamodeld */; };
-		30E50DDD269FCBC200729ABD /* ResourceSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E50DDC269FCBC200729ABD /* ResourceSelectView.swift */; };
-		30E50DDF26A0B21200729ABD /* ConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E50DDE26A0B21200729ABD /* ConversationView.swift */; };
 		30E50DE226A0BA5200729ABD /* DestinationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E50DE126A0BA5200729ABD /* DestinationsView.swift */; };
 		30E50DE826A0BBE900729ABD /* ToursView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E50DE726A0BBE900729ABD /* ToursView.swift */; };
 		30E99D9226681097001ACAAA /* ResourceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E99D9126681097001ACAAA /* ResourceManager.swift */; };
@@ -85,7 +83,6 @@
 		D7CC05042BFB352700C0B10A /* Logging.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E51C38F2AABA88C0095945F /* Logging.m */; };
 		D7CC05052BFB352700C0B10A /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E50DD3269F77CE00729ABD /* RootView.swift */; };
 		D7CC05062BFB352700C0B10A /* NavUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EF5F1E8228DB07100788987 /* NavUtil.m */; };
-		D7CC05072BFB352700C0B10A /* ConversationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E50DDE26A0B21200729ABD /* ConversationView.swift */; };
 		D7CC05092BFB352700C0B10A /* RosWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E561455E2A6E02A8005CF82F /* RosWebView.swift */; };
 		D7CC050B2BFB352700C0B10A /* I18NExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EDF3C4129D4776D00AD1115 /* I18NExtension.swift */; };
 		D7CC050C2BFB352700C0B10A /* TTSHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3096BF1726A5D0990066F256 /* TTSHelper.swift */; };
@@ -93,7 +90,6 @@
 		D7CC050F2BFB352700C0B10A /* CaBotServiceCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 306069B529A686D9001FB5DB /* CaBotServiceCommon.swift */; };
 		D7CC05102BFB352700C0B10A /* SystemStatusDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308FCE2B27E42B7B009FCC7B /* SystemStatusDetailView.swift */; };
 		D7CC05112BFB352700C0B10A /* SpokenTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E8F5A1F2BA4D33800E5D547 /* SpokenTextView.swift */; };
-		D7CC05122BFB352700C0B10A /* ResourceSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E50DDC269FCBC200729ABD /* ResourceSelectView.swift */; };
 		D7CC05132BFB352700C0B10A /* CaBotServiceBLE.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E29F070228B55FC00CA7DD6 /* CaBotServiceBLE.swift */; };
 		D7CC05142BFB352700C0B10A /* TourManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E50DCB269F672800729ABD /* TourManager.swift */; };
 		D7CC05152BFB352700C0B10A /* BatteryStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 308FCE2D27E62B30009FCC7B /* BatteryStatusView.swift */; };
@@ -182,8 +178,6 @@
 		30E50DD5269F784A00729ABD /* OnboardGrantAccess.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardGrantAccess.swift; sourceTree = "<group>"; };
 		30E50DD6269F784A00729ABD /* MainMenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainMenuView.swift; sourceTree = "<group>"; };
 		30E50DDA269F7E3800729ABD /* CaBot.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CaBot.xcdatamodel; sourceTree = "<group>"; };
-		30E50DDC269FCBC200729ABD /* ResourceSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceSelectView.swift; sourceTree = "<group>"; };
-		30E50DDE26A0B21200729ABD /* ConversationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationView.swift; sourceTree = "<group>"; };
 		30E50DE126A0BA5200729ABD /* DestinationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationsView.swift; sourceTree = "<group>"; };
 		30E50DE726A0BBE900729ABD /* ToursView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToursView.swift; sourceTree = "<group>"; };
 		30E99D9126681097001ACAAA /* ResourceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceManager.swift; sourceTree = "<group>"; };
@@ -314,11 +308,9 @@
 				D7CC05312BFB3B1A00C0B10A /* User */,
 				30E50DD3269F77CE00729ABD /* RootView.swift */,
 				30E50DD5269F784A00729ABD /* OnboardGrantAccess.swift */,
-				30E50DDC269FCBC200729ABD /* ResourceSelectView.swift */,
 				308FCE2D27E62B30009FCC7B /* BatteryStatusView.swift */,
 				308FCE2B27E42B7B009FCC7B /* SystemStatusDetailView.swift */,
 				308FCE2F27E81B7E009FCC7B /* StatusLabelStyle.swift */,
-				30E50DDE26A0B21200729ABD /* ConversationView.swift */,
 				09725B0924FE4AC300012D42 /* DialogViewControllerCabot.swift */,
 				30E50DE726A0BBE900729ABD /* ToursView.swift */,
 				3013614626A1E77B0050CF9E /* WebContentView.swift */,
@@ -561,6 +553,7 @@
 				D7CC051A2BFB352700C0B10A /* Frameworks */,
 				D7CC05212BFB352700C0B10A /* ShellScript */,
 				D7CC05222BFB352700C0B10A /* Resources */,
+				E46C82662C182BB200917AB3 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -701,6 +694,23 @@
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nTHREE_JS=${TEMP_DIR}/three.min.js\ncurl -o $THREE_JS https://cdn.jsdelivr.net/npm/three@0.89.0/build/three.min.js\ncp -f $THREE_JS ${SRCROOT}/Resource/localserver/js/\n\nEVENTEMITTER2_JS=${TEMP_DIR}/eventemitter2.min.js\ncurl -o $EVENTEMITTER2_JS https://cdn.jsdelivr.net/npm/eventemitter2@6.4/lib/eventemitter2.min.js\ncp -f $EVENTEMITTER2_JS ${SRCROOT}/Resource/localserver/js/\n\nROSLIB_JS=${TEMP_DIR}/roslib.js\ncurl -o $ROSLIB_JS https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.js\ncp -f $ROSLIB_JS ${SRCROOT}/Resource/localserver/js/\n\nROS3D_JS=${TEMP_DIR}/ros3d.min.js\ncurl -o $ROS3D_JS https://raw.githubusercontent.com/CMU-cabot/ros3djs/cabot-ros2/build/ros3d.min.js\ncp -f $ROS3D_JS ${SRCROOT}/Resource/localserver/js/\n\nfor lang in en.lproj ja.lproj; do\n    mkdir -p \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/${lang}\"\n    cp \"${SRCROOT}/CaBot/${lang}/User-InfoPlist.strings\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/${lang}/InfoPlist.strings\"\ndone\n\ngit_commit=$(git rev-parse --short HEAD)\n/usr/libexec/PlistBuddy -c \"Set :GitCommitHash ${git_commit}\" \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n";
 		};
+		E46C82662C182BB200917AB3 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n";
+		};
 		E5FD56542A835D56008237DC /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -746,7 +756,6 @@
 				7E51C3902AABA88C0095945F /* Logging.m in Sources */,
 				30E50DD4269F77CE00729ABD /* RootView.swift in Sources */,
 				7EF5F1EA228DB07100788987 /* NavUtil.m in Sources */,
-				30E50DDF26A0B21200729ABD /* ConversationView.swift in Sources */,
 				3096BF1426A5C29F0066F256 /* SettingView.swift in Sources */,
 				E561455F2A6E02A8005CF82F /* RosWebView.swift in Sources */,
 				30E50DD8269F784A00729ABD /* MainMenuView.swift in Sources */,
@@ -757,7 +766,6 @@
 				306069B629A686D9001FB5DB /* CaBotServiceCommon.swift in Sources */,
 				308FCE2C27E42B7B009FCC7B /* SystemStatusDetailView.swift in Sources */,
 				7E8F5A202BA4D33800E5D547 /* SpokenTextView.swift in Sources */,
-				30E50DDD269FCBC200729ABD /* ResourceSelectView.swift in Sources */,
 				7E29F072228B55FC00CA7DD6 /* CaBotServiceBLE.swift in Sources */,
 				30E50DCC269F672800729ABD /* TourManager.swift in Sources */,
 				308FCE2E27E62B30009FCC7B /* BatteryStatusView.swift in Sources */,
@@ -818,7 +826,6 @@
 				D7CC05042BFB352700C0B10A /* Logging.m in Sources */,
 				D7CC05052BFB352700C0B10A /* RootView.swift in Sources */,
 				D7CC05062BFB352700C0B10A /* NavUtil.m in Sources */,
-				D7CC05072BFB352700C0B10A /* ConversationView.swift in Sources */,
 				D7D7A6FB2BFECB490072ADF6 /* TourDetailView.swift in Sources */,
 				D7F6BE6E2C2A57C300CD8258 /* SettingView.swift in Sources */,
 				D7CC05092BFB352700C0B10A /* RosWebView.swift in Sources */,
@@ -828,7 +835,6 @@
 				D7CC050F2BFB352700C0B10A /* CaBotServiceCommon.swift in Sources */,
 				D7CC05102BFB352700C0B10A /* SystemStatusDetailView.swift in Sources */,
 				D7CC05112BFB352700C0B10A /* SpokenTextView.swift in Sources */,
-				D7CC05122BFB352700C0B10A /* ResourceSelectView.swift in Sources */,
 				D7CC05132BFB352700C0B10A /* CaBotServiceBLE.swift in Sources */,
 				D7CC05142BFB352700C0B10A /* TourManager.swift in Sources */,
 				D7CC05152BFB352700C0B10A /* BatteryStatusView.swift in Sources */,

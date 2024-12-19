@@ -24,23 +24,23 @@ import SwiftUI
 
 struct DestinationDetailView: View {
     @EnvironmentObject var modelData: CaBotAppModel
-    @State var destination: Destination
+    @State var destination: any Destination
     @State private var isConfirming = false
-    @State private var targetDestination: Destination?
+    @State private var targetDestination: (any Destination)?
 
     var body: some View {
         let tourManager = modelData.tourManager
         Form {
             Section(header: Text(destination.title.text)) {
-                if let startMessage =  destination.startMessage?.content {
-                    Text(startMessage)
+                if let startMessage = destination.startMessage {
+                    Text(startMessage.text)
                 }
-                if let arriveMessages = destination.arriveMessages{
-                    ForEach(arriveMessages, id: \.self) { arriveMessage in
-                        Text(arriveMessage.content!)
+                if let arriveMessages = destination.arriveMessages {
+                    ForEach(arriveMessages, id: \.text) { arriveMessage in
+                        Text(arriveMessage.text)
                     }
                 }
-                if let url = destination.content?.url {
+                if let url = destination.content {
                     Button("Show more detail") {
                         modelData.contentURL = url
                         modelData.isContentPresenting = true
@@ -58,7 +58,7 @@ struct DestinationDetailView: View {
                     }
                 }
                 .confirmationDialog(Text("ADD_A_DESTINATION"), isPresented: $isConfirming, presenting: targetDestination) {
-                detail in
+                    detail in
                     Button {
                         if let dest = targetDestination {
                             modelData.clearAll()
@@ -103,13 +103,16 @@ struct DestinationDetailView: View {
 struct DestinationDetailView_Previews: PreviewProvider {
     static var previews: some View {
         let modelData = CaBotAppModel()
+        modelData.modeType = .Normal
 
-        let resource = modelData.resourceManager.resource(by: "Test data")!
-        let destinations = try! Destination.load(at: resource.destinationsSource!)
-        let destination = destinations[0]
-        let destinations2 = try! Destination.load(at: destination.file!)
-
-        DestinationDetailView(destination: destinations2[0])
-            .environmentObject(modelData)
+        var floorDestinationsForPreviews: Directory.Sections
+        do {
+            floorDestinationsForPreviews = try Directory.loadForPreview()
+            return AnyView(DestinationDetailView(destination: floorDestinationsForPreviews.sections[0].items[0])
+                .environmentObject(modelData))
+        } catch {
+            NSLog("Failed to download directory JSON")
+        }
+        return AnyView(EmptyView())
     }
 }

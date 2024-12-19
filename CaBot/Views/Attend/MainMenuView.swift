@@ -39,11 +39,9 @@ struct MainMenuView: View {
                 ActionMenus()
                     .environmentObject(modelData)
             }
-            DestinationMenus()
-                .environmentObject(modelData)
             MainMenus()
                 .environmentObject(modelData)
-                .disabled(!modelData.suitcaseConnected && !modelData.menuDebug)
+                .disabled((!modelData.suitcaseConnected && !modelData.menuDebug) || modelData.serverIsReady != .Ready)
             StatusMenus()
                 .environmentObject(modelData)
             MapMenus()
@@ -58,7 +56,7 @@ struct MainMenuView: View {
             return true
         }
         if let ad = modelData.tourManager.arrivedDestination {
-            if let _ = ad.content?.url {
+            if let _ = ad.content {
                 return true
             }
             if modelData.tourManager.currentDestination == nil,
@@ -105,9 +103,9 @@ struct UserInfoDestinations: View {
                 }
             }
             Section(header: Text("Tour")) {
-                ForEach(modelData.userInfo.destinations, id: \.self) { destination in
+                ForEach(modelData.userInfo.destinations, id: \.value) { destination in
                     Label {
-                        Text(destination)
+                        Text(destination.title.text)
                     } icon: {
                         Image(systemName: "mappin.and.ellipse")
                     }
@@ -119,103 +117,93 @@ struct UserInfoDestinations: View {
 
 struct UserInfoView: View {
     @EnvironmentObject var modelData: CaBotAppModel
-    
+
     var body: some View {
-        let grayOutOpacity = (modelData.isUserAppConnected && modelData.suitcaseConnected) ? 1.0 : 0.1
         Section(header: Text("User App Info")) {
-            if modelData.suitcaseConnected && !modelData.isUserAppConnected {
-                Label {
-                    Text("USER_APP_NOT_CONNECTED").foregroundColor(.red)
-                } icon: {
-                    Image(systemName: "xmark.circle").foregroundColor(.red)
+            Label {
+                if let tour = modelData.userInfo.selectedTour {
+                    Text(tour.title.text)
+                } else {
+                    if (modelData.userInfo.destinations.count == 0) {
+                        Text("PLACEHOLDER_TOUR_TITLE").foregroundColor(.gray)
+                    } else {
+                        Text("CUSTOMIZED_TOUR")
+                    }
+                }
+            } icon: {
+                Image(systemName: "list.bullet.rectangle.portrait")
+            }
+            Label {
+                if let dest = modelData.userInfo.currentDestination {
+                    Text(dest.title.text)
+                } else if let dest = modelData.userInfo.nextDestination {
+                    Text(dest.title.text)
+                } else {
+                    Text("PLACEHOLDER_DESTINATION_TITLE").foregroundColor(.gray)
+                }
+                if modelData.systemStatus.level == .Active{
+                    Spacer()
+                    HStack {
+                        Image(systemName: modelData.touchStatus.level.icon)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 24, height: 24)
+                    }
+                    .foregroundColor(modelData.touchStatus.level.color)
+                }
+            } icon: {
+                if modelData.userInfo.currentDestination != nil {
+                    Image(systemName: "arrow.triangle.turn.up.right.diamond")
+                } else {
+                    Image(systemName: "mappin.and.ellipse")
                 }
             }
-            Group {
-                Label {
-                    if (modelData.userInfo.selectedTour.isEmpty) {
-                        if (modelData.userInfo.destinations.count == 0) {
-                            Text("PLACEHOLDER_TOUR_TITLE").foregroundColor(.gray)
-                        } else {
-                            Text("CUSTOMIZED_TOUR")
+            if modelData.userInfo.nextDestination != nil {
+                Button(action: {
+                    modelData.share(user_info: SharedInfo(type: .Skip, value: ""))
+                }) {
+                    Label{
+                        if let dest = modelData.userInfo.currentDestination {
+                            Text("Skip Label \(dest.title.text)")
+                        } else if let dest = modelData.userInfo.nextDestination {
+                            Text("Skip Label \(dest.title.text)")
                         }
-                    } else {
-                        Text(modelData.userInfo.selectedTour)
+                    } icon: {
+                        Image(systemName: "arrow.right.to.line")
                     }
-                } icon: {
-                    Image(systemName: "list.bullet.rectangle.portrait")
                 }
-                Label {
-                    if modelData.userInfo.currentDestination != "" {
-                        Text(modelData.userInfo.currentDestination)
-                    } else if modelData.userInfo.nextDestination != "" {
-                        Text(modelData.userInfo.nextDestination)
-                    } else {
-                        Text("PLACEHOLDER_DESTINATION_TITLE").foregroundColor(.gray)
-                    }
-                    if modelData.systemStatus.level == .Active{
+            }
+            if (modelData.userInfo.destinations.count > 1) {
+                NavigationLink(destination: UserInfoDestinations().environmentObject(modelData).heartbeat("UserInfoDestinations"), label: {
+                    HStack {
                         Spacer()
-                        HStack {
-                            Image(systemName: modelData.touchStatus.level.icon)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 24, height: 24)
-                        }
-                        .foregroundColor(modelData.touchStatus.level.color)
+                        Text("See detail")
                     }
+                })
+            }
+            if modelData.userInfo.speakingText.count == 0 {
+                Label {
+                    Text("PLACEHOLDER_SPEAKING_TEXT").foregroundColor(.gray)
                 } icon: {
-                    if modelData.userInfo.currentDestination != "" {
-                        Image(systemName: "arrow.triangle.turn.up.right.diamond")
-                    } else {
-                        Image(systemName: "mappin.and.ellipse")
-                    }
+                    Image(systemName: "text.bubble")
                 }
-                if modelData.userInfo.nextDestination != "" {
-                    Button(action: {
-                        modelData.share(user_info: SharedInfo(type: .Skip, value: ""))
-                    }) {
-                        Label{
-                            if modelData.userInfo.currentDestination != ""{
-                                Text("Skip Label \(modelData.userInfo.currentDestination)")
-                            }else{
-                                Text("Skip Label \(modelData.userInfo.nextDestination)")
-                            }
-                        } icon: {
-                            Image(systemName: "arrow.right.to.line")
-                        }
-                    }
+            } else if modelData.userInfo.speakingText.count > 1 {
+                ForEach(modelData.userInfo.speakingText[..<2], id: \.self) { text in
+                    SpokenTextView.showText(text: text)
                 }
-                if (modelData.userInfo.destinations.count >= 1) {
-                    NavigationLink(destination: UserInfoDestinations().environmentObject(modelData).heartbeat("UserInfoDestinations"), label: {
+                if modelData.userInfo.speakingText.count > 2 {
+                    NavigationLink(destination: SpokenTextView().environmentObject(modelData).heartbeat("SpokenTextView"), label: {
                         HStack {
                             Spacer()
-                            Text("See detail")
+                            Text("See history")
                         }
                     })
                 }
-                if modelData.userInfo.speakingText.count == 0 {
-                    Label {
-                        Text("PLACEHOLDER_SPEAKING_TEXT").foregroundColor(.gray)
-                    } icon: {
-                        Image(systemName: "text.bubble")
-                    }
-                } else if modelData.userInfo.speakingText.count > 1 {
-                    ForEach(modelData.userInfo.speakingText[..<2], id: \.self) { text in
-                        SpokenTextView.showText(text: text)
-                    }
-                    if modelData.userInfo.speakingText.count > 2 {
-                        NavigationLink(destination: SpokenTextView().environmentObject(modelData).heartbeat("SpokenTextView"), label: {
-                            HStack {
-                                Spacer()
-                                Text("See history")
-                            }
-                        })
-                    }
-                } else {
-                    ForEach(modelData.userInfo.speakingText, id: \.self) { text in
-                        SpokenTextView.showText(text: text)
-                    }
+            } else {
+                ForEach(modelData.userInfo.speakingText, id: \.self) { text in
+                    SpokenTextView.showText(text: text)
                 }
-            }.opacity(grayOutOpacity)
+            }
         }
     }
 }
@@ -259,7 +247,7 @@ struct ArrivedActionMenus: View {
     
     var body: some View {
         if let ad = modelData.tourManager.arrivedDestination {
-            if let contentURL = ad.content?.url {
+            if let contentURL = ad.content {
                 Button(action: {
                     modelData.open(content: contentURL)
                 }) {
@@ -285,9 +273,9 @@ struct ArrivedActionMenus: View {
                 .disabled(!modelData.suitcaseConnected && !modelData.menuDebug)
             }
             if let count = ad.arriveMessages?.count {
-                if let text = ad.arriveMessages?[count-1].content {
+                if let text = ad.arriveMessages?[count-1] {
                     Button(action: {
-                        modelData.speak(text, priority:.Required) { _, _ in }
+                        modelData.speak(text.text, priority:.Required) { _, _ in }
                     }) {
                         Label{
                             Text("Repeat the message")
@@ -375,7 +363,7 @@ struct DestinationMenus: View {
                         }
                     }
                 }
-                ForEach(modelData.tourManager.first(n: maxDestinationNumber-1), id: \.self) {dest in
+                ForEach(modelData.tourManager.first(n: maxDestinationNumber-1), id: \.value) {dest in
                     Label(dest.title.text, systemImage: "mappin.and.ellipse")
                 }
                 if modelData.tourManager.destinations.count > 0 {
@@ -397,58 +385,21 @@ struct MainMenus: View {
     @EnvironmentObject var modelData: CaBotAppModel
 
     var body: some View {
-        if let cm = modelData.resource {
-            Section(header: Text("Navigation")) {
-                if modelData.modeType == .Debug{
-                    if let src = cm.conversationSource{
-                        NavigationLink(
-                            destination: ConversationView(src: src, dsrc: cm.destinationAllSource)
-                                .onDisappear(){
-                                    modelData.resetAudioSession()
-                                }
-                                .environmentObject(modelData).heartbeat("ConversationView"),
-                            label: {
-                                Text("START_CONVERSATION")
-                            })
-                    }
-                }
-                if let src = cm.destinationsSource {
-                    NavigationLink(
-                        destination: DestinationsView(src: src)
-                            .environmentObject(modelData).heartbeat("DestinationsView"),
-                        label: {
-                            Text("SELECT_DESTINATION")
-                        })
-                    .disabled(!modelData.isUserAppConnected)
-                }
-                //if modelData.modeType == .Debug{
-                    if let src = cm.toursSource {
-                        NavigationLink(
-                            destination: ToursView(src: src)
-                                .environmentObject(modelData).heartbeat("ToursView"),
-                            label: {
-                                Text("SELECT_TOUR")
-                            })
-                        .disabled(!modelData.isUserAppConnected)
-                    }
-                //}
-            }
-
-
-            if cm.customeMenus.count > 0 {
-                Section(header: Text("Others")) {
-                    ForEach (cm.customeMenus, id: \.self) {
-                        menu in
-
-                        if let url = menu.script.url {
-                            Button(menu.title) {
-                                let jsHelper = JSHelper(withScript: url)
-                                _ = jsHelper.call(menu.function, withArguments: [])
-                            }
-                        }
-                    }
-                }
-            }
+        Section(header: Text("Navigation")) {
+            NavigationLink(
+                destination: DestinationsView()
+                    .environmentObject(modelData).heartbeat("DestinationsView"),
+                label: {
+                    Text("SELECT_DESTINATION")
+                })
+            .disabled(!modelData.isUserAppConnected)
+            NavigationLink(
+                destination: ToursView()
+                    .environmentObject(modelData).heartbeat("ToursView"),
+                label: {
+                    Text("SELECT_TOUR")
+                })
+            .disabled(!modelData.isUserAppConnected)
         }
     }
 }
@@ -702,10 +653,6 @@ struct ContentView_Previews: PreviewProvider {
         modelData.serverTCPVersion = CaBotServiceBLE.CABOT_BLE_VERSION
         modelData.modeType = .Normal
 
-        if let r = modelData.resourceManager.resource(by: "Test data") {
-            modelData.resource = r
-        }
-
         return MainMenuView()
             .environmentObject(modelData)
             .environment(\.locale, .init(identifier: "en"))
@@ -832,14 +779,14 @@ struct ContentView_Previews: PreviewProvider {
         modelData.menuDebug = true
         modelData.noSuitcaseDebug = true
 
-        if let r = modelData.resourceManager.resource(by: "place0") {
-            modelData.resource = r
-            if let url = r.toursSource {
-                if let tours = try? Tour.load(at: url) {
-                    modelData.tourManager.set(tour: tours[0])
-                    _ = modelData.tourManager.proceedToNextDestination()
-                }
+        do{
+            let tours = try ResourceManager.shared.loadForPreview().tours
+            if  tours.indices.contains(1){
+                modelData.tourManager.set(tour: tours[0])
+                _ = modelData.tourManager.proceedToNextDestination()
             }
+        }catch {
+            NSLog("Error loading tours for preview: \(error)")
         }
 
         return MainMenuView()
@@ -850,13 +797,13 @@ struct ContentView_Previews: PreviewProvider {
     static var preview_tour2: some View {
         let modelData = CaBotAppModel()
 
-        if let r = modelData.resourceManager.resource(by: "place0") {
-            modelData.resource = r
-            if let url = r.toursSource {
-                if let tours = try? Tour.load(at: url) {
-                    modelData.tourManager.set(tour: tours[0])
-                }
+        do{
+            let tours = try ResourceManager.shared.loadForPreview().tours
+            if  tours.indices.contains(1){
+                modelData.tourManager.set(tour: tours[0])
             }
+        }catch {
+            NSLog("Error loading tours for preview: \(error)")
         }
 
         return MainMenuView()
@@ -867,13 +814,13 @@ struct ContentView_Previews: PreviewProvider {
     static var preview_tour3: some View {
         let modelData = CaBotAppModel()
 
-        if let r = modelData.resourceManager.resource(by: "place0") {
-            modelData.resource = r
-            if let url = r.toursSource {
-                if let tours = try? Tour.load(at: url) {
-                    modelData.tourManager.set(tour: tours[1])
-                }
+        do{
+            let tours = try ResourceManager.shared.loadForPreview().tours
+            if  tours.indices.contains(1){
+                modelData.tourManager.set(tour: tours[1])
             }
+        }catch {
+            NSLog("Error loading tours for preview: \(error)")
         }
 
         return MainMenuView()
@@ -884,13 +831,13 @@ struct ContentView_Previews: PreviewProvider {
     static var preview_tour4: some View {
         let modelData = CaBotAppModel()
 
-        if let r = modelData.resourceManager.resource(by: "place0") {
-            modelData.resource = r
-            if let url = r.toursSource {
-                if let tours = try? Tour.load(at: url) {
-                    modelData.tourManager.set(tour: tours[1])
-                }
+        do{
+            let tours = try ResourceManager.shared.loadForPreview().tours
+            if  tours.indices.contains(1){
+                modelData.tourManager.set(tour: tours[1])
             }
+        }catch {
+            NSLog("Error loading tours for preview: \(error)")
         }
 
         return MainMenuView()
@@ -901,8 +848,6 @@ struct ContentView_Previews: PreviewProvider {
     static var preview: some View {
         let modelData = CaBotAppModel()
 
-        modelData.resource = modelData.resourceManager.resource(by: "place0")
-
         return MainMenuView()
             .environmentObject(modelData)
             .previewDisplayName("preview")
@@ -911,8 +856,6 @@ struct ContentView_Previews: PreviewProvider {
 
     static var preview_ja: some View {
         let modelData = CaBotAppModel()
-
-        modelData.resource = modelData.resourceManager.resource(by: "place0")
 
         return MainMenuView()
             .environment(\.locale, .init(identifier: "ja"))

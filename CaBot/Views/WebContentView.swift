@@ -52,9 +52,7 @@ struct WebContentView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: WKWebView, context: Context) {
-        if let localURL = modelData.resourceManager.resolveContentURL(url: url) {
-            uiView.loadFileURL(localURL, allowingReadAccessTo: modelData.resourceManager.getResourceRoot())
-        } else {
+        if uiView.url != url {
             uiView.load(URLRequest(url: url))
         }
     }
@@ -64,9 +62,8 @@ struct WebView_Previews : PreviewProvider {
     static var previews: some View {
         let modelData = CaBotAppModel()
         
-        let contentURL = URL(string: "content://place0/test.html")!
-        let url = modelData.resourceManager.resolveContentURL(url: contentURL)!
-        return WebContentView(url: url,
+        let contentURL = URL(string: "content://place0/test.html")!  // TODO
+        return WebContentView(url: contentURL,
                               handlers: ["Test": TestHandler()])
             .environmentObject(modelData)
     }

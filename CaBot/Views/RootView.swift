@@ -36,10 +36,6 @@ struct RootView: View {
                     OnboardGrantAccess()
                         .environmentObject(modelData)
                         .heartbeat("OnboardGrantAccess")
-                case .ResourceSelect:
-                    ResourceSelectView()
-                        .environmentObject(modelData)
-                        .heartbeat("ResourceSelectView")
                 case .App:
                     MainMenuView()
                         .environmentObject(modelData)
@@ -82,60 +78,40 @@ struct RootView: View {
             })
             .alert(isPresented: $modelData.isConfirmingSummons) {
                 let ad = modelData.tourManager.arrivedDestination
-                let destination = ad!.waitingDestination!.value
-                let title = ad!.waitingDestination!.title
+                let destination = ad?.waitingDestination?.value
+                let title = ad?.waitingDestination?.title ?? I18NText.empty()
                 return Alert(title: Text("Let the suitcase wait"),
                              message: Text(LocalizedStringKey("Let the suitcase wait message \(title.text)")),
                              primaryButton: .default(Text("No")) {
-                                // noop
-                             },
+                    // noop
+                },
                              secondaryButton: .destructive(Text("Yes")){
-                                _ = modelData.summon(destination: destination)
-                             })
+                    if let destination {
+                        _ = modelData.summon(destination: destination)
+                    }
+                })
             }
         }
-        .environment(\.locale, modelData.resource?.locale ?? .init(identifier: modelData.resourceLang))
+        .environment(\.locale, modelData.selectedLocale)
     }
 }
 
 struct RootView_Previews: PreviewProvider {
     static var previews: some View {
-        previewApp
         previewContent
-        previewSelect
         previewOnboard
         previewAdvanced
-    }
-
-    static var previewApp: some View {
-        let modelData = CaBotAppModel()
-        modelData.displayedScene = .ResourceSelect
-        modelData.suitcaseConnected = false
-        modelData.resource = modelData.resourceManager.resource(by: "place0")
-
-        return RootView()
-            .environmentObject(modelData)
     }
 
     static var previewContent: some View {
         let modelData = CaBotAppModel()
         modelData.displayedScene = .App
         modelData.isContentPresenting = true
-        modelData.contentURL = URL(string: "content://place0/test.html")!
+        modelData.contentURL = URL(string: "content://place0/test.html")!  // TODO
 
         return RootView()
             .environmentObject(modelData)
-
-    }
-
-    static var previewSelect: some View {
-        let modelData = CaBotAppModel()
-        modelData.displayedScene = .ResourceSelect
-        modelData.suitcaseConnected = false
-        modelData.resource = nil
-
-        return RootView()
-            .environmentObject(modelData)
+            .previewDisplayName("Show Content")
     }
 
     static var previewOnboard: some View {
@@ -144,14 +120,16 @@ struct RootView_Previews: PreviewProvider {
 
         return RootView()
             .environmentObject(modelData)
+            .previewDisplayName(".Onboard")
     }
 
     static var previewAdvanced: some View {
         let modelData = CaBotAppModel()
         modelData.suitcaseConnected = true
-        modelData.modeType = .Advanced
+        modelData.displayedScene = .App
 
         return RootView()
             .environmentObject(modelData)
+            .previewDisplayName(".App")
     }
 }

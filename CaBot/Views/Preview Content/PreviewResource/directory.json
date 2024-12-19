@@ -1,0 +1,124 @@
+{
+    "sections": [
+        {
+            "title": "Search by Floor",
+            "items": [
+                {
+                    "title": "3F (all forDemonstarion=ture)",
+                    "content": {
+                        "sections": [
+                            {
+                                "title": "3F-1",
+                                "items": [
+                                    {
+                                        "subtitle": "Others - 3F",
+                                        "titlePron": "Destination1",
+                                        "subtitlePron": "Others - 3F",
+                                        "title": "Destination1 demo",
+                                        "nodeID": "Node_ID_FOR_A3",
+                                        "forDemonstration": "true"
+                                    }
+                                ]
+                            },
+                            {
+                                "title": "3F-2",
+                                "items": [
+                                    {
+                                        "subtitle": "Others - 3F",
+                                        "titlePron": "Destination2",
+                                        "subtitlePron": "Others - 3F",
+                                        "title": "Destination2 demo",
+                                        "nodeID": "Node_ID_FOR_B3",
+                                        "forDemonstration": "true"
+                                    }
+                                ]
+                            },
+                            {
+                                "title": "3F-3",
+                                "items": [
+                                    {
+                                        "subtitle": "Others - 3F",
+                                        "titlePron": "Destination3",
+                                        "subtitlePron": "Others - 3F",
+                                        "title": "Destination3 demo",
+                                        "nodeID": "Node_ID_FOR_C3",
+                                        "forDemonstration": "true"
+                                    },
+                                    {
+                                        "subtitle": "Others - 3F",
+                                        "titlePron": "Destination4",
+                                        "subtitlePron": "Others - 3F",
+                                        "title": "Destination4 demo",
+                                        "nodeID": "Node_ID_FOR_D3",
+                                        "forDemonstration": "true"
+                                    }
+                                ]
+                            }
+                        ],
+                        "showSectionIndex": true
+                    }
+                },
+
+                {
+                    "title": "5F",
+                    "content": {
+                        "sections": [
+                            {
+                                "title": "5F-1",
+                                "items": [
+                                    {
+                                        "subtitle": "Others - 5F",
+                                        "titlePron": "Destination1",
+                                        "subtitlePron": "Others - 5F",
+                                        "title": "Destination1",
+                                        "nodeID": "Node_ID_FOR_A",
+                                        "forDemonstration": "false"
+                                    }
+                                ]
+                            },
+                            {
+                                "title": "5F-2",
+                                "items": [
+                                    {
+                                        "subtitle": "Others - 5F",
+                                        "titlePron": "Destination2",
+                                        "subtitlePron": "Others - 5F",
+                                        "title": "Destination2",
+                                        "nodeID": "Node_ID_FOR_B",
+                                        "forDemonstration": "false"
+                                    }
+                                ]
+                            },
+                            {
+                                "title": "5F-3",
+                                "items": [
+                                    {
+                                        "subtitle": "Others - 5F",
+                                        "titlePron": "Destination3",
+                                        "subtitlePron": "Others - 5F",
+                                        "title": "Destination3 demo",
+                                        "nodeID": "Node_ID_FOR_C",
+                                        "forDemonstration": "true"
+                                    },
+                                    {
+                                        "subtitle": "Others - 5F",
+                                        "titlePron": "Destination4",
+                                        "subtitlePron": "Others - 5F",
+                                        "title": "Destination4 demo",
+                                        "nodeID": "Node_ID_FOR_D",
+                                        "forDemonstration": "true"
+                                    }
+                                ]
+                            }
+                        ],
+                        "showSectionIndex": true
+                    }
+                }
+            ]
+        },
+        {
+            "title": "Nearby Facility"
+        }
+    ],
+    "showSectionIndex": false
+}

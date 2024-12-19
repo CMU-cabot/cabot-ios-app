@@ -107,6 +107,10 @@ struct CaBotApp: App {
                 if isVoiceOverRunning {
                     modelData.stopSpeak()
                 }
+                ResourceManager.shared.invalidate()
+                if modelData.suitcaseConnected {
+                    modelData.loadFromServer()
+                }
                 break
             @unknown default:
                 break

@@ -310,3 +310,9 @@
 "Restart Localization"="位置推定の再試行";
 "Restarting Localization"="位置推定中";
 "RESTART_LOCALIZATION_MESSAGE"="位置推定が再試行されます。必ずロボットが停止した状態で行ってください。";
+
+//Resource Download Alert View
+"Retry Alert" = "サーバーとの接続をご確認ください！";
+"Retry" = "リトライ";
+"Return Mainmenu" = "メインメニューに戻る";
+"Resource Download" = "リソースのダウンロード";

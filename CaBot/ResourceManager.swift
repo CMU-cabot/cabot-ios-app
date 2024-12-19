@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021  Carnegie Mellon University
+ * Copyright (c) 2021, 2024  Carnegie Mellon University
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,25 +21,235 @@
  *******************************************************************************/
 
 import Foundation
-import Yams
 
-enum MetadataError: Error {
+
+class ResourceManager {
+    public static let shared = ResourceManager()
+    public var modeType: ModeType = .Normal
+
+    public func set(addressCandidate: AddressCandidate) {
+        self.addressCandidate = addressCandidate
+    }
+    public func set(modeType: ModeType) {
+        self.modeType = modeType
+    }
+
+    public enum Resource: String {
+        case config
+        case directory
+        case tourdata
+        case features_start
+        case features
+
+        var file_name: String {
+            "\(self.rawValue).json"
+        }
+    }
+
+    public struct Result {
+        var tours: [Tour]
+        var directory: Directory.Sections
+    }
+
+    public func initServer() throws -> Bool {
+        let configData = try ResourceManager.shared.fetchData(from: .config)
+        self.config = try JSONDecoder().decode(Config.self, from: configData)
+        let _ = try ResourceManager.shared.fetchData(from: .features_start)
+        return true
+    }
+
+    public var isServerDataReady: Bool {
+        get {
+            lastResult != nil
+        }
+    }
+
+    public func invalidate() {
+        loadSemaphore.wait()
+        defer {
+            loadSemaphore.signal()
+        }
+        lastResult = nil
+    }
+
+    private var lastResult: Result? = nil
+    private let loadSemaphore = DispatchSemaphore(value: 1)
+    public func load() throws -> Result {
+        if let lastResult {
+            print("loading cache")
+            return lastResult
+        }
+        loadSemaphore.wait()
+        defer {
+            loadSemaphore.signal()
+        }
+        print("loading")
+        do {
+            // need to load in this order to build structure correctly
+            // make suer the server is initialized with the user ID
+            let _ = try initServer()
+            // features are not depending on other data, so load it first
+            let _ = try Features.load()
+            // tour data depends on features, it provides messages
+            let tourData = try TourData.load()
+            // directory depends on features and messages
+            let directory = try Directory.load()
+            lastResult = Result(tours: tourData.tours, directory: directory)
+            if let lastResult {
+                return lastResult
+            }
+        } catch {
+            print("Error")
+        }
+        throw ResourceManagerError.contentLoadError
+    }
+
+    public func loadForPreview() throws -> Result {
+        let _ = try Features.loadForPreview()
+        let tourData = try TourData.loadForPreview()
+        let directory = try Directory.loadForPreview()
+        return Result(tours: tourData.tours, directory: directory)
+    }
+
+    public func getDestination(by ref: String) -> (any Destination)? {
+        if let dest = TourData.getTourDestination(by: ref) {
+            return dest
+        }
+        else if let dest = Directory.getDestination(by: ref) {
+            return dest
+        }
+        return nil
+    }
+
+    public func contentURL(path: String?) -> URL? {
+        guard let path else { return nil }
+        guard path.range(of: "^[A-Za-z]", options: .regularExpression) != nil else {
+            return nil
+        }
+        let replacedPath = path.replacingOccurrences(of: "%@", with: I18N.shared.langCode)
+        guard let addressCandidate else { return nil }
+        guard let url = URL(string: "http://\(addressCandidate.getCurrent()):9090/map/\(replacedPath)") else {
+            return nil
+        }
+
+        var resultData: Data? = nil
+        let semaphore = DispatchSemaphore(value: 0)
+
+        let task = self.session.dataTask(with: url) { data, response, error in
+            defer { semaphore.signal() }
+            if let data = data,
+               let httpResponse = response as? HTTPURLResponse,
+               httpResponse.statusCode == 200 {
+                resultData = data
+            }
+        }
+        task.resume()
+        semaphore.wait()  // Wait until the network call finishes
+        if resultData != nil {
+            return url
+        }
+        NSLog("Could not load content at \(path) -> \(url)")
+        return nil
+    }
+
+    private var addressCandidate: AddressCandidate?
+    private var config: Config?
+
+    private struct Config: Codable {
+        struct InitialLocation: Codable {
+            let lat: Double
+            let lng: Double
+            let floor: Int
+        }
+
+        let doNotUseSavedCenter: String
+        let initialLocation: InitialLocation
+        let mapService: String
+        let mapServiceUseHttp: String
+
+        enum CodingKeys: String, CodingKey {
+            case doNotUseSavedCenter = "DO_NOT_USE_SAVED_CENTER"
+            case initialLocation = "INITIAL_LOCATION"
+            case mapService = "MAP_SERVICE"
+            case mapServiceUseHttp = "MAP_SERVICE_USE_HTTP"
+        }
+    }
+
+    private let session: URLSession
+    private init() {
+        let config = URLSessionConfiguration.default
+        config.requestCachePolicy = .reloadIgnoringLocalCacheData // Ignore local cache
+        config.urlCache = nil // Disable URLCache entirely
+        session = URLSession(configuration: config)
+    }
+
+    fileprivate func fetchData(from resource: Resource, lat: Double? = nil, lng: Double? = nil, dist: Int = 2000, user: String? = nil) throws -> Data {
+        guard let currentAddress = addressCandidate?.getCurrent() else { throw ResourceManagerError.contentLoadError }
+        let lat = lat ?? config?.initialLocation.lat ?? 0
+        let lng = lng ?? config?.initialLocation.lng ?? 0
+        let user = user ?? UIDevice.current.identifierForVendor?.uuidString ?? "default_user_identifier"
+
+        let baseURL: String
+
+        switch resource {
+        case .config:
+            baseURL = "http://\(currentAddress):9090/map/api/config"
+        case .directory:
+            baseURL = "http://\(currentAddress):9090/query/directory?user=\(user)&lat=\(lat)&lng=\(lng)&dist=\(dist)&lang=\(I18N.shared.langCode)"
+        case .tourdata:
+            baseURL = "http://\(currentAddress):9090/map/cabot/tourdata.json"
+        case .features_start:
+            baseURL = "http://\(currentAddress):9090/map/routesearch?action=start&lat=\(lat)&lng=\(lng)&user=\(user)&dist=\(dist)"
+        case .features:
+            baseURL = "http://\(currentAddress):9090/map/routesearch?action=features&lat=\(lat)&lng=\(lng)&user=\(user)&dist=\(dist)"
+        }
+
+        guard let url = URL(string: baseURL) else {
+            throw ResourceManagerError.contentLoadError
+        }
+
+        var dataReceived: Data?
+        let semaphore = DispatchSemaphore(value: 0)
+
+        let task = session.dataTask(with: url) { data, response, error in
+            if let error = error {
+                NSLog("Error fetching data: \(error.localizedDescription)")
+                semaphore.signal()
+                return
+            }
+            dataReceived = data
+            semaphore.signal()
+        }
+
+        task.resume()
+        _ = semaphore.wait(timeout: .now() + 3.0)
+
+        guard let data = dataReceived else {
+            throw ResourceManagerError.contentLoadError
+        }
+        try saveData(data, to: resource.file_name)
+
+        return data
+    }
+
+    fileprivate func fetchDataPreview(for resource: Resource) throws -> Data {
+        let path = Bundle.main.resourceURL!.appendingPathComponent("PreviewResource")
+        let fileURL = path.appendingPathComponent(resource.file_name)
+        return try Data(contentsOf: fileURL)
+    }
+
+    private func saveData(_ data: Data, to fileName: String) throws {
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            throw ResourceManagerError.contentLoadError
+        }
+        let fileURL = documentsDirectory.appendingPathComponent(fileName)
+        try data.write(to: fileURL)
+    }
+}
+
+enum ResourceManagerError: Error {
     case noName
-    case yamlParseError(error: YamlError)
     case contentLoadError
-    case nestedReferenceError
-}
-
-enum SourceType: String, Decodable {
-    case local
-    case remote
-}
-
-extension CodingUserInfoKey {
-    static let src = CodingUserInfoKey(rawValue: "src")!
-    static let i18n = CodingUserInfoKey(rawValue: "i18n")!
-    static let refCount = CodingUserInfoKey(rawValue: "refCount")!
-    static let error = CodingUserInfoKey(rawValue: "error")!
 }
 
 class I18N {
@@ -50,7 +260,7 @@ class I18N {
             Locale(identifier: self.lang).languageCode ?? "en"
         }
     }
-    
+
     static let shared:I18N = I18N()
 
     private init() {
@@ -64,19 +274,34 @@ class I18N {
     }
 }
 
+class BufferedInfo {
+    private var info:String = ""
+    func add(info: String?) {
+        guard let info = info else { return }
+        if self.info.count > 0 { self.info += "\n" }
+        self.info += info
+    }
+    func summary() -> String? {
+        if self.info.count > 0 {
+            return self.info
+        }
+        return nil
+    }
+}
+
 class KeyedI18NText: Equatable {
     let key: String
     let base: I18NText?
-    
+
     static func == (lhs: KeyedI18NText, rhs: KeyedI18NText) -> Bool {
         return lhs.key == rhs.key && lhs.base == rhs.base
     }
-    
+
     init(key: String, base: I18NText?) {
         self.key = key
         self.base = base
     }
-    
+
     var text: String {
         get {
             if let base = self.base {
@@ -98,17 +323,31 @@ class KeyedI18NText: Equatable {
     }
 }
 
-class I18NText: Equatable {
+class I18NText: Equatable, Hashable {
     private var _text: [String: String] = [:]
     private var _pron: [String: String] = [:]
-    
+
     static func == (lhs: I18NText, rhs: I18NText) -> Bool {
         return lhs._text == rhs._text && lhs._pron == rhs._pron
+    }
+    func hash(into hasher: inout Hasher) {
+        for item in _text {
+            hasher.combine(item.key)
+            hasher.combine(item.value)
+        }
+        for item in _pron {
+            hasher.combine(item.key)
+            hasher.combine(item.value)
+        }
     }
 
     init(text: [String: String], pron: [String: String]) {
         self._text = text
         self._pron = pron
+    }
+
+    static func empty() -> I18NText {
+        return I18NText(text: [:], pron: [:])
     }
 
     var text: String {
@@ -131,19 +370,19 @@ class I18NText: Equatable {
             return self.text
         }
     }
-    
+
     var languages: [String] {
         get {
             return self._text.keys.sorted()
         }
     }
-    
+
     var isEmpty: Bool {
         get {
             return _text.count == 0 || _pron.count == 0
         }
     }
-    
+
     var warn: String? {
         get {
             let warn = BufferedInfo()
@@ -173,12 +412,17 @@ class I18NText: Equatable {
             for key in container.allKeys.filter({ key in
                 key.stringValue.hasPrefix(baseKey)
             }) {
-                let items = key.stringValue.split(separator: "-")
+                let separators = CharacterSet(charactersIn: "-_:")
+                let items = key.stringValue.components(separatedBy: separators)
                 if items.count == 1 { // title
                     main["Base"] = try container.decode(String.self, forKey: key)
                 }
                 else if items.count == 2 {
-                    main[String(items[1])] = try container.decode(String.self, forKey: key)
+                    if items[1] == "hira" { // special case for Japanese hiragana
+                        pron["ja"] = try container.decode(String.self, forKey: key)
+                    } else {
+                        main[String(items[1])] = try container.decode(String.self, forKey: key)
+                    }
                 }
                 else if items.count == 3 && items[2] == "pron" {
                     pron[String(items[1])] = try container.decode(String.self, forKey: key)
@@ -191,312 +435,636 @@ class I18NText: Equatable {
     }
 }
 
-class BufferedInfo {
-    private var info:String = ""
-    func add(info: String?) {
-        guard let info = info else { return }
-        if self.info.count > 0 { self.info += "\n" }
-        self.info += info
-    }
-    func summary() -> String? {
-        if self.info.count > 0 {
-            return self.info
+class Messages {
+    var arriveMessages: [I18NText] = []
+    var startMessage: I18NText?
+    var summary: I18NText?
+
+    public func add(_ message: Message) {
+        switch(message.type) {
+        case .startMessage:
+            self.startMessage = message.text
+        case .arriveMessage:
+            self.arriveMessages.append(message.text)
+        case .summary:
+            self.summary = message.text
         }
-        return nil
     }
 }
 
-func yamlPath(_ path: [CodingKey]) -> String{
-    var ret:String = ""
-    for e in path {
-        if let index = e.intValue {
-            ret += "[\(index)]"
-        } else {
-            ret += "/[\(e.stringValue)]"
-        }
-    }
-    return ret
-}
+struct TourData: Decodable {
+    let tours: [Tour]
+    let destinations: [DestinationRef]
+    let messages: [Message]
+    static var refIndex: [String: Messages] = [:]
+    static var tourIndex: [String: Tour] = [:]
+    static var destRefIndex: [String: DestinationRef] = [:]
+    static var destIndex: [String: TourDestination] = [:]
 
-struct Source: Decodable, Hashable, CustomStringConvertible {
-    static func == (lhs: Source, rhs: Source) -> Bool {
-        return lhs.base == rhs.base && lhs.type == rhs.type && lhs.src == rhs.src
-    }
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(base)
-        hasher.combine(type)
-        hasher.combine(src)
-    }
-    var description: String {
-        var exists = "not exists"
-        if let content = self.content {
-            exists = "content length=\(content.count)"
-        }
-        return "\(self.src) - (\(exists))"
-    }
-    
-    var warn: String? {
-        get {
-            let warn = BufferedInfo()
-            if let content = self.content {
-                if let lang = LanguageDetector(string: content).detect() {
-                    if lang != i18n.langCode {
-                        warn.add(info: "Different language detected: \(lang) - expected \(i18n.langCode)")
-                    }
-                }
+    static func buildIndex(messages: [Message]) {
+        TourData.refIndex.removeAll()
+        for message in messages {
+            if TourData.refIndex[message.parent] == nil{
+                TourData.refIndex[message.parent] = Messages()
             }
-            return warn.summary()
+            TourData.refIndex[message.parent]?.add(message)
         }
     }
-    
-    var error: String? {
-        get {
-            let error = BufferedInfo()
-            if let _ = self.content {
-            } else {
-                error.add(info: "Content not found")
-            }
-            return error.summary()
-        }
-    }
-    
-    let base: URL?
-    let type: SourceType
-    let _src: String
-    var src: String {
-        get {
-            return String(format:_src, i18n.langCode)
-        }
-    }
-    let i18n: I18N
 
-    var url: URL? {
-        get {
-            switch(type) {
-            case .local:
-                let langSrc = String(format: src, i18n.langCode)
-                return base?.appendingPathComponent(langSrc)
-            case .remote:
-                return URL(string:src)
+    static func getMessage(by ref: NodeRef) -> Messages? {
+        return refIndex[ref.description]
+    }
+
+    static func buildIndex(destinations: [DestinationRef]) {
+        for destination in destinations {
+            var key = destination.value
+            if let variation = destination.variation {
+                key += "#\(variation)"
+            }
+            destRefIndex[key] = destination
+        }
+    }
+
+    static func getDestinationRef(by ref: String) -> DestinationRef? {
+        return destRefIndex[ref]
+    }
+
+    static func buildIndex(tours: [Tour]) {
+        for tour in tours {
+            tourIndex[tour.id] = tour
+            for destination in tour.destinations {
+                destIndex[destination.ref.description] = destination
             }
         }
     }
 
-    var content: String? {
-        get {
-            guard let url = url  else { return nil }
-            guard let text = try? String(contentsOf: url) else { return nil }
-            return text.replacingOccurrences(of: "\r\n", with: "\n")
-        }
+    static func getTour(by id: String) -> Tour? {
+        return tourIndex[id]
     }
 
-    enum CodingKeys: String, CodingKey {
-        case type
-        case src
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        i18n = decoder.userInfo[.i18n] as! I18N
-        type = try container.decode(SourceType.self, forKey: .type)
-        _src = try container.decode(String.self, forKey: .src)
-        base = (decoder.userInfo[.src] as? URL)?.deletingLastPathComponent()
-    }
-
-    init(base: URL?, type:SourceType, src:String, i18n:I18N) {
-        self.base = base
-        self.type = type
-        self._src = src
-        self.i18n = i18n
-    }
-}
-
-struct CustomMenu: Decodable, Hashable {
-    static func == (lhs: CustomMenu, rhs: CustomMenu) -> Bool {
-        lhs.id == rhs.id
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-
-    let title: String
-    let id: String
-    let script: Source
-    let function: String
-}
-
-struct Metadata: Decodable{
-    let identifier: String
-    let name: I18NText
-    let i18n: I18N
-    let langCode: String
-    let conversation: Source?
-    let destinationAll: Source?
-    let destinations: Source?
-    let tours: Source?
-    let custom_menus: [CustomMenu]?
-
-    static func load(at url: URL) throws -> Metadata {
-        do {
-            let str = try String(contentsOf: url)
-            var userInfo:[CodingUserInfoKey : Any] = [:]
-            userInfo[.src] = url
-            userInfo[.i18n] = I18N.shared
-            let yamlDecoder = YAMLDecoder()
-            return try yamlDecoder.decode(Metadata.self, from: str, userInfo: userInfo)
-        } catch let error as YamlError {
-            throw MetadataError.yamlParseError(error: error)
-        }
+    static func getTourDestination(by ref: String) -> TourDestination? {
+        return destIndex[ref]
     }
 
     enum CodingKeys: CodingKey {
-        case name
-        case language
-        case i18n
-        case conversation
-        case destinationAll
-        case destinations
         case tours
-        case custom_menus
+        case destinations
+        case messages
     }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.messages = try container.decode([Message].self, forKey: .messages)
+        TourData.buildIndex(messages: self.messages)
+        self.destinations = try container.decode([DestinationRef].self, forKey: .destinations)
+        TourData.buildIndex(destinations: self.destinations)
+        self.tours = try container.decode([Tour].self, forKey: .tours)
+        TourData.buildIndex(tours: self.tours)
+    }
 
-        // needs to have I18N instance
-        let i18n = decoder.userInfo[.i18n] as! I18N
-        self.i18n = i18n
-        if let language = try? container.decodeIfPresent(String.self, forKey: .language) {
-            i18n.set(lang: language)
+    fileprivate static func load() throws -> TourData {
+        do {
+            let data = try ResourceManager.shared.fetchData(from: .tourdata)
+            let tourdata = try JSONDecoder().decode(TourData.self, from: data)
+            return tourdata
+        } catch {
+            throw ResourceManagerError.contentLoadError
         }
-        self.langCode = i18n.langCode
+    }
 
-        self.name = I18NText.decode(decoder: decoder, baseKey: CodingKeys.name.stringValue)
-        self.identifier = self.name.text
-        self.conversation = try? container.decodeIfPresent(Source.self, forKey: .conversation)
-        self.destinationAll = try? container.decodeIfPresent(Source.self, forKey: .destinationAll)
-        self.destinations = try? container.decodeIfPresent(Source.self, forKey: .destinations)
-        self.tours = try? container.decodeIfPresent(Source.self, forKey: .tours)
-        self.custom_menus = try? container.decodeIfPresent([CustomMenu].self, forKey: .custom_menus)
+    fileprivate static func loadForPreview() throws -> TourData {
+        do {
+            let data = try ResourceManager.shared.fetchDataPreview(for: .tourdata)
+            let root = try JSONDecoder().decode(TourData.self, from: data)
+            return root
+        } catch {
+            throw ResourceManagerError.contentLoadError
+        }
     }
 }
 
-class Resource: Hashable {
-    let base: URL
-    var langOverride: String?
+class Tour: Decodable, Hashable{
 
-    init(at url: URL) throws {
-        base = url
-        metadata = try Metadata.load(at: url.appendingPathComponent(Resource.METADATA_FILE_NAME))
+    // MARK: - Properties
+    let title: I18NText
+    let id: String
+    var destinations: [TourDestination]
+    let defaultVar: String?
+    let introduction: I18NText
+    let error: String?
+
+    // MARK: - Coding Keys
+    enum CodingKeys: String, CodingKey {
+        case id = "tour_id"
+        case destinations
+        case defaultVar = "default_var"
     }
 
-    static func == (lhs: Resource, rhs: Resource) -> Bool {
-        lhs.id == rhs.id
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        id = try container.decode(String.self, forKey: .id)
+        destinations = try container.decode([TourDestination].self, forKey: .destinations)
+        defaultVar = try container.decodeIfPresent(String.self, forKey: .defaultVar)
+        title = I18NText.decode(decoder: decoder, baseKey: "title")
+
+        introduction = I18NText(text: [:], pron: [:])
+        error = nil
+    }
+
+    struct DynamicCodingKeys: CodingKey {
+        var stringValue: String
+        var intValue: Int?
+
+        init?(stringValue: String) {
+            self.stringValue = stringValue
+            self.intValue = nil
+        }
+
+        init?(intValue: Int) {
+            self.intValue = intValue
+            self.stringValue = "title-"
+        }
+    }
+    // MARK: - Hashable Conformance
+    static func == (lhs: Tour, rhs: Tour) -> Bool {
+        return lhs.id == rhs.id
     }
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
+}
 
-    static let METADATA_FILE_NAME: String = "_metadata.yaml"
+struct NodeRef: Decodable, Hashable, CustomStringConvertible {
+    var node_id: String
+    var variation: String?
 
-    private let metadata: Metadata
-
-    var identifier:String {
-        get {
-            metadata.identifier
+    var description: String {
+        if let variation = variation {
+            "\(node_id)#\(variation)"
+        } else {
+            node_id
         }
     }
 
-    var name:String {
-        get {
-            metadata.name.text
-        }
+    static func == (lhs: NodeRef, rhs: NodeRef) -> Bool {
+        return lhs.description == rhs.description
     }
 
-    var id:String {
-        get {
-            base.path
-        }
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(description)
     }
 
-    var lang: String {
-        get {
-            self.langOverride ?? metadata.langCode
-        }
-        set {
-            self.langOverride = newValue
-            I18N.shared.set(lang: newValue)  // TODO unify language model
-        }
+    init(node_id: String, variation: String?) {
+        self.node_id = node_id
+        self.variation = variation
     }
 
-    var locale: Locale {
-        return Locale.init(identifier: self.lang)
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let refStr = try container.decode(String.self)
+        (self.node_id, self.variation) = NodeRef.parse(from: refStr)
     }
 
-    var conversationSource: Source? {
-        get {
-            if let c = metadata.conversation {
-                return c
-            }
-            return nil
+    static func parse(from input: String) -> (node_id: String, variation: String?) {
+        let parts = input.split(separator: "#", maxSplits: 1, omittingEmptySubsequences: false)
+        let node_id = String(parts[0])
+        let variation = parts.count > 1 ? String(parts[1]) : nil
+        return (node_id, variation)
+    }
+}
+
+class TourDestination: Destination, Decodable {
+    static func == (lhs: TourDestination, rhs: TourDestination) -> Bool {
+        lhs.ref == rhs.ref
+    }
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(ref)
+    }
+
+    var value: String
+    var arrivalAngle: Int?
+    var content: URL?
+    var summaryMessage: I18NText? = nil
+    var startMessage: I18NText? = nil
+    var arriveMessages: [I18NText]? = nil
+    var waitingDestination: (any Destination)? = nil
+    var waitingDestinationAngle: Int?
+    var subtour: Tour?
+    var error: String?
+    var warning: String?
+    var forDemonstration: Bool = false
+
+    let ref: NodeRef
+    let refTitle: String
+    var title: I18NText = I18NText.empty()
+
+    enum CodingKeys: String, CodingKey {
+        case ref
+        case refTitle = "#ref"
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        ref = try container.decode(NodeRef.self, forKey: .ref)
+
+        // TODO use ref not ref.description
+        let destRef = TourData.getDestinationRef(by: ref.description)
+        arrivalAngle = destRef?.arrivalAngle
+        content = ResourceManager.shared.contentURL(path: destRef?.content)
+        if let value = destRef?.waitingDestination {
+            waitingDestination = WaitingDestination(value: value, arrivalAngle: destRef?.waitingDestinationAngle)
         }
-    }
-    
-    var destinationAllSource: Source? {
-        get {
-            if let d = metadata.destinationAll {
-                return d
-            }
-            return nil
+
+        refTitle = try container.decode(String.self, forKey: .refTitle)
+        value = ref.node_id
+        if let arrivalAngle {
+            value += "@\(arrivalAngle)"
         }
-    }
-
-    var destinationsSource: Source? {
-        get {
-            if let d = metadata.destinations {
-                return d
-            }
-            return nil
+        if let messages = TourData.getMessage(by: ref) {
+            self.startMessage = messages.startMessage
+            self.arriveMessages = messages.arriveMessages
+            self.summaryMessage = messages.summary
         }
-    }
-
-    var toursSource: Source? {
-        get {
-            if let t = metadata.tours {
-                return t
-            }
-            return nil
-        }
-    }
-
-    var customeMenus: [CustomMenu] {
-        get {
-            if let cm = metadata.custom_menus {
-                return cm
-            }
-            return []
-        }
-    }
-
-    var languages: [String] {
-        get {
-            var languages:[String] = []
-            for lang in metadata.name.languages {
-                if lang != "Base" {
-                    languages.append(lang)
-                }
-            }
-
-            if languages.contains(where: {lang in lang == metadata.langCode}) == false {
-                languages.append(metadata.langCode)
-            }
-            return languages
+        
+        if let feature = Features.getFeature(by: ref) {
+            title = feature.properties.name
         }
     }
 }
 
+struct DestinationRef: Decodable {
+    let floor: Int
+    let value: String
+    let title: String
+    let variation: String?
+    let arrivalAngle: Int?
+    let content: String?
+    let waitingDestination: String?
+    let waitingDestinationAngle: Int?
+    let subtour: String?
+
+    enum CodingKeys: String, CodingKey {
+        case floor, value
+        case title = "#title"
+        case variation = "var"
+        case arrivalAngle
+        case content
+        case waitingDestination
+        case waitingDestinationAngle
+        case subtour
+    }
+}
+
+struct Message: Decodable {
+    enum MessageType: String, Decodable {
+        case startMessage
+        case arriveMessage
+        case summary
+    }
+    let type: MessageType
+    let parent: String
+    var text: I18NText
+
+    enum CodingKeys: String, CodingKey {
+        case type
+        case parent
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        type = try container.decode(MessageType.self, forKey: .type)
+        parent = try container.decode(String.self, forKey: .parent)
+        let allValues = try decoder.container(keyedBy: DynamicCodingKeys.self)
+        var textDict: [String: String] = [:]
+        self.text = I18NText.decode(decoder: decoder, baseKey: "text")
+    }
+
+    struct DynamicCodingKeys: CodingKey {
+        var stringValue: String
+        var intValue: Int?
+
+        init?(stringValue: String) {
+            self.stringValue = stringValue
+        }
+
+        init?(intValue: Int) {
+            self.intValue = intValue
+            self.stringValue = "\(intValue)"
+        }
+    }
+}
+
+class Features {
+    private static var features: [Feature] = []
+    private static var refIndex: [String: Feature] = [:]
+
+    static func buildIndex() {
+        TourData.refIndex.removeAll()
+        for feature in features {
+            for entrance in feature.properties.entrances {
+                refIndex[entrance] = feature
+            }
+        }
+    }
+
+    static func getFeature(by ref: NodeRef) -> Feature? {
+        return refIndex[ref.node_id]
+    }
+
+    fileprivate static func load() throws -> [Feature] {
+        do {
+            let featuresData = try ResourceManager.shared.fetchData(from: .features)
+            Features.features = try JSONDecoder().decode([Feature].self, from: featuresData)
+            buildIndex()
+            return Features.features
+        } catch {
+            throw ResourceManagerError.contentLoadError
+        }
+    }
+
+    fileprivate static func loadForPreview() throws -> [Feature] {
+        do {
+            let data = try ResourceManager.shared.fetchDataPreview(for: .features)
+            Features.features = try JSONDecoder().decode([Feature].self, from: data)
+            buildIndex()
+            return Features.features
+        } catch {
+            throw ResourceManagerError.contentLoadError
+        }
+    }
+}
+
+class Feature : Decodable,  Hashable {
+    let properties: Properties
+    let identifier: String
+    enum CodingKeys: String, CodingKey {
+        case properties
+        case identifier = "_id"
+    }
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        properties = try container.decode(Properties.self, forKey: .properties)
+        identifier = try container.decode(String.self, forKey: .identifier)
+    }
+
+    static func == (lhs: Feature, rhs: Feature) -> Bool {
+        return lhs.identifier == rhs.identifier
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(identifier)
+    }
+    struct Properties: Decodable {
+        var entrances: [String] = []
+        var name: I18NText
+
+        private struct CodingKeys: CodingKey {
+            var stringValue: String
+            init?(stringValue: String) {
+                self.stringValue = stringValue
+            }
+            var intValue: Int?
+            init?(intValue: Int) {
+                return nil
+            }
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            for key in container.allKeys.filter({ key in
+                key.stringValue.range(of: "ent.?_node", options: .regularExpression) != nil
+            })  {
+                let entrance = try container.decode(String.self, forKey: key)
+                self.entrances.append(entrance)
+            }
+            name = I18NText.decode(decoder: decoder, baseKey: "name")
+        }
+    }
+}
+
+
+class Directory {
+    struct Sections: Decodable {
+        let sections: [Section]
+        let showSectionIndex: Bool
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            sections = try container.decodeIfPresent([Section].self, forKey: .sections) ?? []
+            showSectionIndex = try container.decodeIfPresent(Bool.self, forKey: .showSectionIndex) ?? false
+        }
+
+        init() {
+            sections = []
+            showSectionIndex = false
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case sections
+            case showSectionIndex
+        }
+
+        var itemCount: Int {
+            get {
+                sections.reduce(0) { r, section in r + section.itemCount }
+            }
+        }
+
+        var sectionCount: Int {
+            get {
+                sections.reduce(0) { r, section in r + ((section.itemCount > 0) ? 1 : 0)}
+            }
+        }
+
+        var showSections: Bool {
+            return Double(itemCount) / Double(sectionCount) > 1.5
+        }
+
+        func allDestinations() -> [any Destination] {
+            sections.flatMap { $0.items.flatMap { $0.allDestinations() } }
+        }
+    }
+
+    struct Section: Decodable, Hashable {
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(title)
+            for item in items {
+                hasher.combine(item)
+            }
+        }
+        let title: I18NText
+        let items: [SectionItem]
+
+        var itemCount: Int {
+            get {
+                items.reduce(0) {r, item in r + (item.hidden ? 0 : 1) }
+            }
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            title = I18NText.decode(decoder: decoder, baseKey: "title")
+            items = try container.decodeIfPresent([SectionItem].self, forKey: .items) ?? []
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case title, items
+        }
+    }
+
+    struct SectionItem: Destination, Decodable {
+        static func == (lhs: Directory.SectionItem, rhs: Directory.SectionItem) -> Bool {
+            lhs.title == rhs.title && lhs.nodeID == rhs.nodeID
+        }
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(title)
+            if let nodeID = nodeID {
+                hasher.combine(nodeID)
+            }
+        }
+
+        public var hidden: Bool {
+            (self.forDemonstration && ResourceManager.shared.modeType != .Advanced) || sectionContent?.itemCount ?? 1 == 0
+        }
+
+        func allDestinations() -> [any Destination] {
+            if let content = sectionContent {
+                return content.allDestinations()
+            }
+            return [self]
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            title = I18NText.decode(decoder: decoder, baseKey: "title")
+            sectionContent = try container.decodeIfPresent(Sections.self, forKey: .content)
+
+            if sectionContent == nil {
+                subtitle = try container.decodeIfPresent(String.self, forKey: .subtitle) ?? "Unknown"
+                titlePron = try container.decodeIfPresent(String.self, forKey: .titlePron) ?? "Unknown"
+                subtitlePron = try container.decodeIfPresent(String.self, forKey: .subtitlePron) ?? "Unknown"
+                nodeID = try container.decodeIfPresent(String.self, forKey: .nodeID) ?? "No ID"
+
+                if let nodeID = nodeID {
+                    if let feature = Features.getFeature(by: NodeRef(node_id: nodeID, variation: nil)) {
+                        title = feature.properties.name
+                    } else {
+                        title = I18NText.decode(decoder: decoder, baseKey: "title")
+                    }
+                    if let destRef = TourData.getDestinationRef(by: nodeID) {
+                        arrivalAngle = destRef.arrivalAngle
+                        content = ResourceManager.shared.contentURL(path: destRef.content)
+                        if let value = destRef.waitingDestination {
+                            waitingDestination = WaitingDestination(value: value, arrivalAngle: destRef.arrivalAngle)
+                        }
+                        _subtour = destRef.subtour
+                    }
+
+                    if let forDemonstrationString = try container.decodeIfPresent(String.self, forKey: .forDemonstration) {
+                        forDemonstration = (forDemonstrationString.lowercased() == "true")
+                    } else {
+                        forDemonstration = false
+                    }
+                    if let message = TourData.getMessage(by: NodeRef(node_id: nodeID, variation: nil)) {
+                        if let startMessage = message.startMessage {
+                            self.startMessage = startMessage
+                        }
+                        self.arriveMessages = message.arriveMessages
+                        if let summary = message.summary {
+                            self.summaryMessage = summary
+                        }
+                    }
+                }
+            }
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case content
+            case subtitle
+            case titlePron
+            case subtitlePron
+            case title
+            case nodeID
+            case forDemonstration
+        }
+
+        var sectionContent: Sections? = nil
+        var subtitle: String? = nil
+        var titlePron: String? = nil
+        var subtitlePron: String? = nil
+        var nodeID: String? = nil
+
+        // Destination protocol
+        var value: String {
+            get {
+                var val = self.nodeID ?? ""
+                if let arrivalAngle = self.arrivalAngle {
+                    val += "@\(arrivalAngle)"
+                }
+                return val
+            }
+        }
+        var arrivalAngle: Int?
+        var title: I18NText = I18NText.empty()
+        var content: URL?
+        var summaryMessage: I18NText? = nil
+        var startMessage: I18NText? = nil
+        var arriveMessages: [I18NText]? = nil
+        var waitingDestination: (any Destination)?
+        var _subtour: String? = nil
+        var subtour: Tour? {
+            get {
+                if let _subtour = _subtour {
+                    TourData.getTour(by: _subtour)
+                } else {
+                    nil
+                }
+            }
+        }
+        var error: String? = nil
+        var warning: String? = nil
+        var forDemonstration: Bool = false
+    }
+    
+    static var sections: Directory.Sections = Directory.Sections()
+    static var valueIndex: [String: any Destination] = [:]
+
+    static func buildIndex() {
+        for dest in sections.allDestinations() {
+            valueIndex[dest.value] = dest
+        }
+    }
+
+    static func getDestination(by value: String) -> (any Destination)? {
+        valueIndex[value]
+    }
+
+    fileprivate static func load() throws -> Sections {
+        let directoryData = try ResourceManager.shared.fetchData(from: .directory)
+        Directory.sections = try JSONDecoder().decode(Sections.self, from: directoryData)
+        Directory.buildIndex()
+        return Directory.sections
+    }
+
+    static func loadForPreview() throws -> Sections {
+        let data = try ResourceManager.shared.fetchDataPreview(for: .directory)
+        let directoryDataDecoded = try JSONDecoder().decode(Sections.self, from: data)
+        Directory.buildIndex()
+        return directoryDataDecoded
+    }
+
+    class FloorDestination{
+        let floorTitle: I18NText
+        let destinations: [any Destination]
+
+        init(floorTitle: I18NText, destinations: [any Destination] = []) {
+            self.floorTitle = floorTitle
+            self.destinations = destinations
+        }
+    }
+}
 
 /// Destination for the robot waiting position
 ///
@@ -507,342 +1075,116 @@ class Resource: Hashable {
 /// - pron: <String> Reading text for the destination if required other wise title is used for reading
 ///    - the text can be localizable
 /// ```
-struct WaitingDestination: Decodable, Equatable {
+struct WaitingDestination: Destination {
     static func == (lhs: WaitingDestination, rhs: WaitingDestination) -> Bool {
-        return lhs.title == rhs.title && lhs.value == rhs.value
+        return lhs.value == rhs.value
     }
-    
-    var parentTitle:I18NText?
-    let value:String
-    var title:KeyedI18NText {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.value)
+    }
+
+    init(value: String, arrivalAngle: Int? = nil) {
+        self._value = value
+        self.arrivalAngle = arrivalAngle
+        let feature = Features.getFeature(by: NodeRef(node_id: value, variation: nil))
+        self.title = feature?.properties.name ?? I18NText.empty()
+        self.content = nil
+        self.summaryMessage = nil
+        self.startMessage = nil
+        self.arriveMessages = nil
+        self.waitingDestination = nil
+        self.subtour = nil
+        self.error = nil
+        self.warning = nil
+        self.forDemonstration = false
+    }
+
+    var title: I18NText
+    var _value: String
+    var value: String {
         get {
-            return KeyedI18NText(key: "Robot Waiting Spot (%@)", base: parentTitle)
+            var val = self._value
+            if let arrivalAngle = self.arrivalAngle {
+                val += "@\(arrivalAngle)"
+            }
+            return val
         }
     }
-
-    enum CodingKeys: String, CodingKey {
-        case value
-    }
-
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        if let value = try? container.decode(String.self, forKey: .value) {
-            self.value = value
-        } else {
-            self.value = ""
-            //warning.add(info: CustomLocalizedString("file specified by Source(type, src) is deprecated, use just 'src' string instead", lang: i18n.langCode))
-        }
-    }
-}
-
-struct Reference: CustomStringConvertible {
-    let file: String
-    let value: String
-
-    static func from(ref: String) -> Reference? {
-        if let index = ref.firstIndex(of: "/") {
-            let file = String(ref[..<index])
-            let value = String(ref[ref.index(index, offsetBy: 1)...])
-            return Reference(file: file, value:value)
-        }
-        return nil
-    }
-
-    var description: String {
-        return "\(file)/\(value)"
-    }
+    var arrivalAngle: Int?
+    var content: URL?
+    var summaryMessage: I18NText?
+    var startMessage: I18NText?
+    var arriveMessages: [I18NText]?
+    var waitingDestination: (any Destination)?
+    var subtour: Tour?
+    var error: String?
+    var warning: String?
+    var forDemonstration: Bool
 }
 
 /// Destination for the navigation
 ///
 /// ```
-/// - ref: <String> if ref is specified with the format (<local file>/<value>), it will copy properties from the destination that has <value> in the <local file>
-///   - if other properties are specified too, it will override
-/// - title: <String> Display text for the destination
-///   - the text can be localizable
-/// - value: <String> Navigation node ID
-/// - pron: <String> Reading text for the destination if required other wise title is used for reading
-///    - the text can be localizable
-/// - file: <Source> file including a list of destinations
-/// - summaryMessage: <Source> file inculding a message text
-/// - startMessage: <Source> file including a message text
-/// - content: <Source> file including a web content to show in the browser
-/// - waitingDestination: <WaitingDestination>
+/// - title: display text for the destination
+/// - pron: reading text for the destination
+/// - value: navigation node ID
+/// - arrivalAngle: navigation arrival angle
+/// - content: relative path to an html file
+/// - summaryMessage: display under the title
+/// - startMessage: will be read when the navigation started
+/// - arriveMessage: will be read when the navigation arrive
+/// - waitingDestination: the location where the robot will wait
+/// - subtour: subtour
+/// - forDemonstration: only shown in Advaned mode if true
 /// ```
-class Destination: Decodable, Hashable {
-    static func == (lhs: Destination, rhs: Destination) -> Bool {
-        if let lhsfile = lhs.file,
-           let rhsfile = rhs.file {
-            return lhsfile.type == rhsfile.type && lhsfile.src == rhsfile.src
-        }
-        if let lhsvalue = lhs.value,
-           let rhsvalue = rhs.value {
-            return lhsvalue == rhsvalue
-        }
-        return false
-    }
-
-    func hash(into hasher: inout Hasher) {
-        if let file = file {
-            hasher.combine(file.type)
-            hasher.combine(file.src)
-        }
-        if let value = value {
-            hasher.combine(value)
-        }
-    }
-    
-    let i18n:I18N
-    let title: I18NText
-    let value:String?
-    let file:Source?
-    let summaryMessage: Source?
-    let startMessage:Source?
-    let arriveMessages: [Source]?
-    let content:Source?
-    let waitingDestination:WaitingDestination?
-    let subtour:Tour?
-    let error:String?
-    let warning:String?
-    let ref:Reference?
-    let refDest:Destination?
-    var parent: Tour? = nil
-    let debug:Bool
-
-    enum CodingKeys: String, CodingKey {
-        case title
-        case ref
-        case value
-        case pron
-        case file
-        case summaryMessage
-        case startMessage
-        case arriveMessages
-        case content
-        case waitingDestination
-        case subtour
-        case debug
-    }
-
-    static func load(at src: Source, refCount: Int = 0, reference: Reference? = nil) throws -> [Destination] {
-        do {
-            guard let url = src.url else { throw MetadataError.contentLoadError }
-            let str = try String(contentsOf: url)
-            var userInfo:[CodingUserInfoKey : Any] = [:]
-            userInfo[.src] = url
-            userInfo[.i18n] = src.i18n
-            userInfo[.refCount] = refCount
-            
-            let node = try Yams.load(yaml: str)
-            guard let yaml = node as? Array<Any> else { throw MetadataError.contentLoadError }
-            let yamlDecoder = YAMLDecoder()
-            var temp: [Destination] = []
-            for node in yaml {
-                guard let dict = node as? Dictionary<String, Any> else { continue }
-                let value = dict["value"] as? String
-                
-                if reference == nil || value == reference?.value {
-                    let str = try Yams.dump(object: node)
-                    let dest = try yamlDecoder.decode(Destination.self, from: str, userInfo: userInfo)
-                    temp.append(dest)
-                }
-            }
-            return temp
-        } catch let error as YamlError {
-            throw MetadataError.yamlParseError(error: error)
-        }
-    }
-
-    required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let src = decoder.userInfo[.src] as! URL
-        let base = src.deletingLastPathComponent()
-        let i18n = decoder.userInfo[.i18n] as! I18N
-        let refCount = decoder.userInfo[.refCount] as! Int
-        let error = BufferedInfo()
-        let warning = BufferedInfo()
-        var refDest: Destination?
-        
-        self.i18n = i18n
-
-        // if 'ref' is specified, try to find a destination
-    outer: if let refstr = try? container.decode(String.self, forKey: .ref) {
-            guard refCount < 10 else {
-                self.ref = nil
-                error.add(info: CustomLocalizedString("Too deep nested reference \(refCount) [ref]=\(refstr)", lang: i18n.langCode))
-                break outer
-            }
-            if let ref = Reference.from(ref: refstr) {
-                self.ref = ref
-                let refSrc = Source(base: base, type: .local, src: ref.file, i18n: i18n)
-                if let tempDest = try? Destination.load(at: refSrc, refCount: refCount+1, reference: ref) {
-                    if tempDest.count == 1 {
-                        refDest = tempDest[0]
-                    } else if tempDest.count > 1 {
-                        error.add(info: CustomLocalizedString("Found multiple \(ref.file)/\(ref.value)", lang: i18n.langCode))
-
-                    } else {
-                        error.add(info: CustomLocalizedString("Cannot find \(ref.file)/\(ref.value)", lang: i18n.langCode))
-                    }
-                } else {
-                    error.add(info: CustomLocalizedString("Parse Error \(ref.file)/\(ref.value)", lang: i18n.langCode))
-                }
-            } else {
-                self.ref = nil
-                error.add(info: CustomLocalizedString("Reference error (syntax='file/value')", lang: i18n.langCode))
-            }
-        } else {
-            self.ref = nil
-        }
-        
-        self.refDest = refDest
-
-        let title = I18NText.decode(decoder: decoder, baseKey: CodingKeys.title.stringValue)
-        
-        if !title.isEmpty {
-            self.title = title
-        } else {
-            if let title = refDest?.title{
-                self.title = title
-            } else {
-                self.title = title
-            }
-        }
-        
-        if let debug = try? container.decode(Bool.self, forKey: .debug) {
-            self.debug = debug
-        } else {
-            self.debug = false
-        }
-
-        if let value = try? container.decode(String.self, forKey: .value) {
-            self.value = value
-        } else {
-            self.value = refDest?.value
-        }
-        
-        // ToDo: should not refer that has file prop (need to separate)
-        if let file = try? container.decode(String.self, forKey: .file) {
-            self.file = Source(base: base, type: .local, src: file, i18n: i18n)
-        } else {
-            self.file = try? container.decode(Source.self, forKey: .file)
-            warning.add(info: CustomLocalizedString("file specified by Source(type, src) is deprecated, use just 'src' string instead", lang: i18n.langCode))
-        }
-        if let summaryMessage = try? container.decode(Source.self, forKey: .summaryMessage) {
-            self.summaryMessage = summaryMessage
-        } else {
-            self.summaryMessage = refDest?.summaryMessage
-        }
-        if let startMessage = try? container.decode(Source.self, forKey: .startMessage) {
-            self.startMessage = startMessage
-        } else {
-            self.startMessage = refDest?.startMessage
-        }
-        if let arriveMessages = try? container.decode([Source].self, forKey: .arriveMessages) {
-            self.arriveMessages = arriveMessages
-        } else {
-            self.arriveMessages = refDest?.arriveMessages
-        }
-        if let content = try? container.decode(Source.self, forKey: .content) {
-            self.content = content
-        } else {
-            self.content = refDest?.content
-        }
-        
-        var tempSubtour: Tour? = nil
-    outer: do {
-            let subtour = try container.decode(String.self, forKey: .subtour)
-            guard refCount < 5 else {
-                error.add(info: CustomLocalizedString("Nested reference [ref]=\(subtour)", lang: i18n.langCode))
-                tempSubtour = nil
-                break outer
-            }
-            if let ref = Reference.from(ref: subtour) {
-                let src = Source(base: base, type: .local, src: ref.file, i18n: i18n)
-                if let tempTour = try? Tour.load(at: src, refCount: refCount+1, reference: ref) {
-                    if tempTour.count == 1 {
-                        tempSubtour = tempTour[0]
-                        error.add(info: tempTour[0].error)
-                    } else if tempTour.count > 1 {
-                        tempSubtour = nil
-                        error.add(info: CustomLocalizedString("Found multiple \(ref.file)/\(ref.value)", lang: i18n.langCode))
-                    } else {
-                        tempSubtour = nil
-                        error.add(info: CustomLocalizedString("Cannot find \(ref.file)/\(ref.value)", lang: i18n.langCode))
-                    }
-                } else {
-                    tempSubtour = nil
-                    error.add(info: CustomLocalizedString("Parse Error \(ref.file)/\(ref.value)", lang: i18n.langCode))
-                }
-            } else {
-                tempSubtour = nil
-                error.add(info:CustomLocalizedString("Reference error (syntax='file/value')", lang: i18n.langCode))
-            }
-        } catch DecodingError.typeMismatch {
-            error.add(info: CustomLocalizedString("subtour should be speficied in ref format (file/id)", lang: i18n.langCode))
-            tempSubtour = nil
-        } catch {
-            if tempSubtour == nil, let temp = refDest?.subtour {
-                tempSubtour = temp
-            }
-        }
-        self.subtour = tempSubtour
-        
-        if var waitingDestination = try? container.decode(WaitingDestination.self, forKey: .waitingDestination) {
-            waitingDestination.parentTitle = self.title
-            self.waitingDestination = waitingDestination
-        } else {
-            self.waitingDestination = refDest?.waitingDestination
-        }
-        
-        if error.summary() != nil {
-            error.add(info: CustomLocalizedString("Error at \(src.lastPathComponent)\(yamlPath(decoder.codingPath))", lang: i18n.langCode))
-        }
-        
-        if error.summary() == nil, let refError = refDest?.error {
-            error.add(info: refError)
-            error.add(info: CustomLocalizedString("Error at \(src.lastPathComponent)\(yamlPath(decoder.codingPath))", lang: i18n.langCode))
-        }
-        self.error = error.summary()
-        self.warning = warning.summary()
-    }
-    
-    init(title: String, value: String?, pron: String?, file: Source?, summaryMessage: Source?, startMessage: Source?, content: Source?, waitingDestination: WaitingDestination?, subtour: Tour?) {
-        self.i18n = I18N.shared
-        self.title = I18NText(text: [:], pron: [:])
-        self.value = value
-        self.file = file
-        self.summaryMessage = summaryMessage
-        self.startMessage = startMessage
-        self.arriveMessages = nil
-        self.content = content
-        self.waitingDestination = waitingDestination
-        self.subtour = subtour
-        self.error = nil
-        self.warning = nil
-        self.ref = nil
-        self.refDest = nil
-        self.debug = false
-    }
+protocol Destination: Hashable {
+    var title: I18NText { get }
+    //var pron: I18NText { get }
+    var value: String { get }
+    var arrivalAngle: Int? { get }
+    var content: URL? { get }
+    var summaryMessage: I18NText? { get }
+    var startMessage: I18NText? { get }
+    var arriveMessages: [I18NText]? { get }
+    var waitingDestination: (any Destination)? { get }
+    var subtour: Tour? { get }
+    var error: String? { get }
+    var warning: String? { get }
+    var forDemonstration: Bool { get }
 }
-
 
 protocol TourProtocol {
     var title: I18NText { get }
     var id: String { get }
-    var destinations: [Destination] { get }
-    var currentDestination: Destination? { get }
+    var destinations: [any Destination] { get }
+    var currentDestination: (any Destination)? { get }
 }
 
 struct TourSaveData: Codable {
     var id: String
     var destinations: [String]
     var currentDestination: String
-    
+
     init(){
         self.id = ""
         self.destinations = []
         self.currentDestination = ""
+    }
+
+    func toJson() -> Data {
+        let encoder = JSONEncoder()
+        if let jsonData = try? encoder.encode(self) {
+            return jsonData
+        }
+        return Data()
+    }
+
+    func toJsonString() -> String {
+        let jsonData = toJson()
+        if let json = String(data: jsonData, encoding: .utf8) {
+            return json
+        }
+        return ""
     }
 }
 
@@ -874,186 +1216,4 @@ class NavigationSetting: Decodable, NavigationSettingProtocol {
             self.showContentWhenArrive = false
         }
     }
-}
-
-class Tour: Decodable, Hashable, TourProtocol {
-    static func == (lhs: Tour, rhs: Tour) -> Bool {
-        return lhs.id == rhs.id
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-
-    let title: I18NText
-    let id: String
-    let introduction: I18NText
-    let destinations: [Destination]
-    var currentDestination: Destination? = nil
-    let error: String?
-    let setting: NavigationSetting?
-    let debug: Bool
-    
-    enum CodingKeys: String, CodingKey {
-        case title
-        case id
-        case introduction
-        case destinations
-        case navigationSetting
-        case debug
-    }
-    
-    static func load(at src: Source, refCount: Int = 0, reference: Reference? = nil) throws -> [Tour] {
-        do {
-            guard let url = src.url else { throw MetadataError.contentLoadError }
-            let str = try String(contentsOf: url)
-            var userInfo:[CodingUserInfoKey : Any] = [:]
-            userInfo[.src] = url
-            userInfo[.i18n] = src.i18n
-            userInfo[.refCount] = refCount
-            
-            let node = try Yams.load(yaml: str)
-            guard let yaml = node as? Array<Any> else { throw MetadataError.contentLoadError }
-            let yamlDecoder = YAMLDecoder()
-            var temp: [Tour] = []
-            for node in yaml {
-                guard let dict = node as? Dictionary<String, Any> else { continue }
-                let value = dict["id"] as? String
-                
-                if reference == nil || value == reference?.value {
-                    let str = try Yams.dump(object: node)
-                    let dest = try yamlDecoder.decode(Tour.self, from: str, userInfo: userInfo)
-                    temp.append(dest)
-                }
-            }
-            return temp
-        } catch let error as YamlError {
-            throw MetadataError.yamlParseError(error: error)
-        }
-    }
-
-    required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let i18n = decoder.userInfo[.i18n] as! I18N
-        let error = BufferedInfo()
-
-        self.title = I18NText.decode(decoder: decoder, baseKey: CodingKeys.title.stringValue)
-
-        if let id = try? container.decode(String.self, forKey: .id) {
-            self.id = id
-        } else {
-            self.id = "ERROR"
-            error.add(info: CustomLocalizedString("No ID specified", lang: i18n.langCode))
-        }
-        
-        if let debug = try? container.decode(Bool.self, forKey: .debug) {
-            self.debug = debug
-        } else {
-            self.debug = false
-        }
-
-        self.introduction = I18NText.decode(decoder: decoder, baseKey: CodingKeys.introduction.stringValue)
-
-        if let destinations = try? container.decode([Destination].self, forKey: .destinations) {
-            self.destinations = destinations
-            for d in destinations {
-                error.add(info: d.error)
-            }
-        } else {
-            self.destinations = []
-            error.add(info: CustomLocalizedString("No destinations specified", lang: i18n.langCode))
-        }
-        self.error = error.summary()
-        self.setting = try? container.decode(NavigationSetting.self, forKey: .navigationSetting)
-        
-        for dest in self.destinations {
-            dest.parent = self
-        }
-    }
-}
-
-class ResourceManager {
-    public static let shared: ResourceManager = ResourceManager(preview: false)
-
-    private var _resources: [Resource] = []
-    private var _resourceMap: [String: Resource] = [:]
-    var resources: [Resource] {
-        get {
-            return _resources
-        }
-    }
-
-    let preview: Bool
-
-    init(preview: Bool) {
-        self.preview = preview
-        updateResources()
-    }
-
-    public func resolveContentURL(url: URL) -> URL? {
-        let abs = url.absoluteString
-        if abs.starts(with: "content://") == false {
-            return nil
-        }
-
-        let path = abs[abs.index(abs.startIndex, offsetBy: 10)...]
-        return getResourceRoot().appendingPathComponent(String(path))
-    }
-
-    public func updateResources() {
-        _resources = listAllResources()
-        _resourceMap = [:]
-
-        for resource in resources {
-            _resourceMap[resource.id] = resource
-        }
-    }
-
-    public func resource(by identifier: String) -> Resource? {
-        NSLog("resource by identifier=\(identifier)")
-        for resource in resources {
-            NSLog("iterating resource.identifier = \(resource.identifier)")
-            if resource.identifier == identifier {
-                return resource
-            }
-        }
-        return nil
-    }
-
-    func getResourceRoot() -> URL {
-        if preview {
-            let path = Bundle.main.resourceURL
-            return path!.appendingPathComponent("PreviewResource")
-
-        } else {
-            let path = Bundle.main.resourceURL
-            return path!.appendingPathComponent("Resource")
-        }
-    }
-
-    private func listAllResources() -> [Resource] {
-        var list: [Resource] = []
-
-        let resourceRoot = getResourceRoot()
-
-        let fm = FileManager.default
-        let enumerator: FileManager.DirectoryEnumerator? = fm.enumerator(at: resourceRoot, includingPropertiesForKeys: [.isDirectoryKey], options: [], errorHandler: nil)
-
-        while let dir = enumerator?.nextObject() as? URL {
-            if fm.fileExists(atPath: dir.appendingPathComponent(Resource.METADATA_FILE_NAME).path) {
-                do {
-                    let model = try Resource(at: dir)
-                    list.append(model)
-                } catch (let error) {
-                    NSLog(error.localizedDescription)
-                }
-            }
-        }
-
-        return list.sorted { r1, r2 in
-            r1.name < r2.name
-        }
-    }
-
-
 }

@@ -1,0 +1,127 @@
+{
+    "destinations": [
+        {
+            "floor": 5,
+            "value": "Node_ID_FOR_A",
+            "#title": "point A",
+            "var": "tourA"
+        },
+        {
+            "floor": 5,
+            "value": "Node_ID_FOR_B",
+            "#title": "point B",
+            "var": "tourA"
+        },
+        {
+            "floor": 5,
+            "value": "Node_ID_FOR_C",
+            "#title": "point C",
+            "var": "tourA"
+        },
+        {
+            "floor": 5,
+            "value": "Node_ID_FOR_D",
+            "#title": "point D",
+            "var": "tourA"
+        }
+    ],
+    "messages": [
+        {
+            "type": "startMessage",
+            "text:ja": "これは目的地1のテキスト説明です。",
+            "text:en": "This is a text description of destination 1",
+            "parent": "Node_ID_FOR_A#tourA"
+        },
+        {
+            "type": "arriveMessage",
+            "text:ja": "これは目的地1のテキスト説明です。",
+            "text:en": "This is a text description of destination 1",
+            "parent": "Node_ID_FOR_A#tourA"
+        },
+        {
+            "type": "startMessage",
+            "text:ja": "これは目的地2のテキスト説明です。",
+            "text:en": "This is a text description of destination 1",
+            "parent": "Node_ID_FOR_B#tourA"
+        },
+        {
+            "type": "arriveMessage",
+            "text:ja": "これは目的地2のテキスト説明です。",
+            "text:en": "This is a text description of destination 2",
+            "parent": "Node_ID_FOR_B#tourA"
+        },
+        {
+            "type": "startMessage",
+            "text:ja": "「これは目的地3のテキスト説明です。",
+            "text:en": "This is a text description of destination 3",
+            "parent": "Node_ID_FOR_C#tourA"
+        },
+        {
+            "type": "arriveMessage",
+            "text:ja": "これは目的地4のテキスト説明です。",
+            "text:en": "This is a text description of destination 4",
+            "parent": "Node_ID_FOR_C#tourA"
+        },
+        {
+            "type": "startMessage",
+            "text:ja": "これは目的地2のテキスト説明です。",
+            "parent": "Node_ID_FOR_D#tourA"
+        },
+        {
+            "type": "arriveMessage",
+            "text:ja": "これは目的地5のテキスト説明です。",
+            "text:en": "This is a text description of destination 6",
+            "parent": "Node_ID_FOR_D#tourA"
+        }
+    ],
+    "tours": [
+        {
+            "tour_id": "tour_id",
+            "title-ja": "ツアーA",
+            "title-en": "tour B",
+            "destinations": [
+                {
+                    "ref": "Node_ID_FOR_A#tourA",
+                    "#ref": "ポイント１"
+                },
+                {
+                    "ref": "Node_ID_FOR_B#tourA",
+                    "#ref": "ポイント２"
+                },
+                {
+                    "ref": "Node_ID_FOR_C#tourA",
+                    "#ref": "ポイント３"
+                },
+                {
+                    "ref": "Node_ID_FOR_D#tourA",
+                    "#ref": "ポイント４"
+                }
+            ],
+            "default_var": "tourA"
+        },
+        {
+            "tour_id": "tour_id2",
+            "title-ja": "ツアーB",
+            "title-en": "tour B",
+            "destinations": [
+                {
+                    "ref": "Node_ID_FOR_A#tourB",
+                    "#ref": "ポイント１"
+                },
+                {
+                    "ref": "Node_ID_FOR_B#tourB",
+                    "#ref": "ポイント２"
+                },
+                {
+                    "ref": "Node_ID_FOR_C#tourB",
+                    "#ref": "ポイント３"
+                },
+                {
+                    "ref": "Node_ID_FOR_D#tourB",
+                    "#ref": "ポイント４"
+                }
+            ],
+            "default_var": "tourB"
+        }
+    ]
+}

@@ -34,20 +34,9 @@ struct SettingView: View {
     var body: some View {
         return Form {
             Section(header: Text("Settings")){
-                Button(action: {
-                    UserDefaults.standard.setValue(false, forKey: ResourceSelectView.resourceSelectedKey)
-                    UserDefaults.standard.synchronize()
-                    modelData.displayedScene = .ResourceSelect
-                    presentationMode.wrappedValue.dismiss()
-                }) {
-                    Text("SELECT_RESOURCE")
-                }
-
-                if let resource = modelData.resource {
-                    Picker("LANGUAGE", selection: $modelData.selectedLanguage) {
-                        ForEach(resource.languages, id: \.self) { language in
-                            Text(language).tag(language)
-                        }
+                Picker("LANGUAGE", selection: $modelData.selectedLanguage) {
+                    ForEach(modelData.languages, id: \.self) { language in
+                        Text(language).tag(language)
                     }
                 }
 

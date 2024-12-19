@@ -24,17 +24,12 @@ import SwiftUI
 
 struct ToursView: View {
     @EnvironmentObject var modelData: CaBotAppModel
+    @State private var tours: [Tour] = []
     
-    var src:Source
-
     var body: some View {
-        let tours = try! Tour.load(at: src)
-        let filteredTours = tours.filter{
-            tour in (modelData.modeType == .Debug || !tour.debug)}
-
         Form {
             Section(header: Text("SELECT_TOUR")) {
-                ForEach(filteredTours, id: \.self) { tour in
+                ForEach(tours, id: \.id) { tour in
                     NavigationLink(
                         destination: StaticTourDetailView(tour: tour).heartbeat("StaticTourDetailView"),
                         label: {
@@ -42,18 +37,45 @@ struct ToursView: View {
                         })
                 }
             }
-        }.listStyle(PlainListStyle())
+        }
+        .listStyle(PlainListStyle())
+        .onAppear {
+            loadTours()
+           
+        }
     }
+    
+    private func loadTours() {
+        do {
+            tours = try ResourceManager.shared.load().tours
+        } catch {
+            NSLog("Error loading tours: \(error)")
+        }
+    }
+
 }
 
 struct ToursView_Previews: PreviewProvider {
     static var previews: some View {
         let modelData = CaBotAppModel()
+        var previewTours: [Tour] = []
+        do {
+            previewTours = try ResourceManager.shared.loadForPreview().tours
+        } catch {
+            NSLog("Error loading tours for preview: \(error)")
+        }
 
-        let resource = modelData.resourceManager.resource(by: "Test data")!
-        let tours = resource.toursSource!
-
-        return ToursView(src: tours)
-            .environmentObject(modelData)
+        return Form {
+            Section(header: Text("SELECT_TOUR")) {
+                ForEach(previewTours, id: \.id) { tour in
+                    NavigationLink(
+                        destination: StaticTourDetailView(tour: tour).heartbeat("StaticTourDetailView"),
+                        label: {
+                            Text(tour.title.text)
+                        })
+                }
+            }
+        }
+        .environmentObject(modelData)
     }
 }

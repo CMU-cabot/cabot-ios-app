@@ -23,24 +23,27 @@
 import Foundation
 
 protocol TourManagerDelegate {
-    func tour(manager: TourManager, destinationChanged: Destination?, isStartMessageSpeaking: Bool)
+    func tour(manager: TourManager, destinationChanged: (any Destination)?, isStartMessageSpeaking: Bool)
     func tourUpdated(manager: TourManager)
+    func needToStartAnnounce(wait: Bool)
 }
 
 class TourManager: TourProtocol {
+    static let defaultTourID: String = "TourManager"
+    static let tourDataStoreKey: String = "tourDataStoreKey"
     var title: I18NText = I18NText(text: [:], pron: [:])
-    var id: String = "TourManager"
-    var destinations: [Destination] {
+    var id: String = defaultTourID
+    var destinations: [any Destination] {
         get {
             _destinations
         }
     }
-    var currentDestination: Destination? {
+    var currentDestination: (any Destination)? {
         get {
             _currentDestination
         }
     }
-    var arrivedDestination: Destination? {
+    var arrivedDestination: (any Destination)? {
         get {
             _arrivedDestination
         }
@@ -50,7 +53,7 @@ class TourManager: TourProtocol {
             return _destinations.count > 0 || _currentDestination != nil
         }
     }
-    var nextDestination: Destination? {
+    var nextDestination: (any Destination)? {
         get {
             return _destinations.first
         }
@@ -78,10 +81,16 @@ class TourManager: TourProtocol {
             _tourSaveData
         }
     }
+    var currentTour: Tour? {
+        get {
+            _tour
+        }
+    }
 
-    private var _destinations: [Destination]
-    private var _currentDestination: Destination?
-    private var _arrivedDestination: Destination?
+    private var _tour: Tour?
+    private var _destinations: [any Destination]
+    private var _currentDestination: (any Destination)?
+    private var _arrivedDestination: (any Destination)?
     private var _subtours: [Tour]
     private var _defaultNavigationSetting: NavigationSettingProtocol
     private var _tempNavigationSetting: NavigationSettingProtocol?
@@ -94,35 +103,41 @@ class TourManager: TourProtocol {
         _defaultNavigationSetting = setting
     }
 
-    func first(n: Int) -> [Destination] {
+    func first(n: Int) -> [(any Destination)] {
         return _destinations[0..<min(_destinations.count, n)].map{ $0 }
     }
 
-    func addToLast(destination: Destination) {
+    func addToLast(destination: (any Destination)) {
         _destinations.append(destination)
         delegate?.tourUpdated(manager: self)
         save()
     }
 
-    func addToFirst(destination: Destination) {
+    func addToFirst(destination: (any Destination)) {
         _destinations.insert(destination, at: 0)
         delegate?.tourUpdated(manager: self)
         save()
     }
 
     func set(tour: Tour) {
+        _tour = tour
         _destinations.removeAll()
         _currentDestination = nil
         _arrivedDestination = nil
-        _tempNavigationSetting = tour.setting
+        //_tempNavigationSetting = tour.setting
         self.id = tour.id
         self.title = tour.title
-        for d in tour.destinations {
-            _destinations.append(d)
-        }
+        SetDestination(tour:tour)
         delegate?.tourUpdated(manager: self)
         delegate?.tour(manager: self, destinationChanged: nil, isStartMessageSpeaking: true)
         save()
+    }
+    
+    func SetDestination(tour: Tour)
+    {
+        for d in tour.destinations {
+            _destinations.append(d)
+        }
     }
 
     func cannotStartCurrent() {
@@ -161,7 +176,8 @@ class TourManager: TourProtocol {
         _destinations.removeAll()
         _currentDestination = nil
         _arrivedDestination = nil
-        id = "TourManager"
+        _tour = nil
+        id = TourManager.defaultTourID
         title = I18NText(text: [:], pron: [:])
         delegate?.tourUpdated(manager: self)
         delegate?.tour(manager: self, destinationChanged: nil, isStartMessageSpeaking: true)
@@ -170,7 +186,6 @@ class TourManager: TourProtocol {
         
     func addSubTour(tour: Tour) {
         _subtours.append(tour)
-        _destinations.insert(contentsOf: tour.destinations, at: 0)
         delegate?.tourUpdated(manager: self)
         save()
     }
@@ -178,7 +193,8 @@ class TourManager: TourProtocol {
     func clearSubTour() {
         if let tour = _subtours.popLast() {
             _destinations = _destinations.filter { dest in
-                dest.parent != tour
+                // TODO dest.parent != tour
+                true
             }
         }
         _arrivedDestination = nil
@@ -201,8 +217,8 @@ class TourManager: TourProtocol {
         return true
     }
 
-    func skipDestination() -> Destination {
-        let skip: Destination = _currentDestination ?? pop()
+    func skipDestination() -> (any Destination) {
+        let skip: any Destination = _currentDestination ?? pop()
         if (_currentDestination != nil) {
             clearCurrent()
         } else {
@@ -212,34 +228,44 @@ class TourManager: TourProtocol {
         return skip
     }
 
-    func pop() -> Destination {
+    func pop() -> (any Destination) {
         let dest = _destinations.removeFirst()
-        
-        if let last = _subtours.last,
-           last.destinations.last == dest {
-            _ = _subtours.popLast()
-        }
-        
         save()
-        
         return dest
     }
-    
-    func save(){
+
+    func getTourSaveData() -> TourSaveData {
         var data = TourSaveData()
+        if destinations.count == 0 && data.currentDestination == "" {
+            _tour = nil
+            id = TourManager.defaultTourID
+        }
         data.id = id
         for d in destinations {
-            data.destinations.append(d.value ?? d.ref?.value ?? "")
-        }
-        data.currentDestination = currentDestination?.value ?? currentDestination?.ref?.value ?? ""
-        
-        let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(data) {
-            UserDefaults.standard.set(encoded, forKey: "tourSaveData")
-            NSLog("--- Save tour data ---")
-            for d in data.destinations {
-                NSLog(d)
+            if let tourDestination = d as? TourDestination {
+                data.destinations.append(tourDestination.ref.description)
+            } else {
+                data.destinations.append(d.value)
             }
+        }
+        if let tourDestination = currentDestination as? TourDestination {
+            data.currentDestination = tourDestination.ref.description
+        } else {
+            if let value = currentDestination?.value {
+                data.currentDestination = value
+            } else {
+                data.currentDestination = ""
+            }
+        }
+        return data
+    }
+
+    func save(){
+        var data = getTourSaveData()
+        let encoder = JSONEncoder()
+        print("restore save \(data)")
+        if let encoded = try? encoder.encode(data) {
+            UserDefaults.standard.set(encoded, forKey: TourManager.tourDataStoreKey)
         }
         else {
             NSLog("Failed to save tour data")
@@ -247,109 +273,50 @@ class TourManager: TourProtocol {
     }
     
     func update(){
-        _tourSaveData.currentDestination = currentDestination?.value ?? currentDestination?.ref?.value ?? ""
-        UserDefaults.standard.set(_tourSaveData, forKey: "tourSaveData")
+        _tourSaveData.currentDestination = currentDestination?.value ?? ""
+        UserDefaults.standard.set(_tourSaveData, forKey: TourManager.tourDataStoreKey)
     }
     
     func saveDataClear(){
         var data = TourSaveData()
-        data.id = ""
-        
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(data) {
-            UserDefaults.standard.set(encoded, forKey: "tourSaveData")
+            UserDefaults.standard.set(encoded, forKey: TourManager.tourDataStoreKey)
         }
         else {
             NSLog("Failed to save tour data")
         }
     }
     
-    func tourDataLoad(model: CaBotAppModel){
-        if let data = UserDefaults.standard.data(forKey: "tourSaveData") {
+    func tourDataLoad() {
+        _destinations.removeAll()
+        _currentDestination = nil
+        _arrivedDestination = nil
+        _tour =  nil
+        id = TourManager.defaultTourID
+        if let data = UserDefaults.standard.data(forKey: TourManager.tourDataStoreKey) {
             let decoder = JSONDecoder()
             if let decoded = try? decoder.decode(TourSaveData.self, from: data) {
                 _tourSaveData = decoded
-                
-                if(_tourSaveData.id == ""){
-                    NSLog("Tour save data not found")
-                    return
-                }
-                else if(_tourSaveData.id == "TourManager"){
-                    // load destinations
-                    if let src = model.resource?.destinationsSource {
-                        let destinationList = try! Destination.load(at: src)
-                        var destinations : [Destination] = destinationList
-                        for dList in destinationList {
-                            guard let file = dList.file else { continue }
-                            guard let destination = try? Destination.load(at: file) else { continue }
-                            for d in destination{
-                                destinations.append(d)
-                                if decoded.currentDestination == (d.value ?? d.ref?.value ?? "") {
-                                    addToFirst(destination: d)
-                                    var _ = proceedToNextDestination(isStartMessageSpeaking: false)
-                                }
-                            }
-                        }
-                        
-                        for decodedDestination in decoded.destinations {
-                            for d in destinations {
-                                if decodedDestination == (d.value ?? d.ref?.value ?? "") {
-                                    addToLast(destination: d)
-                                }
-                            }
-                        }
-                        
-                        if decoded.destinations.count > 0 && decoded.currentDestination == "" {
-                            model.needToStartAnnounce(wait: true)
+                print("restore \(decoded)")
+
+                id = _tourSaveData.id
+                _tour = TourData.getTour(by: _tourSaveData.id)
+                if let _ = try? ResourceManager.shared.load() {
+                    if _tourSaveData.currentDestination != "" {
+                        if let dest = ResourceManager.shared.getDestination(by: _tourSaveData.currentDestination) {
+                            addToFirst(destination: dest)
+                            let _ = proceedToNextDestination(isStartMessageSpeaking: false)
                         }
                     }
-                }
-                else{
-                    // load tour
-                    if let src = model.resource?.toursSource {
-                        do {
-                            let tours = try Tour.load(at: src)
-                            for tour in tours {
-                                if tour.id == decoded.id {
-                                    set(tour: tour)
-                                    if(_tourSaveData.currentDestination != ""){
-                                        for d in destinations {
-                                            if d.value ?? d.ref?.value != _tourSaveData.currentDestination {
-                                                var _ = pop()
-                                            }
-                                            else{
-                                                var _ = proceedToNextDestination(isStartMessageSpeaking: false)
-                                                break
-                                            }
-                                        }
-                                    }
-                                    else{
-                                        if(_tourSaveData.destinations.count > 0){
-                                            for d in destinations{
-                                                if(destinations.count > 0){
-                                                    if(destinations[0].value ?? destinations[0].ref?.value != _tourSaveData.destinations[0]){
-                                                        var _ = pop()
-                                                    }
-                                                }
-                                                else{
-                                                    break
-                                                }
-                                            }
-                                            model.needToStartAnnounce(wait: true)
-                                        }
-                                        else{
-                                            clearAllDestinations()
-                                        }
-                                    }
-                                    
-                                    return
-                                }
-                            }
-                        } catch {
-                            NSLog("\(src) cannot be loaded")
+                    for destination in _tourSaveData.destinations {
+                        if let dest = ResourceManager.shared.getDestination(by: destination) {
+                            addToLast(destination: dest)
                         }
                     }
-                    
+                    if decoded.destinations.count > 0 && decoded.currentDestination == "" {
+                        delegate?.needToStartAnnounce(wait: true)
+                    }
                 }
             }
         }
