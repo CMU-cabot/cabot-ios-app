@@ -72,7 +72,7 @@ protocol CaBotServiceProtocol {
     func send(destination: String) -> Bool
     func summon(destination: String) -> Bool
     func manage(command: CaBotManageCommand, param: String?) -> Bool
-    func log_request(request: Dictionary<String, String>) -> Bool
+    func log_request(request: LogRequest) -> Bool
     func isConnected() -> Bool
     func share(user_info: SharedInfo) -> Bool
 }
@@ -95,6 +95,7 @@ protocol CaBotServiceDelegate {
     func cabot(service:any CaBotTransportProtocol, touchStatus:TouchStatus)
     func cabot(service:any CaBotTransportProtocol, logList:[LogEntry], status: CaBotLogStatus)
     func cabot(service:any CaBotTransportProtocol, logDetail:LogEntry)
+    func cabot(service:any CaBotTransportProtocol, logInfo:LogEntry)
     func cabot(service:any CaBotTransportProtocol, userInfo:SharedInfo)
     func getModeType() -> ModeType
 }
@@ -411,6 +412,7 @@ enum CaBotLogRequestType:String, Decodable {
     case list
     case detail
     case report
+    case appLog
 }
 
 struct LogEntry: Decodable, Hashable {
@@ -435,42 +437,50 @@ struct LogEntry: Decodable, Hashable {
         }
     }
     
-    func logDate(for language: String) -> String {
-        if let str_nanoseconds = nanoseconds {
-            let inputFormatter = DateFormatter()
-            inputFormatter.dateFormat = "'cabot_'yyyy'-'MM'-'dd'-'HH'-'mm'-'ss"
-            
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateStyle = .medium
-            dateFormatter.timeStyle = .none
-            dateFormatter.locale = Locale(identifier: language)
-            
-            let timeFormatter = DateIntervalFormatter()
-            timeFormatter.dateStyle = .none
-            timeFormatter.timeStyle = .short
-            timeFormatter.locale = Locale(identifier: language)
-            
-            guard let date = inputFormatter.date(from: name) else {
-                return CustomLocalizedString("INVALID_DATE_STRING", lang: language)
-            }
-            
-            let formattedDate = dateFormatter.string(from: date)
-            
-            let formattedTime: String
+    var parsedDate: Date? {
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "'cabot_'yyyy'-'MM'-'dd'-'HH'-'mm'-'ss"
+        return inputFormatter.date(from: name)
+    }
+    
+    var endDate: Date? {
+        if let str_nanoseconds = nanoseconds, let date = parsedDate {
             if let int_nanoseconds = Int(str_nanoseconds) {
                 var seconds = Double(int_nanoseconds) / 1_000_000_000
                 seconds = max(seconds, 60)
-                let endDate = Date(timeInterval: seconds, since: date)
-                formattedTime = timeFormatter.string(from: date, to: endDate)
+                return Date(timeInterval: seconds, since: date)
             } else {
-                let endDate = Date() // now
-                formattedTime = timeFormatter.string(from: date, to: endDate)
+                return Date() // now
             }
-            
-            return "\(formattedDate)  \(formattedTime)"
+        }
+        
+        return nil
+    }
+    
+    func logDate(for language: String) -> String {
+        guard let date = parsedDate else {
+            return CustomLocalizedString("INVALID_DATE_STRING", lang: language)
+        }
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .none
+        dateFormatter.locale = Locale(identifier: language)
+        
+        let timeFormatter = DateIntervalFormatter()
+        timeFormatter.dateStyle = .none
+        timeFormatter.timeStyle = .short
+        timeFormatter.locale = Locale(identifier: language)
+        let formattedDate = dateFormatter.string(from: date)
+        
+        let formattedTime: String
+        if let endDate = endDate {
+            formattedTime = timeFormatter.string(from: date, to: endDate)
         } else {
             return name
         }
+        
+        return "\(formattedDate)  \(formattedTime)"
     }
 }
 
@@ -480,6 +490,14 @@ struct LogResponse: Decodable {
     var type: CaBotLogRequestType
     var log_list: [LogEntry]?
     var log: LogEntry?
+}
+
+struct LogRequest: Codable {
+    var type: String
+    var log_name: String? = nil
+    var title: String? = nil
+    var detail: String? = nil
+    var app_log: [String: String]? = nil
 }
 
 class CaBotServiceActions {
@@ -558,9 +576,17 @@ class CaBotServiceActions {
                 }
                 break
             case .report:
+                NSLog("response report")
+                if let log_info = response.log {
+                    NSLog("get app log")
+                    delegate.cabot(service: service, logInfo: log_info)
+                }
+                break
+            case .appLog:
                 // never happen
                 break
             }
+            
         }
     }
 
