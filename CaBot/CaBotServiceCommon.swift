@@ -118,6 +118,7 @@ enum CaBotManageCommand:String {
     case poweroff
     case start
     case stop
+    case reset_power
     case lang
     case reqfeatures
     case handleside

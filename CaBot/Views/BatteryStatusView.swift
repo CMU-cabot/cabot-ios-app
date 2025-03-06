@@ -24,29 +24,52 @@ import SwiftUI
 
 struct BatteryStatusView: View {
     @EnvironmentObject var modelData: CaBotAppModel
+    @State private var showConfirmationDialog = false
+    @State private var resetParam: String?
 
     var body: some View {
-        return VStack {
+        VStack {
             Form {
-                Section(header:Text("Details")) {
+                Section(header: Text("Details")) {
                     if !modelData.suitcaseConnected {
                         Label(LocalizedStringKey("Suitcase Not Connected"),
                               systemImage: "antenna.radiowaves.left.and.right")
                             .opacity(0.3)
                     }
                     List {
-                        ForEach (modelData.batteryStatus.values, id: \.self) {value in
+                        ForEach(modelData.batteryStatus.values, id: \.self) { value in
                             HStack {
                                 Text(value.key)
                                     .frame(maxWidth: 200, alignment: .topLeading)
-                                Text(value.value)
-                                    .frame(maxWidth: nil, alignment: .topLeading)
+                                if value.value.starts(with: "/") {
+                                    Button(action: {
+                                        resetParam = value.value
+                                        showConfirmationDialog = true
+                                    }) {
+                                        Text("Reset")
+                                    }
+                                } else {
+                                    Text(value.value)
+                                        .frame(maxWidth: .infinity, alignment: .topLeading)
+                                }
                             }
                         }
                     }
                 }
             }
             .navigationTitle("Battery Status")
+            .confirmationDialog("Confirm Reset",
+                                isPresented: $showConfirmationDialog,
+                                titleVisibility: .visible) {
+                Button("Reset", role: .destructive) {
+                    if let param = resetParam {
+                        modelData.systemManageCommand(command: .reset_power, param: param)
+                    }
+                }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("Are you sure you want to reset the battery?")
+            }
         }
     }
 }
