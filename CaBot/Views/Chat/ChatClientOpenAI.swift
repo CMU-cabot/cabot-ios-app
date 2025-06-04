@@ -121,6 +121,7 @@ class ChatClientOpenAI: ChatClient {
         DispatchQueue.main.async {
             appModel.sendingChatData = true
         }
+        appModel.receivingChatContent = false
         client?.chatsStream(query: query) { partialResult in
             print("chat stream partialResult \(partialResult)")
             guard let pub = self.pub, appModel.showingChatView else { return }
@@ -134,6 +135,7 @@ class ChatClientOpenAI: ChatClient {
                     success_count += min(content.count, 1)
                     pub.send(content)
                     NSLog("chat stream content \(content)")
+                    appModel.receivingChatContent = success_count > 0
                 }
                 if let toolCalls = result.choices[0].delta.toolCalls {
                     toolCalls.forEach {tool_call in

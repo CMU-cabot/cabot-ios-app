@@ -347,6 +347,7 @@
 "Could not set tour" = "ツアーを設定できませんでした";
 "Could not send camera image" = "カメラ画像を送信できませんでした";
 "Checking now" = "確認中です";
+"REQUESTING_PLEASE_WAIT" = "確認中です";
 
 // Suitcase's speaker settings
 "SuitcaseSpeaker" = "スーツケース搭載スピーカー";

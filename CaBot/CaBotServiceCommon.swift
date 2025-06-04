@@ -577,6 +577,12 @@ class CaBotServiceActions {
             case .toggleconversation:
                 NSLog("Receive activate microphone request")
                 if let appModel = ChatData.shared.viewModel?.appModel {
+                    if appModel.showingChatView && appModel.sendingChatData {
+                        if !appModel.receivingChatContent {
+                            appModel.speak(CustomLocalizedString("REQUESTING_PLEASE_WAIT", lang:I18N.shared.lang), priority: .Moderate) { _, _ in}
+                        }
+                        return
+                    }
                     appModel.showingChatView = !appModel.showingChatView
                     if !appModel.showingChatView {
                         ChatData.shared.viewModel?.playTimeoutSound()

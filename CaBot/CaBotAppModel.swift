@@ -480,6 +480,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     }
 
     @Published var sendingChatData = false
+    var receivingChatContent = false
     @Published var showingChatView: Bool = false {
         didSet {
             if silentForChange == false {

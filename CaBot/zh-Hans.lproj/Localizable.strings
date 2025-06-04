@@ -347,6 +347,7 @@
 "Could not set tour" = "无法设置行程";
 "Could not send camera image" = "无法发送相机图像";
 "Checking now" = "立即检查";
+"REQUESTING_PLEASE_WAIT" = "正在确认";
 
 // Suitcase's speaker settings
 "SuitcaseSpeaker" = "行李箱内置扬声器";

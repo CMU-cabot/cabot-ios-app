@@ -344,6 +344,7 @@
 "Could not set tour" = "Could not set tour";
 "Could not send camera image" = "Could not send camera image";
 "Checking now" = "Checking now";
+"REQUESTING_PLEASE_WAIT" = "Requesting";
 
 // Suitcase's speaker settings
 "SuitcaseSpeaker" = "Speaker in Suitcase";
