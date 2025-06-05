@@ -767,6 +767,17 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     @Published var userInfo: UserInfoBuffer
     @Published var attend_messages: [ChatMessage] = []
 
+    var iconText: String {
+        get {
+            return self.batteryStatus.message.replacingOccurrences(of: "Unknown", with: "")
+        }
+    }
+    var iconTextColor: Color {
+        get {
+            return self.batteryStatus.level == .OK ? .black : .red
+        }
+    }
+
     private var addressCandidate: AddressCandidate
     private var bleService: CaBotServiceBLE
     private var tcpService: CaBotServiceTCP

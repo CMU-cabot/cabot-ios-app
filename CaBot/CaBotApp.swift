@@ -58,7 +58,7 @@ struct SuitcaseStatusView: View {
                     .clipShape(Circle())
                     .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
                     .padding(.trailing, 8)
-                    .overlay(Text("\(modelData.batteryStatus.message.replacingOccurrences(of: "Unknown", with: ""))").foregroundColor(modelData.batteryStatus.level == .OK ? .black : .red).font(.footnote).fontWeight(.bold).background(.white.opacity(0.8)).offset(y: 0).padding(.leading, -8), alignment: .center)
+                    .overlay(Text(modelData.iconText).foregroundColor(modelData.iconTextColor).font(.footnote).fontWeight(.bold).background(.white.opacity(0.8)).offset(y: 0).padding(.leading, -8), alignment: .center)
             } else {
                 Image("suitcase.rolling.slash", bundle: Bundle.main)
                     .font(.title2)
