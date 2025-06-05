@@ -707,7 +707,7 @@ actor LogPack {
         if let text, isLogWithText {
             output = "\(self.title): \(text)"
         }
-        NSLog("\(output)  x \(packingCount)")
+        NSLog("%@", "\(output)  x \(packingCount)")
         packingCount = 0
     }
 }
