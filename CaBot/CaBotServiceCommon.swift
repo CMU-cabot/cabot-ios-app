@@ -697,7 +697,7 @@ actor LogPack {
         if let text, isLogWithText {
             output = "\(self.title): \(text)"
         }
-        NSLog(output)
+        NSLog("%@", output)
     }
     
     private func _packlog( _ text:String? ) {

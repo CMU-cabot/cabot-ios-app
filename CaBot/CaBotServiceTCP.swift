@@ -40,6 +40,7 @@ class CaBotServiceTCP: NSObject {
     private let cabotVersionLogPack = LogPack(title:"<Socket on: cabot_version>", threshold:3.0, maxPacking:20)
     private let deviceStatusLogPack = LogPack(title:"<Socket on: device_status>", threshold:7.0, maxPacking:4)
     private let systemStatusLogPack = LogPack(title:"<Socket on: system_status>", threshold:7.0, maxPacking:4)
+    private let batteryStatusLogPack = LogPack(title:"<Socket on: battery_status>", threshold:7.0, maxPacking:4)
     private let touchLogPack = LogPack(title:"<Socket on: touch>", threshold:3.0, maxPacking:80)
 
     var delegate:CaBotServiceDelegate?
@@ -206,7 +207,7 @@ class CaBotServiceTCP: NSObject {
             guard let text = dt[0] as? String else { return }
             guard let data = String(text).data(using:.utf8) else { return }
             guard let weakself = self else { return }
-            NSLog("<Socket on: battery_status>")
+            weakself.batteryStatusLogPack.log(text:text)
             guard let delegate = weakself.delegate else { return }
             do {
                 let status = try JSONDecoder().decode(BatteryStatus.self, from: data)
