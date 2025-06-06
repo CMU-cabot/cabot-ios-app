@@ -123,6 +123,7 @@ struct CaBotApp: App {
 
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    var networkMonitor: NetworkMonitor?
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         Logging.startLog(true)
         let versionNo = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
@@ -135,11 +136,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             NSLog( "<UncaughtException> \n\(exception)\n\(stacktrace)")
         }
         
+        networkMonitor = NetworkMonitor()
+        networkMonitor?.startMonitoring()
         return true
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
         NSLog( "<Terminate>" )
         Logging.stopLog()
+        networkMonitor?.stopMonitoring()
     }
 }
