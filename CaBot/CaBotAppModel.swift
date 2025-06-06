@@ -1728,7 +1728,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         let deviceStatusLevel = deviceStatus.level
         if (self.modeType == .Advanced || self.modeType == .Debug){
             if (prevDeviceStatusLevel != deviceStatusLevel) {
-                if (deviceStatusLevel == .OK){
+                if (deviceStatusLevel == .OK || deviceStatusLevel == .Unknown){
                     self.removeNotification()
                 } else {
                     notificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
@@ -1751,7 +1751,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         let systemStatus = self.systemStatus.summary
         if (self.modeType == .Advanced || self.modeType == .Debug){
             if (prevSystemStatus != systemStatus){
-                if (systemStatus == .OK){
+                if (systemStatus == .OK || systemStatus == .Warning){
                     self.removeNotification()
                 } else {
                     notificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
