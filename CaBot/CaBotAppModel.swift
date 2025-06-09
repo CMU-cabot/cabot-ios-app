@@ -732,9 +732,16 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
 
     @Published var deviceStatus: DeviceStatus = DeviceStatus(){
         didSet{
-            isUserAppConnected = deviceStatus.devices.contains { device in
+            let newUserAppConnected = deviceStatus.devices.contains { device in
                 device.type == "User App" && device.level == .OK
             }
+            #if ATTEND
+            if newUserAppConnected != isUserAppConnected {
+                let text = CustomLocalizedString(newUserAppConnected ? "USER_APP_CONNECTED" : "USER_APP_NOT_CONNECTED", lang: self.selectedLanguage)
+                self.tts.speakForAdvanced(text, force: false) { _, _ in }
+            }
+            #endif
+            isUserAppConnected = newUserAppConnected
             if skipWifNotification {
                 skipWifNotification = false
             }
