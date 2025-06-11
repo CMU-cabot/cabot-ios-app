@@ -147,7 +147,7 @@ struct UserInfoView: View {
                 } else {
                     Text("PLACEHOLDER_DESTINATION_TITLE").foregroundColor(.gray)
                 }
-                if modelData.systemStatus.level == .Active{
+                if modelData.systemStatus.level == .Active /*|| modelData.systemStatus.components.isEmpty*/ {
                     Spacer()
                     HStack {
                         Image(systemName: modelData.touchStatus.level.icon)
