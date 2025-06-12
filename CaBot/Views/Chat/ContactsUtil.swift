@@ -38,6 +38,7 @@ class ContactsUtil {
                 if to.count > 0 {
                     self.contextualStrings.insert(to)
                     if from.count > 0 {
+                        self.contextualStrings.insert(from)
                         self.dictionary[from] = to;
                     }
                 }
