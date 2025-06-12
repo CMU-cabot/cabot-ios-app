@@ -150,7 +150,7 @@ struct UserInfoView: View {
                 if modelData.systemStatus.level == .Active /*|| modelData.systemStatus.components.isEmpty*/ {
                     Spacer()
                     HStack {
-                        Image(systemName: modelData.touchStatus.level.icon)
+                        (modelData.touchStatus.level != .Stale ? Image(systemName: modelData.touchStatus.level.icon) : Image(modelData.touchStatus.level.icon, bundle: Bundle.main))
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 24, height: 24)

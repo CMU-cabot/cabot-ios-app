@@ -406,7 +406,7 @@ enum TouchLevel: Int, Decodable {
     var icon: String {
         switch (self) {
         case .Stale:
-            return "" //"xmark.circle"
+            return "custom.hand.raised.slash.badge.exclamationmark" //"xmark.circle"
         case .NoTouch:
             return "hand.raised.slash"
         case .Touching:
