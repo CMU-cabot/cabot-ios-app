@@ -72,7 +72,7 @@
 
 
 //OnboardGrantAccess
-"ONBOARD_MESSAGE"="位置情報、Bluetooth、通知、マイク、音声認識の利用を許可してください";
+"ONBOARD_MESSAGE"="位置情報、Bluetooth、通知、マイク、音声認識、連絡先の利用を許可してください";
 "Enable Location Update"="位置情報を許可する";
 "Location Update Enabled"="位置情報が許可されました";
 "Location Update Denied"="位置情報が許可されませんでした";
