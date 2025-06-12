@@ -149,7 +149,7 @@ struct OnboardGrantAccess: View {
                     Label(LocalizedStringKey("Contacts Not Available"), systemImage:"multiply.circle")
                 case .denied:
                     Label(LocalizedStringKey("Contacts Denied"), systemImage:"multiply.circle")
-                case .limited:
+                @unknown default:
                     Label(LocalizedStringKey("Contacts Limited"), systemImage:"multiply.circle")
                 }
             }
