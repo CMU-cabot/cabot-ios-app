@@ -355,6 +355,7 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
 
         recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
         recognitionRequest!.shouldReportPartialResults = true
+        recognitionRequest!.contextualStrings = ContactsUtil.shared.getContextualStrings()
         last_text = nil
         NSLog("Start recognizing")
         recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest!, resultHandler: { [weak self] (result, e) in

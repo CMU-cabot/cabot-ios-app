@@ -25,16 +25,21 @@ import Contacts
 class ContactsUtil {
     static let shared = ContactsUtil()
     private var dictionary: [String: String] = [:]
+    private var contextualStrings = Set<String>()
 
     func load() {
-        self.dictionary = [:]
+        self.dictionary.removeAll()
+        self.contextualStrings.removeAll()
         let contactStore = CNContactStore()
         let keysToFetch = [CNContactGivenNameKey, CNContactPhoneticGivenNameKey, CNContactFamilyNameKey, CNContactPhoneticFamilyNameKey, CNContactPhoneNumbersKey, CNContactEmailAddressesKey]
         let request = CNContactFetchRequest(keysToFetch: keysToFetch as [CNKeyDescriptor])
         do {
             func addDictionary(from: String, to:String) {
-                if from.count > 0 && to.count > 0 {
-                    self.dictionary[from] = to;
+                if to.count > 0 {
+                    self.contextualStrings.insert(to)
+                    if from.count > 0 {
+                        self.dictionary[from] = to;
+                    }
                 }
             }
             try contactStore.enumerateContacts(with: request) { (contact, stop) in
@@ -46,6 +51,7 @@ class ContactsUtil {
             NSLog("Error loading contacts \(error)")
         }
         NSLog("Contact dictionary: \(self.dictionary)")
+        NSLog("Contact contextualStrings = \(self.getContextualStrings())")
     }
 
     func convert(_ text: String) -> String {
@@ -58,7 +64,7 @@ class ContactsUtil {
         return _text
     }
 
-    func test() {
-        
+    func getContextualStrings() -> [String] {
+        return Array(self.contextualStrings)
     }
 }
