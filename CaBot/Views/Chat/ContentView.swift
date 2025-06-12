@@ -95,6 +95,9 @@ public struct ContentView: View {
         } else {
             model.stt?.restartRecognize()
         }
+        DispatchQueue.global(qos: .userInitiated).async {
+            ContactsUtil.shared.load()
+        }
     }
 
     func debugPrintTourData() {

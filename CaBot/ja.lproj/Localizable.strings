@@ -72,7 +72,7 @@
 
 
 //OnboardGrantAccess
-"ONBOARD_MESSAGE"="位置情報、Bluetooth、通知、マイク、音声認識の利用を許可してください";
+"ONBOARD_MESSAGE"="位置情報、Bluetooth、通知、マイク、音声認識、連絡先の利用を許可してください";
 "Enable Location Update"="位置情報を許可する";
 "Location Update Enabled"="位置情報が許可されました";
 "Location Update Denied"="位置情報が許可されませんでした";
@@ -92,6 +92,11 @@
 "Speech Reco Enabled"="音声認識が許可されました";
 "Speech Reco Not Available"="音声認識を利用できません";
 "Speech Reco Denied"="音声認識が許可されませんでした";
+"Enable Contacts"="連絡先を許可する";
+"Contacts Enabled"="連絡先が許可されました";
+"Contacts Not Available"="連絡先を利用できません";
+"Contacts Denied"="連絡先が許可されませんでした";
+"Contacts Limited"="連絡先が制限されています";
 
 
 // MainMenuView

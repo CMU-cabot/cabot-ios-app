@@ -92,6 +92,11 @@
 "Speech Reco Enabled"="语音识别已启用";
 "Speech Reco Not Available"="语音识别不可用";
 "Speech Reco Denied"="语音识别已被拒绝";
+"Enable Contacts"="启用联系人";
+"Contacts Enabled"="已启用联系人";
+"Contacts Not Available"="联系人不可用";
+"Contacts Denied"="拒绝联系人";
+"Contacts Limited"="联系人受限";
 
 
 // MainMenuView

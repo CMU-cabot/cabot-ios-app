@@ -33,6 +33,7 @@ import HLPDialog
 import Speech
 import ChatView
 import PriorityQueueTTS
+import Contacts
 
 enum GrantState {
     case Init
@@ -336,13 +337,23 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             self.checkOnboardCondition()
         }
     }
+    #if USER
+    @Published var contactsState: CNAuthorizationStatus = CNContactStore.authorizationStatus(for: .contacts) {
+        didSet {
+            self.checkOnboardCondition()
+        }
+    }
+    #else
+    @Published var contactsState: CNAuthorizationStatus = .authorized
+    #endif
     func checkOnboardCondition() {
         DispatchQueue.main.async {
             if (self.bluetoothState == .poweredOn || self.bluetoothState == .poweredOff) &&
                 self.notificationState != .Init &&
                 self.locationState != .Init &&
                 self.recordPermission == .granted &&
-                self.speechRecoState != .notDetermined
+                self.speechRecoState != .notDetermined &&
+                (self.contactsState == .authorized)
             {
                 if self.authRequestedByUser {
                     withAnimation() {
@@ -1110,6 +1121,18 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             }
         }
     }
+
+    #if USER
+    func requestContactsAuthorization() {
+        self.authRequestedByUser = true
+        let contactStore = CNContactStore()
+        contactStore.requestAccess(for: .contacts) { granted, error in
+            DispatchQueue.main.async {
+                self.contactsState = CNContactStore.authorizationStatus(for: .contacts)
+            }
+        }
+    }
+    #endif
 
     func tcpServiceRestart() {
         if !self.tcpService.isSocket() {

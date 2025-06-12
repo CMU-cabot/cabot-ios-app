@@ -46,8 +46,6 @@
 		30AFA5952D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5842D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift */; };
 		30AFA5982D00BCD0004AFA98 /* ChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5862D00BCD0004AFA98 /* ChatSettingsView.swift */; };
 		30AFA5992D00BCD0004AFA98 /* ChatSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5862D00BCD0004AFA98 /* ChatSettingsView.swift */; };
-		30AFA59A2D00BCD0004AFA98 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5872D00BCD0004AFA98 /* SpeechRecognizer.swift */; };
-		30AFA59B2D00BCD0004AFA98 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30AFA5872D00BCD0004AFA98 /* SpeechRecognizer.swift */; };
 		30AFA59E2D00BD4E004AFA98 /* ChatView in Frameworks */ = {isa = PBXBuildFile; productRef = 30AFA59D2D00BD4E004AFA98 /* ChatView */; };
 		30AFA5A02D00BD73004AFA98 /* ChatView in Frameworks */ = {isa = PBXBuildFile; productRef = 30AFA59F2D00BD73004AFA98 /* ChatView */; };
 		30AFA5A32D00BDAB004AFA98 /* OpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = 30AFA5A22D00BDAB004AFA98 /* OpenAI */; };
@@ -88,6 +86,8 @@
 		7EDF3C4429D48C3200AD1115 /* Localizable.strings in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E557EFE2581C79B00B1B9CA /* Localizable.strings */; };
 		7EDF3C4529D4901000AD1115 /* Resource in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3099132A265DE50A000C1BFE /* Resource */; };
 		7EF5F1EA228DB07100788987 /* NavUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EF5F1E8228DB07100788987 /* NavUtil.m */; };
+		A0D51ED52DFA50DD001B9935 /* ContactsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D51ED42DFA50DD001B9935 /* ContactsUtil.swift */; };
+		A0D51ED62DFA50DD001B9935 /* ContactsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D51ED42DFA50DD001B9935 /* ContactsUtil.swift */; };
 		A97F30DF2CDDC9FA00BE5C43 /* PriorityQueueTTS in Frameworks */ = {isa = PBXBuildFile; productRef = A97F30DE2CDDC9FA00BE5C43 /* PriorityQueueTTS */; };
 		A97F30E12CDDCA0D00BE5C43 /* PriorityQueueTTS in Frameworks */ = {isa = PBXBuildFile; productRef = A97F30E02CDDCA0D00BE5C43 /* PriorityQueueTTS */; };
 		D7CC04F42BFB352700C0B10A /* DialogViewControllerCabot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09725B0924FE4AC300012D42 /* DialogViewControllerCabot.swift */; };
@@ -200,7 +200,6 @@
 		30AFA5832D00BCD0004AFA98 /* ChatClientOpenAI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatClientOpenAI.swift; sourceTree = "<group>"; };
 		30AFA5842D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PriorityQueueTTSWrapper.swift; sourceTree = "<group>"; };
 		30AFA5862D00BCD0004AFA98 /* ChatSettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatSettingsView.swift; sourceTree = "<group>"; };
-		30AFA5872D00BCD0004AFA98 /* SpeechRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
 		30C3059D26B9036A00A1383A /* DestinationDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationDetailView.swift; sourceTree = "<group>"; };
 		30E50DCB269F672800729ABD /* TourManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TourManager.swift; sourceTree = "<group>"; };
 		30E50DCD269F75DB00729ABD /* CaBotApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaBotApp.swift; sourceTree = "<group>"; };
@@ -246,6 +245,7 @@
 		A056A36D2D8059DE0001FD38 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/User-InfoPlist.strings"; sourceTree = "<group>"; };
 		A056A36E2D8059DE0001FD38 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Attend-InfoPlist.strings"; sourceTree = "<group>"; };
 		A056A36F2D8059DE0001FD38 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		A0D51ED42DFA50DD001B9935 /* ContactsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsUtil.swift; sourceTree = "<group>"; };
 		D7CC052B2BFB352700C0B10A /* CaBot-User.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CaBot-User.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7CC05322BFB3BF900C0B10A /* DestinationDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DestinationDetailView.swift; sourceTree = "<group>"; };
 		D7CC05342BFB419900C0B10A /* DestinationsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DestinationsView.swift; sourceTree = "<group>"; };
@@ -342,6 +342,7 @@
 			isa = PBXGroup;
 			children = (
 				30AFA57F2D00BCD0004AFA98 /* AppleSTT.swift */,
+				A0D51ED42DFA50DD001B9935 /* ContactsUtil.swift */,
 				30AFA5832D00BCD0004AFA98 /* ChatClientOpenAI.swift */,
 				30AFA5812D00BCD0004AFA98 /* ChatConfiguration.swift */,
 				30AFA57E2D00BCD0004AFA98 /* ChatViewModel.swift */,
@@ -349,7 +350,6 @@
 				30AFA5802D00BCD0004AFA98 /* LimitedArray.swift */,
 				30AFA5842D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift */,
 				30AFA5862D00BCD0004AFA98 /* ChatSettingsView.swift */,
-				30AFA5872D00BCD0004AFA98 /* SpeechRecognizer.swift */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -824,6 +824,7 @@
 				30E50DD4269F77CE00729ABD /* RootView.swift in Sources */,
 				7EF5F1EA228DB07100788987 /* NavUtil.m in Sources */,
 				3096BF1426A5C29F0066F256 /* SettingView.swift in Sources */,
+				A0D51ED62DFA50DD001B9935 /* ContactsUtil.swift in Sources */,
 				E561455F2A6E02A8005CF82F /* RosWebView.swift in Sources */,
 				30E50DD8269F784A00729ABD /* MainMenuView.swift in Sources */,
 				30AFA58C2D00BCD0004AFA98 /* LimitedArray.swift in Sources */,
@@ -837,7 +838,6 @@
 				30AFA5902D00BCD0004AFA98 /* ContentView.swift in Sources */,
 				7E8F5A202BA4D33800E5D547 /* SpokenTextView.swift in Sources */,
 				7E29F072228B55FC00CA7DD6 /* CaBotServiceBLE.swift in Sources */,
-				30AFA59A2D00BCD0004AFA98 /* SpeechRecognizer.swift in Sources */,
 				30E50DCC269F672800729ABD /* TourManager.swift in Sources */,
 				308FCE2E27E62B30009FCC7B /* BatteryStatusView.swift in Sources */,
 				30E99DA4266B2216001ACAAA /* BeaconSampler.swift in Sources */,
@@ -889,7 +889,6 @@
 				D7CC04FA2BFB352700C0B10A /* LocalConversation.swift in Sources */,
 				D7CC05352BFB419900C0B10A /* DestinationsView.swift in Sources */,
 				D7CC04FB2BFB352700C0B10A /* ToursView.swift in Sources */,
-				30AFA59B2D00BCD0004AFA98 /* SpeechRecognizer.swift in Sources */,
 				D7CC04FC2BFB352700C0B10A /* JSHelper.swift in Sources */,
 				D7CC04FD2BFB352700C0B10A /* CaBotApp.swift in Sources */,
 				D7CC04FF2BFB352700C0B10A /* ResourceManager.swift in Sources */,
@@ -900,6 +899,7 @@
 				D7CC05042BFB352700C0B10A /* Logging.m in Sources */,
 				D7CC05052BFB352700C0B10A /* RootView.swift in Sources */,
 				D7CC05062BFB352700C0B10A /* NavUtil.m in Sources */,
+				A0D51ED52DFA50DD001B9935 /* ContactsUtil.swift in Sources */,
 				D7D7A6FB2BFECB490072ADF6 /* TourDetailView.swift in Sources */,
 				30AFA58B2D00BCD0004AFA98 /* AppleSTT.swift in Sources */,
 				D7F6BE6E2C2A57C300CD8258 /* SettingView.swift in Sources */,

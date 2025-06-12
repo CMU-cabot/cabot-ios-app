@@ -72,7 +72,7 @@
 
 
 // OnboardGrantAccess
-"ONBOARD_MESSAGE"="Please allow the app to access Location, Bluetooth device, Notification, Microphone and Speech Reco.";
+"ONBOARD_MESSAGE"="Please allow the app to access Location, Bluetooth device, Notification, Microphone, Speech Reco and Contacts.";
 "Enable Location Update"="Enable Location Update";
 "Location Update Enabled"="Location Update Enabled";
 "Location Update Denied"="Location Update Denied";
@@ -92,6 +92,11 @@
 "Speech Reco Enabled"="Speech Reco Enabled";
 "Speech Reco Not Available"="Speech Reco Not Available";
 "Speech Reco Denied"="Speech Reco Not Available";
+"Enable Contacts"="Enable Contacts";
+"Contacts Enabled"="Contacts Enabled";
+"Contacts Not Available"="Contacts Not Available";
+"Contacts Denied"="Contacts Denied";
+"Contacts Limited"="Contacts Limited";
 
 
 // MainMenuView
