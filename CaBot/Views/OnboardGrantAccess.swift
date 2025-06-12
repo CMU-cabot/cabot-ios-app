@@ -134,6 +134,29 @@ struct OnboardGrantAccess: View {
             .padding()
             .disabled(modelData.speechRecoState != .notDetermined)
             .frame(width:250, alignment: .leading)
+
+            #if USER
+            Button(action: {
+                userAction = true
+                modelData.requestContactsAuthorization()
+            }) {
+                switch(modelData.contactsState) {
+                case .notDetermined:
+                    Label(LocalizedStringKey("Enable Contacts"), systemImage:"circle")
+                case .authorized:
+                    Label(LocalizedStringKey("Contacts Enabled"), systemImage:"checkmark.circle")
+                case .restricted:
+                    Label(LocalizedStringKey("Contacts Not Available"), systemImage:"multiply.circle")
+                case .denied:
+                    Label(LocalizedStringKey("Contacts Denied"), systemImage:"multiply.circle")
+                case .limited:
+                    Label(LocalizedStringKey("Contacts Limited"), systemImage:"multiply.circle")
+                }
+            }
+            .padding()
+            .disabled(modelData.contactsState != .notDetermined)
+            .frame(width:250, alignment: .leading)
+            #endif
         }
     }
 }

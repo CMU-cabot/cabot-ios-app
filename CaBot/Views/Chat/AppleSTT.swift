@@ -224,6 +224,7 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
     private var last_failure:(NSError)->Void = {arg in}
     private var last_timeout:()->Void = { () in}
     private var last_text: String?
+    private var last_converted: String?
 
     private var stopstt:()->()
     private let waitDelay = 0.0
@@ -361,7 +362,7 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
                 return
             }
             let complete:()->Void = {
-                if let last_text = weakself.last_text {
+                if let last_text = weakself.last_converted {
                     NSLog("Recognized: \(last_text)")
                     let text = PassthroughSubject<String, Error>()
                     action(text, 0)
@@ -425,6 +426,7 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
             weakself.stoptimer();
 
             weakself.last_text = result.bestTranscription.formattedString;
+            weakself.last_converted = ContactsUtil.shared.convert(result.bestTranscription.formattedString)
 
             weakself.resulttimer = Timer.scheduledTimer(withTimeInterval: weakself.resulttimerDuration, repeats: false, block: { (timer) in
                 weakself.endRecognize()
@@ -435,9 +437,9 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
             let length:Int = str?.count ?? 0
             if (length > 0) {
                 DispatchQueue.main.async {
-                    if let str {
-                        NSLog("Result = \(str), Length = \(length), isFinal = \(isFinal)");
-                        weakself.state?.wrappedValue.chatText = str
+                    if let str, let converted = weakself.last_converted {
+                        NSLog("Result = \(str)(\(converted)), Length = \(length), isFinal = \(isFinal)");
+                        weakself.state?.wrappedValue.chatText = converted
                     }
                 }
                 if isFinal{

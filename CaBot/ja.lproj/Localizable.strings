@@ -92,6 +92,11 @@
 "Speech Reco Enabled"="音声認識が許可されました";
 "Speech Reco Not Available"="音声認識を利用できません";
 "Speech Reco Denied"="音声認識が許可されませんでした";
+"Enable Contacts"="連絡先を許可する";
+"Contacts Enabled"="連絡先が許可されました";
+"Contacts Not Available"="連絡先を利用できません";
+"Contacts Denied"="連絡先が許可されませんでした";
+"Contacts Limited"="連絡先が制限されています";
 
 
 // MainMenuView

@@ -89,6 +89,11 @@
 "Speech Reco Enabled"="Speech Reco Enabled";
 "Speech Reco Not Available"="Speech Reco Not Available";
 "Speech Reco Denied"="Speech Reco Not Available";
+"Enable Contacts"="Enable Contacts";
+"Contacts Enabled"="Contacts Enabled";
+"Contacts Not Available"="Contacts Not Available";
+"Contacts Denied"="Contacts Denied";
+"Contacts Limited"="Contacts Limited";
 
 
 // MainMenuView
