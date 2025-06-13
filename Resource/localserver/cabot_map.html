@@ -279,6 +279,33 @@ THE SOFTWARE.Copyright (c) 2023  Carnegie Mellon University and Miraikan
             throttle_rate: 1000,
             radius : 0.5
         });
+
+        ROS3D.PoseWithCovariance.prototype.subscribe = function(){
+          this.unsubscribe();
+
+          // subscribe to the topic
+          this.rosTopic = new ROSLIB.Topic({
+              ros : this.ros,
+              name : this.topicName,
+              queue_length : 1,
+              throttle_rate: this.options.throttle_rate || 0,
+              messageType : 'geometry_msgs/PoseWithCovarianceStamped'
+          });
+          this.rosTopic.subscribe(this.processMessage.bind(this));
+        };
+
+        const gnss = new ROS3D.PoseWithCovariance({
+            ros : ros,
+            topic : '/gnss_fix_local',
+            tfClient : tfClient,
+            rootObject : viewer.scene,
+            color : 0x7f7fff,
+            length : 1.0,
+            headLength : 0.75,
+            shaftDiameter : 0.25,
+            headDiameter : 1.0,
+            throttle_rate: 1000
+        });
     }
 </script>
 

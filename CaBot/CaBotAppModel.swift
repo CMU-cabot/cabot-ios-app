@@ -896,7 +896,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         }
         #if ATTEND
         if let voiceSetting = UserDefaults.standard.value(forKey: voiceSettingKey) as? String {
-            self.useAttendVoice = VoiceMode(rawValue: voiceSetting) == .Attend
+//            self.useAttendVoice = VoiceMode(rawValue: voiceSetting) == .Attend
         }
         #endif
 
