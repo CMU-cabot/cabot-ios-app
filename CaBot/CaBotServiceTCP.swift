@@ -55,23 +55,35 @@ class CaBotServiceTCP: NSObject {
         self.mode = mode
     }
 
-    func emit(_ event: String, _ items: SocketData..., completion: (() -> ())? = nil)  {
+    func emit(_ event: String, _ items: SocketData..., timeout: TimeInterval = 1.0, completion: (() -> ())? = nil)  {
         guard let manager = self.manager else { return }
         guard let socket = self.socket else { return }
         guard socket.status == .connected else { return }
 
-        let timeoutTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: false) { (timer) in
+        let timeoutTimer = Timer.scheduledTimer(withTimeInterval: timeout, repeats: false) { (timer) in
             NSLog("emit data \(Unmanaged.passUnretained(timer).toOpaque()) - timeout")
-            self.stop()
+            NSLog("emit \(event) timeout \(timeout)sec")
+            self.stopUnlessSendingChunks()
         }
 
         manager.handleQueue.async {
             socket.emit(event, items) {
                 timeoutTimer.invalidate()
+                completion?()
             }
         }
     }
     
+    private var last_chunk_send_time: TimeInterval = 0
+
+    func stopUnlessSendingChunks(){
+        if Date().timeIntervalSince1970 - last_chunk_send_time > 10.0 {
+            self.stop()
+        } else {
+            NSLog("Do not stop socket while sending chunks")
+        }
+    }
+
     func stop(){
         if let address = address { NSLog("stopping TCP \(address)") }
         self.connected = false
@@ -342,7 +354,7 @@ class CaBotServiceTCP: NSObject {
                 let now = Date().timeIntervalSince1970
                 if now - weakself.last_data_received_time > 5.0 {
                     NSLog("No heartbeat response since last_data_received_time: \(weakself.last_data_received_time)")
-                    weakself.stop()
+                    weakself.stopUnlessSendingChunks()
                 }
             }
             RunLoop.current.run()
@@ -429,6 +441,7 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
     func send_log(log_info: LogRequest, app_log: [String], urls: [URL]) -> Bool {
         NSLog("send log_info \(log_info)")
         NSLog("app_log_list \(app_log)")
+        self.last_chunk_send_time = Date().timeIntervalSince1970
         let zipped = zip(app_log ,urls)
         for (fileName, url) in zipped {
             let chunkSize = 512 * 1024
@@ -455,7 +468,9 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
                 do {
                     let jsonData = try JSONSerialization.data(withJSONObject: dict, options: [])
 
-                    self.emit("log_request_chunk", jsonData)
+                    self.emit("log_request_chunk", jsonData, timeout: 10.0) {
+                        self.last_chunk_send_time = Date().timeIntervalSince1970
+                    }
                 } catch {
                     print("fail to serialize JSON: \(error)")
                 }
