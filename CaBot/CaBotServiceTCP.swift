@@ -468,11 +468,13 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
                 do {
                     let jsonData = try JSONSerialization.data(withJSONObject: dict, options: [])
 
+                    let start = Date()
                     self.emit("log_request_chunk", jsonData, timeout: 10.0) {
                         self.last_chunk_send_time = Date().timeIntervalSince1970
+                        NSLog("log_request_chunk \(fileName):\(chunkIndex), \(jsonData.count) bytes, \(-start.timeIntervalSinceNow) sec")
                     }
                 } catch {
-                    print("fail to serialize JSON: \(error)")
+                    NSLog("log_request_chunk fail to serialize JSON: \(error)")
                 }
                 chunkIndex += 1
             }
@@ -482,9 +484,12 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
             do {
                 let jsonData2 = try JSONSerialization.data(withJSONObject: dict2, options: [])
 
-                self.emit("log_request", jsonData2)
+                let start = Date()
+                self.emit("log_request", jsonData2) {
+                    NSLog("log_request \(fileName), \(jsonData2.count) bytes, \(-start.timeIntervalSinceNow) sec")
+                }
             } catch {
-                print("fail to serialize JSON: \(error)")
+                NSLog("log_request fail to serialize JSON: \(error)")
             }
 
             NSLog("chunk end \(fileName)")
