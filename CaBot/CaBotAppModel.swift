@@ -1355,6 +1355,8 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 break
             case .restart_localization:
                 break
+            case .reset_gnss:
+                break
             case .reqfeatures:
                 break
             case .handleside:

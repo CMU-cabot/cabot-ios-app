@@ -90,6 +90,11 @@ struct RosWebView: View, LocalizationStatusDelegate {
                     } label: {
                         Text("Restart Localization")
                     }
+                    Button {
+                        modelData.systemManageCommand(command: .reset_gnss)
+                    } label: {
+                        Text("Reset GNSS")
+                    }
                     Button("Cancel", role: .cancel) {
                     }
                 } message: {
