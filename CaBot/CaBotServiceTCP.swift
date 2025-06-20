@@ -441,8 +441,9 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
     func send_log(log_info: LogRequest, app_log: [String], urls: [URL]) -> Bool {
         NSLog("send log_info \(log_info)")
         NSLog("app_log_list \(app_log)")
-        self.last_chunk_send_time = Date().timeIntervalSince1970
         let zipped = zip(app_log ,urls)
+        let emitCondition = NSCondition()
+        var emitCounter = 0
         for (fileName, url) in zipped {
             let chunkSize = 512 * 1024
             guard let fileHandle = try? FileHandle(forReadingFrom: url) else {
@@ -467,11 +468,25 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
                 
                 do {
                     let jsonData = try JSONSerialization.data(withJSONObject: dict, options: [])
-
+                    emitCondition.lock()
+                    while emitCounter >= 4 {
+                        if !emitCondition.wait(until: Date().addingTimeInterval(30)) {
+                            emitCondition.unlock()
+                            NSLog("error emit counter timeout")
+                            return false
+                        }
+                    }
+                    emitCounter += 1
+                    emitCondition.unlock()
                     let start = Date()
+                    self.last_chunk_send_time = Date().timeIntervalSince1970
                     self.emit("log_request_chunk", jsonData, timeout: 10.0) {
                         self.last_chunk_send_time = Date().timeIntervalSince1970
-                        NSLog("log_request_chunk \(fileName):\(chunkIndex), \(jsonData.count) bytes, \(-start.timeIntervalSinceNow) sec")
+                        NSLog("log_request_chunk \(fileName):\(chunkIndex):\(emitCounter), \(jsonData.count) bytes, \(-start.timeIntervalSinceNow) sec")
+                        emitCondition.lock()
+                        emitCounter -= 1
+                        emitCondition.signal()
+                        emitCondition.unlock()
                     }
                 } catch {
                     NSLog("log_request_chunk fail to serialize JSON: \(error)")
