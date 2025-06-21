@@ -448,9 +448,11 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
             GlobalOverlay.show()
         }
         defer {
+            emitCondition.lock()
             while emitCounter > 0 {
                 emitCondition.wait(until: Date().addingTimeInterval(30))
             }
+            emitCondition.unlock()
             DispatchQueue.main.async {
                 GlobalOverlay.hide()
             }
