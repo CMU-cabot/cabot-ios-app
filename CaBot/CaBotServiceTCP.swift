@@ -488,6 +488,7 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
                     emitCondition.lock()
                     while emitCounter >= 4 {
                         if !emitCondition.wait(until: Date().addingTimeInterval(30)) {
+                            emitCounter = 0
                             emitCondition.unlock()
                             NSLog("error emit counter timeout")
                             return false
