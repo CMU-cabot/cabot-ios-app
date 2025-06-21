@@ -444,6 +444,18 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
         let zipped = zip(app_log ,urls)
         let emitCondition = NSCondition()
         var emitCounter = 0
+        DispatchQueue.main.async {
+            GlobalOverlay.show()
+        }
+        defer {
+            while emitCounter > 0 {
+                emitCondition.wait(until: Date().addingTimeInterval(30))
+            }
+            DispatchQueue.main.async {
+                GlobalOverlay.hide()
+            }
+            NSLog("send_log finished")
+        }
         for (fileName, url) in zipped {
             let chunkSize = 512 * 1024
             guard let fileHandle = try? FileHandle(forReadingFrom: url) else {
@@ -570,5 +582,43 @@ class NetworkMonitor {
 
     func stopMonitoring() {
         monitor.cancel()
+    }
+}
+
+import SwiftUI
+
+final class GlobalOverlay {
+    private static var window: UIWindow?
+
+    static func show() {
+        guard window == nil,
+              let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
+
+        let overlay = UIHostingController(rootView:
+            ZStack {
+                Color.black.opacity(0.4).ignoresSafeArea()
+                VStack(spacing: 12) {
+                    ProgressView()
+                    Text("processing...")
+                        .foregroundColor(.black)
+                }
+                .padding()
+                .background(Color.white)
+                .cornerRadius(12)
+            }
+        )
+        overlay.view.backgroundColor = .clear
+
+        let newWindow = UIWindow(windowScene: windowScene)
+        newWindow.rootViewController = overlay
+        newWindow.windowLevel = .alert + 1
+        newWindow.makeKeyAndVisible()
+
+        window = newWindow
+    }
+
+    static func hide() {
+        window?.isHidden = true
+        window = nil
     }
 }
