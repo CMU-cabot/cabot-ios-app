@@ -450,7 +450,10 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
         defer {
             emitCondition.lock()
             while emitCounter > 0 {
-                emitCondition.wait(until: Date().addingTimeInterval(30))
+                if !emitCondition.wait(until: Date().addingTimeInterval(30)) {
+                    NSLog("error emit counter timeout")
+                    break
+                }
             }
             emitCondition.unlock()
             DispatchQueue.main.async {
