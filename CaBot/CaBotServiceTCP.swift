@@ -450,7 +450,7 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
         defer {
             emitCondition.lock()
             while emitCounter > 0 {
-                if !emitCondition.wait(until: Date().addingTimeInterval(30)) {
+                if !emitCondition.wait(until: Date().addingTimeInterval(10)) {
                     NSLog("error emit counter timeout")
                     break
                 }
@@ -486,7 +486,7 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
                 do {
                     let jsonData = try JSONSerialization.data(withJSONObject: dict, options: [])
                     emitCondition.lock()
-                    while emitCounter >= 4 {
+                    while emitCounter >= 2 {
                         if !emitCondition.wait(until: Date().addingTimeInterval(30)) {
                             emitCounter = 0
                             emitCondition.unlock()
