@@ -486,7 +486,7 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
                 do {
                     let jsonData = try JSONSerialization.data(withJSONObject: dict, options: [])
                     emitCondition.lock()
-                    while emitCounter >= 2 {
+                    while emitCounter >= 1 {
                         if !emitCondition.wait(until: Date().addingTimeInterval(30)) {
                             emitCounter = 0
                             emitCondition.unlock()
