@@ -447,6 +447,10 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
         DispatchQueue.main.async {
             GlobalOverlay.show()
         }
+        #if ATTEND
+        Thread.sleep(forTimeInterval: 3) // Wait until the user app saves the log
+        #endif
+        NSLog("send_log start")
         defer {
             emitCondition.lock()
             while emitCounter > 0 {
@@ -456,7 +460,7 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
                 }
             }
             emitCondition.unlock()
-            DispatchQueue.main.async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                 GlobalOverlay.hide()
             }
             NSLog("send_log finished")
