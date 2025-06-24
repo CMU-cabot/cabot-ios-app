@@ -130,6 +130,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let buildNo = Bundle.main.infoDictionary!["CFBundleVersion"] as! String
         let commitHash = Bundle.main.infoDictionary!["GitCommitHash"] as! String
         NSLog( "<Launched> Version: \(versionNo) (\(buildNo)) \(commitHash) - \(CaBotServiceBLE.CABOT_BLE_VERSION)")
+        NSLog("<iOS> Version: \(UIDevice.current.systemVersion)")
         
         NSSetUncaughtExceptionHandler { exception in
             let stacktrace = exception.callStackSymbols.joined(separator:"\n")
