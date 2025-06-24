@@ -466,7 +466,7 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
             NSLog("send_log finished")
         }
         for (fileName, url) in zipped {
-            let chunkSize = 512 * 1024
+            let chunkSize = 256 * 1024
             guard let fileHandle = try? FileHandle(forReadingFrom: url) else {
                 return false
             }
