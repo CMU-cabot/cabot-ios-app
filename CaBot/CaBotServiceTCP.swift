@@ -514,6 +514,10 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
                     NSLog("log_request_chunk fail to serialize JSON: \(error)")
                 }
                 chunkIndex += 1
+                if data.count < chunkSize {
+                    NSLog("last chunk \(data.count)/\(chunkSize)")
+                    break
+                }
             }
 
             let dict2: [String: Any] = ["type": log_info.type, "cabotLogName": log_info.log_name, "appLogName": fileName, "totalChunks": chunkIndex]
