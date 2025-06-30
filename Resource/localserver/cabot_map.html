@@ -294,6 +294,46 @@ THE SOFTWARE.Copyright (c) 2023  Carnegie Mellon University and Miraikan
           this.rosTopic.subscribe(this.processMessage.bind(this));
         };
 
+        ROS3D.PoseWithCovariance.prototype.processMessage = function(message){
+          if(this.sn!==null){
+              this.sn.unsubscribeTf();
+              this.rootObject.remove(this.sn);
+          }
+
+          const covariance = message.pose.covariance, position = message.pose.pose.position, orientation = message.pose.pose.orientation;
+          window.webkit?.messageHandlers?.callbackHandler?.postMessage(`gnss_fix_local: position=(${position.x}, ${position.y}, ${position.z}), covariance=(${covariance[0]}, ${covariance[7]}, ${covariance[14]})`);
+          position.z += 0.1;
+
+          this.options.origin = new THREE.Vector3( position.x, position.y, position.z);
+
+          var rot = new THREE.Quaternion(orientation.x, orientation.y, orientation.z, orientation.w);
+          this.options.direction = new THREE.Vector3(1,0,0);
+          this.options.direction.applyQuaternion(rot);
+          this.options.material = new THREE.MeshBasicMaterial({color: this.color});
+          var arrow = new ROS3D.Arrow(this.options);
+
+          this.sn = new ROS3D.SceneNode({
+              frameID : message.header.frame_id,
+              tfClient : this.tfClient,
+              object : arrow
+          });
+
+          this.rootObject.add(this.sn);
+
+          // Draw covariance
+          let radius = Math.max(Math.sqrt(covariance[0]), Math.sqrt(covariance[7]));
+          radius = Math.max(radius || 10, 0.2);
+          const geometry = new THREE.CircleGeometry(radius, 64);
+          const material = new THREE.MeshBasicMaterial({
+            color: 0x0000ff,
+            opacity: 0.2,
+            transparent: true
+          });
+          const mesh = new THREE.Mesh(geometry, material);
+          mesh.position.set(position.x, position.y, position.z);
+          this.sn.add(mesh);
+        };
+
         const gnss = new ROS3D.PoseWithCovariance({
             ros : ros,
             topic : '/gnss_fix_local',
