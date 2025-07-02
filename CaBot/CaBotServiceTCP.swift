@@ -417,6 +417,11 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
 
     func manage(command: CaBotManageCommand, param: String?) -> Bool {
         if let param = param {
+            if command == .lang {
+                NSLog("manage \(command.rawValue)-\(param.prefix(2))")
+                self.emit("manage_cabot", "\(command.rawValue)-\(param.prefix(2))")
+                return true
+            }
             NSLog("manage \(command.rawValue)-\(param)")
             self.emit("manage_cabot", "\(command.rawValue)-\(param)")
             return true
