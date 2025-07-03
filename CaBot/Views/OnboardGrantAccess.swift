@@ -157,6 +157,47 @@ struct OnboardGrantAccess: View {
             .disabled(modelData.contactsState != .notDetermined)
             .frame(width:250, alignment: .leading)
             #endif
+            #if ATTEND
+            Button(action: {
+                userAction = true
+                modelData.requestCameraAuthorization()
+            }) {
+                switch(modelData.cameraState) {
+                case .notDetermined:
+                    Label(LocalizedStringKey("Enable Camera"), systemImage:"circle")
+                case .authorized:
+                    Label(LocalizedStringKey("Camera Enabled"), systemImage:"checkmark.circle")
+                case  .denied, .restricted:
+                    Label(LocalizedStringKey("Camera Denied"), systemImage:"multiply.circle")
+                @unknown default:
+                    Label(LocalizedStringKey("Camera Denied"), systemImage:"multiply.circle")
+                }
+            }
+            .padding()
+            .disabled(modelData.cameraState != .notDetermined)
+            .frame(width:250, alignment: .leading)
+
+            Button(action: {
+                userAction = true
+                modelData.requestPhotoLibraryAuthorization()
+            }) {
+                switch(modelData.photoLibraryState) {
+                case .notDetermined:
+                    Label(LocalizedStringKey("Enable Photo Library Access"), systemImage:"circle")
+                case .authorized:
+                    Label(LocalizedStringKey("Photo Library Access Enabled"), systemImage:"checkmark.circle")
+                case  .denied, .restricted:
+                    Label(LocalizedStringKey("Photo Library Access Denied"), systemImage:"multiply.circle")
+                case .limited:
+                    Label(LocalizedStringKey("Photo Library Access Limited"), systemImage:"multiply.circle")
+                @unknown default:
+                    Label(LocalizedStringKey("Photo Library Access Limited"), systemImage:"multiply.circle")
+                }
+            }
+            .padding()
+            .disabled(modelData.photoLibraryState != .notDetermined)
+            .frame(width:250, alignment: .leading)
+            #endif
         }
     }
 }

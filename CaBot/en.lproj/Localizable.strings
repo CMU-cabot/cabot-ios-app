@@ -97,6 +97,13 @@
 "Contacts Not Available"="Contacts Not Available";
 "Contacts Denied"="Contacts Denied";
 "Contacts Limited"="Contacts Limited";
+"Enable Camera"="Enable Camera";
+"Camera Enabled"="Camera Enabled";
+"Camera Denied"="Camera Denied";
+"Enable Photo Library Access"="Enable Photo Library Access";
+"Photo Library Access Enabled"="Photo Library Access Enabled";
+"Photo Library Access Denied"="Photo Library Access Denied";
+"Photo Library Access Limited"="Photo Library Access Limited";
 
 
 // MainMenuView
@@ -364,3 +371,6 @@
 // Emergency Stop
 "RELEASE_EMERGENCYSTOP" = "Release Emergency Stop";
 "CONFIRM_EMERGENCYSTOP" = "Release the emergency stop. Be sure to remove your hand from the handle.";
+
+// Camera
+"Snapshot"="Snapshot";

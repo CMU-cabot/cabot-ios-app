@@ -86,6 +86,8 @@
 		7EDF3C4429D48C3200AD1115 /* Localizable.strings in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7E557EFE2581C79B00B1B9CA /* Localizable.strings */; };
 		7EDF3C4529D4901000AD1115 /* Resource in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3099132A265DE50A000C1BFE /* Resource */; };
 		7EF5F1EA228DB07100788987 /* NavUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EF5F1E8228DB07100788987 /* NavUtil.m */; };
+		A02372372E1528F100754038 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02372362E1528F100754038 /* CameraView.swift */; };
+		A02372382E1528F100754038 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02372362E1528F100754038 /* CameraView.swift */; };
 		A0D51ED52DFA50DD001B9935 /* ContactsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D51ED42DFA50DD001B9935 /* ContactsUtil.swift */; };
 		A0D51ED62DFA50DD001B9935 /* ContactsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D51ED42DFA50DD001B9935 /* ContactsUtil.swift */; };
 		A97F30DF2CDDC9FA00BE5C43 /* PriorityQueueTTS in Frameworks */ = {isa = PBXBuildFile; productRef = A97F30DE2CDDC9FA00BE5C43 /* PriorityQueueTTS */; };
@@ -242,6 +244,7 @@
 		7EDF3C4129D4776D00AD1115 /* I18NExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = I18NExtension.swift; sourceTree = "<group>"; };
 		7EF5F1E8228DB07100788987 /* NavUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavUtil.m; sourceTree = "<group>"; };
 		7EF5F1E9228DB07100788987 /* NavUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavUtil.h; sourceTree = "<group>"; };
+		A02372362E1528F100754038 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		A056A36D2D8059DE0001FD38 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/User-InfoPlist.strings"; sourceTree = "<group>"; };
 		A056A36E2D8059DE0001FD38 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Attend-InfoPlist.strings"; sourceTree = "<group>"; };
 		A056A36F2D8059DE0001FD38 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -372,6 +375,7 @@
 				E561455E2A6E02A8005CF82F /* RosWebView.swift */,
 				458B54382A970B4A00AD9D10 /* LogFilesView.swift */,
 				7E8F5A1F2BA4D33800E5D547 /* SpokenTextView.swift */,
+				A02372362E1528F100754038 /* CameraView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -821,6 +825,7 @@
 				3013614326A0F8E10050CF9E /* TourDetailView.swift in Sources */,
 				7E51C3902AABA88C0095945F /* Logging.m in Sources */,
 				30AFA5882D00BCD0004AFA98 /* ChatViewModel.swift in Sources */,
+				A02372382E1528F100754038 /* CameraView.swift in Sources */,
 				30E50DD4269F77CE00729ABD /* RootView.swift in Sources */,
 				7EF5F1EA228DB07100788987 /* NavUtil.m in Sources */,
 				3096BF1426A5C29F0066F256 /* SettingView.swift in Sources */,
@@ -880,6 +885,7 @@
 				7ECCFD882CFB940100894970 /* SuitcaseFeatures.swift in Sources */,
 				30AFA5992D00BCD0004AFA98 /* ChatSettingsView.swift in Sources */,
 				D7E54B522C0CD03A002FE3C4 /* MainMenuView.swift in Sources */,
+				A02372372E1528F100754038 /* CameraView.swift in Sources */,
 				30AFA5912D00BCD0004AFA98 /* ContentView.swift in Sources */,
 				D7CC04F42BFB352700C0B10A /* DialogViewControllerCabot.swift in Sources */,
 				D7CC04F52BFB352700C0B10A /* LogFilesView.swift in Sources */,

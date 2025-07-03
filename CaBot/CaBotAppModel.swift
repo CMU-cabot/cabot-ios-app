@@ -34,6 +34,7 @@ import Speech
 import ChatView
 import PriorityQueueTTS
 import Contacts
+import Photos
 
 enum GrantState {
     case Init
@@ -346,6 +347,21 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     #else
     @Published var contactsState: CNAuthorizationStatus = .authorized
     #endif
+    #if ATTEND
+    @Published var cameraState: AVAuthorizationStatus = AVCaptureDevice.authorizationStatus(for: .video) {
+        didSet {
+            self.checkOnboardCondition()
+        }
+    }
+    @Published var photoLibraryState: PHAuthorizationStatus = PHPhotoLibrary.authorizationStatus() {
+        didSet {
+            self.checkOnboardCondition()
+        }
+    }
+    #else
+    @Published var cameraState: AVAuthorizationStatus = .authorized
+    @Published var photoLibraryState: PHAuthorizationStatus = .authorized
+    #endif
     func checkOnboardCondition() {
         DispatchQueue.main.async {
             if (self.bluetoothState == .poweredOn || self.bluetoothState == .poweredOff) &&
@@ -353,7 +369,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 self.locationState != .Init &&
                 self.recordPermission == .granted &&
                 self.speechRecoState != .notDetermined &&
-                (self.contactsState == .authorized)
+                self.contactsState == .authorized &&
+                self.cameraState == .authorized &&
+                self.photoLibraryState == .authorized
             {
                 if self.authRequestedByUser {
                     withAnimation() {
@@ -1129,6 +1147,25 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         contactStore.requestAccess(for: .contacts) { granted, error in
             DispatchQueue.main.async {
                 self.contactsState = CNContactStore.authorizationStatus(for: .contacts)
+            }
+        }
+    }
+    #endif
+
+    #if ATTEND
+    func requestCameraAuthorization() {
+        self.authRequestedByUser = true
+        AVCaptureDevice.requestAccess(for: .video) { granted in
+            DispatchQueue.main.async {
+                self.cameraState = AVCaptureDevice.authorizationStatus(for: .video)
+            }
+        }
+    }
+    func requestPhotoLibraryAuthorization() {
+        self.authRequestedByUser = true
+        PHPhotoLibrary.requestAuthorization() { status in
+            DispatchQueue.main.async {
+                self.photoLibraryState = PHPhotoLibrary.authorizationStatus()
             }
         }
     }
