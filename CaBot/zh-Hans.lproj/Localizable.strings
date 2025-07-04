@@ -97,6 +97,13 @@
 "Contacts Not Available"="联系人不可用";
 "Contacts Denied"="拒绝联系人";
 "Contacts Limited"="联系人受限";
+"Enable Camera"="启用相机";
+"Camera Enabled"="相机已启用";
+"Camera Denied"="相机访问被拒绝";
+"Enable Photo Library Access"="启用照片库访问";
+"Photo Library Access Enabled"="照片库访问已启用";
+"Photo Library Access Denied"="照片库访问被拒绝";
+"Photo Library Access Limited"="照片库访问受限";
 
 
 // MainMenuView
@@ -364,3 +371,6 @@
 // Emergency Stop
 "RELEASE_EMERGENCYSTOP" = "释放紧急停止";
 "CONFIRM_EMERGENCYSTOP" = "松开紧急停止装置。 始终将手从手柄上移开。";
+
+// Camera
+"Snapshot"="快照";

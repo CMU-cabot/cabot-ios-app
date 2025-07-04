@@ -97,6 +97,13 @@
 "Contacts Not Available"="連絡先を利用できません";
 "Contacts Denied"="連絡先が許可されませんでした";
 "Contacts Limited"="連絡先が制限されています";
+"Enable Camera"="カメラを有効にする";
+"Camera Enabled"="カメラが有効になりました";
+"Camera Denied"="カメラが拒否されました";
+"Enable Photo Library Access"="写真ライブラリへのアクセスを有効にする";
+"Photo Library Access Enabled"="写真ライブラリへのアクセスが有効になりました";
+"Photo Library Access Denied"="写真ライブラリへのアクセスが拒否されました";
+"Photo Library Access Limited"="写真ライブラリへのアクセスが制限されています";
 
 
 // MainMenuView
@@ -364,3 +371,6 @@
 // Emergency Stop
 "RELEASE_EMERGENCYSTOP" = "緊急停止を解除";
 "CONFIRM_EMERGENCYSTOP" = "緊急停止を解除します。ハンドルから手を必ず離してください。";
+
+// Camera
+"Snapshot"="スナップショット";

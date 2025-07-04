@@ -621,6 +621,9 @@ struct SettingMenus: View {
         let commitHash = Bundle.main.infoDictionary!["GitCommitHash"] as! String
 
         Section(header:Text("System")) {
+            NavigationLink (destination: CameraView()) {
+                Text("Snapshot")
+            }.disabled(!modelData.suitcaseConnected)
             if #available(iOS 15.0, *) {
                 NavigationLink (destination: LogFilesView(langOverride: modelData.resourceLang)
                     .environmentObject(modelData.logList).heartbeat("LogFilesView"),
