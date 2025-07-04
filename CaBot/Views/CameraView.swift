@@ -104,7 +104,13 @@ class CameraManager: ObservableObject {
     }
     
     private func configureSession() {
-        guard let videoDevice = AVCaptureDevice.default(for: .video) else {
+        let discoverySession = AVCaptureDevice.DiscoverySession(
+            deviceTypes: [.builtInUltraWideCamera, .builtInWideAngleCamera],
+            mediaType: .video,
+            position: .back
+        )
+        NSLog("camera devices=\(discoverySession.devices)")
+        guard let videoDevice = discoverySession.devices.first else {
             return
         }
         
@@ -140,9 +146,12 @@ class CameraManager: ObservableObject {
     }
     
     func capturePhoto() {
+        guard let availableSizes = videoDeviceInput?.device.activeFormat.supportedMaxPhotoDimensions else {return}
+        guard let maxSize = availableSizes.max(by: { ($0.width * $0.height) < ($1.width * $1.height) }) else {return}
         let photoSettings = AVCapturePhotoSettings()
-        photoOutput?.isHighResolutionCaptureEnabled = true
-        photoSettings.isHighResolutionPhotoEnabled = true
+        photoOutput?.maxPhotoDimensions = maxSize
+        photoSettings.maxPhotoDimensions = maxSize
+        NSLog("capturePhoto maxSize=\(maxSize)")
         photoOutput?.capturePhoto(with: photoSettings, delegate: captureDelegate)
     }
     
