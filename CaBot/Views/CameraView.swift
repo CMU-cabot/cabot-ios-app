@@ -21,6 +21,7 @@
  *******************************************************************************/
 
 import AVFoundation
+import CoreMotion
 import Photos
 import SwiftUI
 import UIKit
@@ -128,12 +129,14 @@ class CameraManager: ObservableObject {
                 self.session.startRunning()
             }
         }
+        captureDelegate.startMotionUpdates()
     }
     
     func stopSession() {
         if session.isRunning {
             session.stopRunning()
         }
+        captureDelegate.stopMotionUpdates()
     }
     
     func capturePhoto() {
@@ -149,6 +152,8 @@ class CameraManager: ObservableObject {
 }
 
 class CameraManagerPhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate {
+    let motionManager = CMMotionManager()
+    var deviceOrientation: UIDeviceOrientation?
     func photoOutput(_ output: AVCapturePhotoOutput,
                      didFinishProcessingPhoto photo: AVCapturePhoto,
                      error: Error?) {
@@ -179,13 +184,12 @@ class CameraManagerPhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate
     }
     
     func addExifData(imageData: Data) -> Data {
-        guard let location = ChatData.shared.lastLocation else {return imageData}
         guard let imageSource = CGImageSourceCreateWithData(imageData as CFData, nil) else {return imageData}
         guard let UTI = CGImageSourceGetType(imageSource) else {return imageData}
         guard let originalMetadata = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [CFString: Any] else {return imageData}
         
         var orientation: CGImagePropertyOrientation
-        switch UIDevice.current.orientation {
+        switch deviceOrientation {
         case .portrait:
             orientation = .right
         case .landscapeLeft:
@@ -197,23 +201,35 @@ class CameraManagerPhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate
         default:
             orientation = .up
         }
-        let customMetadata: [CFString: Any] = [
-            kCGImagePropertyGPSDictionary: [
-                kCGImagePropertyGPSLatitude: location.lat,
-                kCGImagePropertyGPSLongitude: location.lng,
-                kCGImagePropertyGPSLatitudeRef: location.lat >= 0 ? "N" : "S",
-                kCGImagePropertyGPSLongitudeRef: location.lng >= 0 ? "E" : "W"
-            ],
-            kCGImagePropertyTIFFDictionary: [
-                kCGImagePropertyTIFFOrientation: orientation.rawValue
-            ],
-            kCGImagePropertyIPTCDictionary: [
-                kCGImagePropertyIPTCCaptionAbstract: "lat,lng,floor,yaw\n\(location.lat),\(location.lng),\(location.floor),\(location.yaw)"
-            ]
-        ]
-        
+        print("orientation=\(orientation)")
         var metadata = originalMetadata
-        metadata.merge(customMetadata) { (_, new) in new }
+        if let location = ChatData.shared.lastLocation {
+            let customMetadata: [CFString: Any] = [
+                kCGImagePropertyTIFFDictionary: [
+                    kCGImagePropertyTIFFOrientation: orientation.rawValue
+                ],
+                kCGImagePropertyGPSDictionary: [
+                    kCGImagePropertyGPSLatitude: location.lat,
+                    kCGImagePropertyGPSLongitude: location.lng,
+                    kCGImagePropertyGPSLatitudeRef: location.lat >= 0 ? "N" : "S",
+                    kCGImagePropertyGPSLongitudeRef: location.lng >= 0 ? "E" : "W"
+                ],
+                kCGImagePropertyIPTCDictionary: [
+                    kCGImagePropertyIPTCCaptionAbstract: "lat,lng,floor,yaw\n\(location.lat),\(location.lng),\(location.floor),\(location.yaw ?? 0.0)"
+                ]
+            ]
+            metadata.merge(customMetadata) { (_, new) in new }
+        } else {
+            let customMetadata: [CFString: Any] = [
+                kCGImagePropertyTIFFDictionary: [
+                    kCGImagePropertyTIFFOrientation: orientation.rawValue
+                ],
+                kCGImagePropertyIPTCDictionary: [
+                    kCGImagePropertyIPTCCaptionAbstract: "No current location"
+                ]
+            ]
+            metadata.merge(customMetadata) { (_, new) in new }
+        }
         
         let destinationData = NSMutableData()
         if let destination = CGImageDestinationCreateWithData(destinationData as CFMutableData, UTI, 1, nil) {
@@ -225,5 +241,24 @@ class CameraManagerPhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate
             }
         }
         return imageData
+    }
+
+    func startMotionUpdates() {
+        guard motionManager.isDeviceMotionAvailable else { return }
+        motionManager.deviceMotionUpdateInterval = 0.2
+        motionManager.startDeviceMotionUpdates(to: .main) { motion, error in
+            guard let motion = motion else { return }
+            let x = motion.gravity.x
+            let y = motion.gravity.y
+            if abs(y) >= abs(x) {
+                self.deviceOrientation = y < 0 ? .portrait : .portraitUpsideDown
+            } else {
+                self.deviceOrientation = x < 0 ? .landscapeLeft : .landscapeRight
+            }
+        }
+    }
+
+    func stopMotionUpdates() {
+        motionManager.stopDeviceMotionUpdates()
     }
 }
