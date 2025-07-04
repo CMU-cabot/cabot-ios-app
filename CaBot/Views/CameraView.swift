@@ -204,6 +204,7 @@ class CameraManagerPhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate
         print("orientation=\(orientation)")
         var metadata = originalMetadata
         if let location = ChatData.shared.lastLocation {
+            let location_rotate = location.rotate ?? location.yaw ?? 0.0
             let customMetadata: [CFString: Any] = [
                 kCGImagePropertyTIFFDictionary: [
                     kCGImagePropertyTIFFOrientation: orientation.rawValue
@@ -212,10 +213,12 @@ class CameraManagerPhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate
                     kCGImagePropertyGPSLatitude: location.lat,
                     kCGImagePropertyGPSLongitude: location.lng,
                     kCGImagePropertyGPSLatitudeRef: location.lat >= 0 ? "N" : "S",
-                    kCGImagePropertyGPSLongitudeRef: location.lng >= 0 ? "E" : "W"
+                    kCGImagePropertyGPSLongitudeRef: location.lng >= 0 ? "E" : "W",
+                    kCGImagePropertyGPSImgDirection: location_rotate,
+                    kCGImagePropertyGPSImgDirectionRef: "T"
                 ],
                 kCGImagePropertyIPTCDictionary: [
-                    kCGImagePropertyIPTCCaptionAbstract: "lat,lng,floor,yaw\n\(location.lat),\(location.lng),\(location.floor),\(location.yaw ?? 0.0)"
+                    kCGImagePropertyIPTCCaptionAbstract: "lat,lng,floor,rotate\n\(location.lat),\(location.lng),\(location.floor),\(location_rotate)"
                 ]
             ]
             metadata.merge(customMetadata) { (_, new) in new }

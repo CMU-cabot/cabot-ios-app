@@ -173,6 +173,7 @@ class ChatData {
         var lng: Double
         var floor: Int
         var yaw: Double?
+        var rotate: Double?
     }
 
     struct CameraOrientation: Decodable {
