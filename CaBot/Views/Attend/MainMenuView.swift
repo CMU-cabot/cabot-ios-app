@@ -426,12 +426,6 @@ struct MainMenus: View {
 
     var body: some View {
         Section(header: Text("Navigation")) {
-            #if false
-                Toggle(isOn: $modelData.toggleChatView) {
-                    Text("START_CONVERSATION")
-                }
-                .disabled(!modelData.isUserAppConnected)
-            #endif
             NavigationLink(
                 destination: DestinationsView()
                     .environmentObject(modelData).heartbeat("DestinationsView"),
@@ -445,6 +439,10 @@ struct MainMenus: View {
                 label: {
                     Text("SELECT_TOUR")
                 })
+            .disabled(!modelData.isUserAppConnected)
+            Toggle(isOn: $modelData.toggleChatView) {
+                Text("START_CONVERSATION")
+            }
             .disabled(!modelData.isUserAppConnected)
         }
     }
