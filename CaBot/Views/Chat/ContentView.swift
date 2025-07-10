@@ -29,24 +29,51 @@ public struct ContentView: View {
     @State var timer: Timer?
     static var inactive_at: Date?
     public var body: some View {
-        ChatView(messages: model.messages)
-        HStack {
-            Spacer()
-            ChatStateButton(action: {
-                NSLog("Tapped ChatStateButton while \(model.chatState.chatState.rawValue)")
-                model.toggleChat()
-            }, state: $model.chatState)
-            .frame(width: 150)
-            .disabled(appModel.sendingChatData)
-            Spacer()
-        }
-        .frame(height: 200)
-        .onAppear() {
-            appModel.sendingChatData = false
-            startChat(true)
-        }
-        .onDisappear() {
-            startChat(false)
+        ZStack() {
+            VStack{
+                ChatView(messages: model.messages)
+                HStack {
+                    Spacer()
+                    ChatStateButton(action: {
+                        NSLog("Tapped ChatStateButton while \(model.chatState.chatState.rawValue)")
+                        model.toggleChat()
+                    }, state: $model.chatState)
+                    .frame(width: 150)
+                    .disabled(appModel.sendingChatData)
+                    Spacer()
+                }
+                .frame(height: 200)
+                .onAppear() {
+                    appModel.sendingChatData = false
+                    startChat(true)
+                }
+                .onDisappear() {
+                    startChat(false)
+                }
+            }
+            if model.chatState.chatState == .Listening {
+                Color.white.opacity(1.0)
+                    .ignoresSafeArea()
+                    .overlay(
+                        VStack {
+                            Spacer()
+                            Image(systemName: "mic.circle.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .padding(20)
+                                .frame(maxWidth: .infinity)
+                                .foregroundColor(.blue)
+                            Spacer()
+                            Text(model.chatState.chatText)
+                                .foregroundColor(.blue)
+                                .font(.largeTitle)
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                            Spacer()
+                        }
+                    )
+                    .allowsHitTesting(false)
+            }
         }
     }
     
