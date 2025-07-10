@@ -43,6 +43,20 @@ class ChatViewModel: ObservableObject  {
     let inactive_delay = 20.0
     let welcome_delay = 5 * 60.0
 
+    private let enlargeSpeakNowKey = "enlargeSpeakNowKey"
+    @Published var enlargeSpeakNow: Bool = false {
+        didSet {
+            UserDefaults.standard.setValue(enlargeSpeakNow, forKey: enlargeSpeakNowKey)
+            UserDefaults.standard.synchronize()
+        }
+    }
+
+    init() {
+        if let enlargeVoiceInputView = UserDefaults.standard.value(forKey: enlargeSpeakNowKey) as? Bool {
+            self.enlargeSpeakNow = enlargeVoiceInputView
+        }
+    }
+
     func toggleChat() {
         if self.stt?.recognizing == true {
             self.stt?.endRecognize()

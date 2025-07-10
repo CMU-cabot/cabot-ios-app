@@ -51,7 +51,7 @@ public struct ContentView: View {
                     startChat(false)
                 }
             }
-            if model.chatState.chatState == .Listening {
+            if model.enlargeSpeakNow && model.chatState.chatState == .Listening && model.chatState.chatText == CustomLocalizedString("SPEAK_NOW", lang: I18N.shared.lang) {
                 Color.white.opacity(1.0)
                     .ignoresSafeArea()
                     .overlay(

@@ -352,6 +352,7 @@
 
 // Chat
 "SPEAK_NOW" = "話しかけてください";
+"ENLARGE_SPEAK_NOW" = "\"話しかけてください\"を拡大";
 "Chat Settings" = "対話設定";
 "Chat server connection" = "対話サーバー接続";
 "An unexpected error has occurred" = "予期せぬエラーが起きました";

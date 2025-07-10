@@ -44,6 +44,7 @@ struct ChatSettingsView: View {
                         .keyboardType(.asciiCapable)
                 }
             }
+            Toggle("ENLARGE_SPEAK_NOW", isOn: $model.chatModel.enlargeSpeakNow)
         }.navigationTitle(Text("Settings"))
     }
 }
