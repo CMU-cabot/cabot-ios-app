@@ -350,7 +350,6 @@
 // Chat
 "SPEAK_NOW" = "Speak Now!";
 "ENLARGE_SPEAK_NOW" = "Enlarge \"Speak Now\"";
-"Enlarge %@" = "Enlarge %@";
 "Chat Settings" = "Chat Settings";
 "Chat server connection" = "Chat server connection";
 "An unexpected error has occurred" = "An unexpected error has occurred";
