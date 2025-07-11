@@ -1364,6 +1364,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
 
     func playAudio(file: String) {
         detailSettingModel.playAudio(file: file)
+        #if USER
+        self.share(user_info: SharedInfo(type: .PlayAudio, value: file))
+        #endif
     }
 
     func needToStartAnnounce(wait: Bool) {
@@ -2038,6 +2041,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 } else if userInfo.value == "false" {
                     PriorityQueueTTS.shared.continueSpeaking()
                 }
+            }
+            if userInfo.type == .PlayAudio {
+                self.playAudio(file: userInfo.value)
             }
             return
         }

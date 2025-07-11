@@ -58,6 +58,7 @@ struct SharedInfo: Codable {
         case ChangeSpeakerVolume
         case UpdateSpeakerSettings
         case SpeakState
+        case PlayAudio
     }
     init(type: InfoType, value: String, flag1: Bool = false, flag2: Bool = false, location: Int = 0, length: Int = 0) {
         self.info_id = Int64(Date().timeIntervalSince1970*1000000000.0)
