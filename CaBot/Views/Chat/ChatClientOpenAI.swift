@@ -72,6 +72,16 @@ class ChatClientOpenAI: ChatClient {
             self.client = nil
         }
     }
+    func speakGreeting(_ message: String) {
+        self.pub = PassthroughSubject<String, Error>()
+        if let pub = self.pub {
+            let result_id = UUID().uuidString
+            self.callback?(result_id, pub)
+            self.callback_called.insert(result_id)
+            pub.send(message)
+            pub.send(completion: .finished)
+        }
+    }
     func send(message: String) {
         guard let appModel = ChatData.shared.viewModel?.appModel, appModel.showingChatView else {return}
         // prepare messages

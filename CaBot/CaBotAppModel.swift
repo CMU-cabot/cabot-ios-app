@@ -2095,6 +2095,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         if userInfo.type == .SpeakState {
             self.share(user_info: userInfo)
         }
+        if userInfo.type == .RequestPlayAudio {
+            self.playAudio(file: userInfo.value)
+        }
     }
 
     func shareAllUserConfig() {

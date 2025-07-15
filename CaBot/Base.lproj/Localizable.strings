@@ -371,3 +371,13 @@
 
 // Camera
 "Snapshot"="Snapshot";
+
+// Sample Audio
+"Play the voice recognition start sound" = "Play the voice recognition start sound";
+"Play the voice recognition end sound" = "Play the voice recognition end sound";
+"Play the voice recognition timeout sound" = "Play the voice recognition timeout sound";
+
+// Dummy greeting messages
+"GREETING_1" = "Please let me know your request.";
+"GREETING_2" = "Is there anything I can help you with?";
+"GREETING_3" = "What seems to be the matter?";
