@@ -379,3 +379,8 @@
 "Play the voice recognition start sound" = "音声認識開始音を再生する";
 "Play the voice recognition end sound" = "音声認識終了音を再生する";
 "Play the voice recognition timeout sound" = "音声認識タイムアウト音を再生する";
+
+// Dummy greeting messages
+"GREETING_1" = "ご用件をお聞かせください。";
+"GREETING_2" = "何かお手伝いできることはありますか？";
+"GREETING_3" = "どうされましたか？";

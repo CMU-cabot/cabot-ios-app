@@ -93,7 +93,10 @@ public struct ContentView: View {
         if welcome_message {
             model.send(message: "")
         } else {
-            model.stt?.restartRecognize()
+//            model.stt?.restartRecognize()
+            if let greeting = ["GREETING_1", "GREETING_2", "GREETING_3", "SPEAK_NOW"].randomElement() {
+                model.chat?.speakGreeting(CustomLocalizedString(greeting, lang: I18N.shared.lang))
+            }
         }
         DispatchQueue.global(qos: .userInitiated).async {
             ContactsUtil.shared.load()

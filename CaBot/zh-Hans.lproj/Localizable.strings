@@ -379,3 +379,8 @@
 "Play the voice recognition start sound" = "播放语音识别开始声";
 "Play the voice recognition end sound" = "播放语音识别结束声音";
 "Play the voice recognition timeout sound" = "播放语音识别超时声音";
+
+// Dummy greeting messages
+"GREETING_1" = "請告訴我您的需求。";
+"GREETING_2" = "有什麼我可以幫忙的嗎？";
+"GREETING_3" = "發生什麼事了嗎？";
