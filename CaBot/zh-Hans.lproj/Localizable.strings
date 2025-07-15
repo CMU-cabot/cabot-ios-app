@@ -374,3 +374,8 @@
 
 // Camera
 "Snapshot"="快照";
+
+// Sample Audio
+"Play the voice recognition start sound" = "播放语音识别开始声";
+"Play the voice recognition end sound" = "播放语音识别结束声音";
+"Play the voice recognition timeout sound" = "播放语音识别超时声音";

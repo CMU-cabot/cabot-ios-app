@@ -371,3 +371,8 @@
 
 // Camera
 "Snapshot"="Snapshot";
+
+// Sample Audio
+"Play the voice recognition start sound" = "Play the voice recognition start sound";
+"Play the voice recognition end sound" = "Play the voice recognition end sound";
+"Play the voice recognition timeout sound" = "Play the voice recognition timeout sound";
