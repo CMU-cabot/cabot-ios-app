@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  *******************************************************************************/
 
+import AVFoundation
 import Collections
 import CoreData
 import SwiftUI
@@ -2554,6 +2555,42 @@ class SilentAudioPlayer {
         if playing && !(audioPlayer?.isPlaying ?? true) {
             audioPlayer?.play()
             print("restart audioPlayer")
+        }
+    }
+}
+
+class BGMPlayer: NSObject, AVAudioPlayerDelegate {
+    static let shared = BGMPlayer()
+    var player: AVAudioPlayer?
+    let startDuration: TimeInterval = 1.0
+    let silenceDuration: TimeInterval = 1.0
+
+    func start() {
+        let url = URL(fileURLWithPath: "/System/Library/Audio/UISounds/nano/WorkoutStartAutodetect.caf")
+//        guard let url = Bundle.main.url(forResource: "sound", withExtension: "mp3") else { return }
+
+        do {
+            player = try AVAudioPlayer(contentsOf: url)
+            player?.delegate = self
+            DispatchQueue.main.asyncAfter(deadline: .now() + startDuration) {
+                self.player?.play()
+            }
+        } catch {
+            print("Error loading sound: \(error)")
+        }
+    }
+
+    func stop() {
+        player?.stop()
+        player = nil
+    }
+
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + silenceDuration) {
+            if self.player != nil {
+                player.currentTime = 0
+                player.play()
+            }
         }
     }
 }
