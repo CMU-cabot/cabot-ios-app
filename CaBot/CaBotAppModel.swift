@@ -1490,7 +1490,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     func tour(manager: TourManager, destinationChanged destination: (any Destination)?, isStartMessageSpeaking: Bool = true) {
         if let dest = destination {
             let dest_id = dest.value
-            if !send(destination: dest_id) {
+            if !tourManager.loadingTourData && !send(destination: dest_id) {
                 manager.cannotStartCurrent()
             } else {
                 // cancel all announcement
