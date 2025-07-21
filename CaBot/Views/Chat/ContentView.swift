@@ -94,7 +94,7 @@ public struct ContentView: View {
             model.send(message: "")
         } else {
 //            model.stt?.restartRecognize()
-            if let greeting = ["GREETING_1", "GREETING_2", "GREETING_3", "SPEAK_NOW"].randomElement() {
+            if let greeting = picker.next() {
                 model.chat?.speakGreeting(CustomLocalizedString(greeting, lang: I18N.shared.lang))
             }
         }
@@ -164,3 +164,31 @@ public struct ContentView: View {
     model.chatState.chatState = .Speaking
     return ContentView(model: model)
 }
+
+class RandomPicker {
+    private let originalItems: [String]
+    private var pool: [String]
+    private var lastItem: String?
+
+    init(items: [String]) {
+        self.originalItems = items
+        self.pool = []
+        refillPool()
+    }
+
+    private func refillPool() {
+        repeat {
+            pool = originalItems.shuffled()
+        } while pool.first == lastItem && originalItems.count > 1
+    }
+
+    func next() -> String? {
+        if pool.isEmpty {
+            refillPool()
+        }
+        let nextItem = pool.removeFirst()
+        lastItem = nextItem
+        return nextItem
+    }
+}
+let picker = RandomPicker(items: ["GREETING_1", "GREETING_2", "GREETING_3", "SPEAK_NOW"])

@@ -96,6 +96,7 @@ class TourManager: TourProtocol {
     private var _tempNavigationSetting: NavigationSettingProtocol?
     private var _tourSaveData: TourSaveData = TourSaveData()
     var delegate:TourManagerDelegate?
+    var loadingTourData = false;
 
     init(setting: NavigationSettingProtocol) {
         _destinations = []
@@ -299,6 +300,10 @@ class TourManager: TourProtocol {
     }
     
     func tourDataLoad() {
+        loadingTourData = true
+        defer {
+            loadingTourData = false
+        }
         _destinations.removeAll()
         _currentDestination = nil
         _arrivedDestination = nil
