@@ -2046,6 +2046,11 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             if userInfo.type == .PlayAudio {
                 self.playAudio(file: userInfo.value)
             }
+            if userInfo.type == .StartBGM {
+                self.startBGM()
+            } else if userInfo.type == .StopBGM {
+                self.stopBGM()
+            }
             return
         }
 
@@ -2160,6 +2165,20 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 share(user_info: SharedInfo(type: .ChatStatus, value: value))
             }
         }
+    }
+
+    func startBGM() {
+        BGMPlayer.shared.start()
+        #if USER
+        self.share(user_info: SharedInfo(type: .StartBGM, value: ""))
+        #endif
+    }
+
+    func stopBGM() {
+        BGMPlayer.shared.stop()
+        #if USER
+        self.share(user_info: SharedInfo(type: .StopBGM, value: ""))
+        #endif
     }
 }
 
