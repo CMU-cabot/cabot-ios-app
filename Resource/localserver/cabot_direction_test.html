@@ -117,6 +117,9 @@ THE SOFTWARE.Copyright (c) 2023  Carnegie Mellon University and Miraikan
 
     function send(degree) {
         window.current = degree;
+        window.servoFreeTopic.publish({
+            data: false
+        });
         window.servoTargetTopic.publish({
             data: degree
         });
@@ -130,7 +133,13 @@ THE SOFTWARE.Copyright (c) 2023  Carnegie Mellon University and Miraikan
             name : '/cabot/servo_target',
             messageType : 'std_msgs/Int16'
         });
+        var servoFreeTopic = new ROSLIB.Topic({
+            ros : ros,
+            name : '/cabot/servo_free',
+            messageType : 'std_msgs/Bool'
+        });
         window.servoTargetTopic = servoTargetTopic;
+        window.servoFreeTopic = servoFreeTopic;
         msg.innerText = "servoTargetTopic is ready."
         send(0);
     }
