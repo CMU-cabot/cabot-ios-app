@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  *******************************************************************************/
 
+import AVFoundation
 import Collections
 import CoreData
 import SwiftUI
@@ -2045,6 +2046,11 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             if userInfo.type == .PlayAudio {
                 self.playAudio(file: userInfo.value)
             }
+            if userInfo.type == .StartBGM {
+                self.startBGM(userInfo.value)
+            } else if userInfo.type == .StopBGM {
+                self.stopBGM()
+            }
             return
         }
 
@@ -2159,6 +2165,20 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 share(user_info: SharedInfo(type: .ChatStatus, value: value))
             }
         }
+    }
+
+    func startBGM(_ fileName: String = "Marimba_double_C4") {
+        BGMPlayer.shared.start(fileName)
+        #if USER
+        self.share(user_info: SharedInfo(type: .StartBGM, value: fileName))
+        #endif
+    }
+
+    func stopBGM() {
+        BGMPlayer.shared.stop()
+        #if USER
+        self.share(user_info: SharedInfo(type: .StopBGM, value: ""))
+        #endif
     }
 }
 
@@ -2557,6 +2577,41 @@ class SilentAudioPlayer {
         if playing && !(audioPlayer?.isPlaying ?? true) {
             audioPlayer?.play()
             print("restart audioPlayer")
+        }
+    }
+}
+
+class BGMPlayer: NSObject, AVAudioPlayerDelegate {
+    static let shared = BGMPlayer()
+    var player: AVAudioPlayer?
+    let startDuration: TimeInterval = 1.0
+    let silenceDuration: TimeInterval = 1.0
+
+    func start(_ fileName: String) {
+        guard let url = Bundle.main.url(forResource: "Resource/\(fileName)", withExtension: "wav") else { return }
+
+        do {
+            player = try AVAudioPlayer(contentsOf: url)
+            player?.delegate = self
+            DispatchQueue.main.asyncAfter(deadline: .now() + startDuration) {
+                self.player?.play()
+            }
+        } catch {
+            print("Error loading sound: \(error)")
+        }
+    }
+
+    func stop() {
+        player?.stop()
+        player = nil
+    }
+
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + silenceDuration) {
+            if self.player != nil {
+                player.currentTime = 0
+                player.play()
+            }
         }
     }
 }

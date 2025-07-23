@@ -44,6 +44,7 @@ struct ChatSettingsView: View {
                         .keyboardType(.asciiCapable)
                 }
             }
+            Toggle("Play Loading Sound", isOn: $model.chatModel.playBGM)
         }.navigationTitle(Text("Settings"))
     }
 }

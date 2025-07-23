@@ -132,7 +132,11 @@ class ChatClientOpenAI: ChatClient {
             appModel.sendingChatData = true
         }
         appModel.receivingChatContent = false
+        if let viewModel = ChatData.shared.viewModel, viewModel.playBGM {
+            appModel.startBGM()
+        }
         client?.chatsStream(query: query) { partialResult in
+//            appModel.stopBGM()
             print("chat stream partialResult \(partialResult)")
             guard let pub = self.pub, appModel.showingChatView else { return }
             switch partialResult {
@@ -199,6 +203,7 @@ class ChatClientOpenAI: ChatClient {
                 break
             }
         } completion: { error in
+            appModel.stopBGM()
             NSLog("chat stream completed \(error), error_count=\(error_count), success_count=\(success_count)")
             guard let pub = self.pub, appModel.showingChatView else {return}
             if success_count == 0 {
