@@ -2047,7 +2047,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 self.playAudio(file: userInfo.value)
             }
             if userInfo.type == .StartBGM {
-                self.startBGM()
+                self.startBGM(userInfo.value)
             } else if userInfo.type == .StopBGM {
                 self.stopBGM()
             }
@@ -2167,10 +2167,10 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         }
     }
 
-    func startBGM() {
-        BGMPlayer.shared.start()
+    func startBGM(_ fileName: String = "Marimba_double_C4") {
+        BGMPlayer.shared.start(fileName)
         #if USER
-        self.share(user_info: SharedInfo(type: .StartBGM, value: ""))
+        self.share(user_info: SharedInfo(type: .StartBGM, value: fileName))
         #endif
     }
 
@@ -2587,9 +2587,8 @@ class BGMPlayer: NSObject, AVAudioPlayerDelegate {
     let startDuration: TimeInterval = 1.0
     let silenceDuration: TimeInterval = 1.0
 
-    func start() {
-        let url = URL(fileURLWithPath: "/System/Library/Audio/UISounds/nano/WorkoutStartAutodetect.caf")
-//        guard let url = Bundle.main.url(forResource: "sound", withExtension: "mp3") else { return }
+    func start(_ fileName: String) {
+        guard let url = Bundle.main.url(forResource: "Resource/\(fileName)", withExtension: "wav") else { return }
 
         do {
             player = try AVAudioPlayer(contentsOf: url)
