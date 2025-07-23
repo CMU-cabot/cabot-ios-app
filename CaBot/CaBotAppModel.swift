@@ -1364,6 +1364,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
 
     func playAudio(file: String) {
         detailSettingModel.playAudio(file: file)
+        #if USER
+        self.share(user_info: SharedInfo(type: .PlayAudio, value: file))
+        #endif
     }
 
     func needToStartAnnounce(wait: Bool) {
@@ -1487,7 +1490,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     func tour(manager: TourManager, destinationChanged destination: (any Destination)?, isStartMessageSpeaking: Bool = true) {
         if let dest = destination {
             let dest_id = dest.value
-            if !send(destination: dest_id) {
+            if !tourManager.loadingTourData && !send(destination: dest_id) {
                 manager.cannotStartCurrent()
             } else {
                 // cancel all announcement
@@ -2039,6 +2042,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                     PriorityQueueTTS.shared.continueSpeaking()
                 }
             }
+            if userInfo.type == .PlayAudio {
+                self.playAudio(file: userInfo.value)
+            }
             return
         }
 
@@ -2087,6 +2093,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         }
         if userInfo.type == .SpeakState {
             self.share(user_info: userInfo)
+        }
+        if userInfo.type == .RequestPlayAudio {
+            self.playAudio(file: userInfo.value)
         }
     }
 

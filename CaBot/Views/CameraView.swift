@@ -193,10 +193,12 @@ class CameraManagerPhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate
     }
     
     func addExifData(imageData: Data) -> Data {
-        guard let imageSource = CGImageSourceCreateWithData(imageData as CFData, nil) else {return imageData}
-        guard let UTI = CGImageSourceGetType(imageSource) else {return imageData}
-        guard let originalMetadata = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [CFString: Any] else {return imageData}
-        
+        guard let imageSource = CGImageSourceCreateWithData(imageData as CFData, nil),
+              let UTI = CGImageSourceGetType(imageSource),
+              let originalMetadata = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [CFString: Any],
+              let exifDict = originalMetadata[kCGImagePropertyExifDictionary] as? [CFString: Any],
+              let dateTimeOriginal = exifDict[kCGImagePropertyExifDateTimeOriginal] as? String else {return imageData}
+
         var orientation: CGImagePropertyOrientation
         switch deviceOrientation {
         case .portrait:
@@ -216,6 +218,7 @@ class CameraManagerPhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate
             let location_rotate = location.rotate ?? location.yaw ?? 0.0
             let customMetadata: [CFString: Any] = [
                 kCGImagePropertyTIFFDictionary: [
+                    kCGImagePropertyTIFFDateTime: dateTimeOriginal,
                     kCGImagePropertyTIFFOrientation: orientation.rawValue
                 ],
                 kCGImagePropertyGPSDictionary: [
@@ -234,6 +237,7 @@ class CameraManagerPhotoCaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate
         } else {
             let customMetadata: [CFString: Any] = [
                 kCGImagePropertyTIFFDictionary: [
+                    kCGImagePropertyTIFFDateTime: dateTimeOriginal,
                     kCGImagePropertyTIFFOrientation: orientation.rawValue
                 ],
                 kCGImagePropertyIPTCDictionary: [

@@ -603,6 +603,32 @@ struct MapMenus: View {
                 }
             }
         }
+        if modelData.isUserAppConnected {
+            Button(action: {
+                modelData.share(user_info: SharedInfo(type: .RequestPlayAudio, value: "/System/Library/Audio/UISounds/nano/SiriStart_Haptic.caf") )
+            }) {
+                HStack {
+                    Image(systemName: "play.circle")
+                    Text("Play the voice recognition start sound")
+                }
+            }
+            Button(action: {
+                modelData.share(user_info: SharedInfo(type: .RequestPlayAudio, value: "/System/Library/Audio/UISounds/nano/SiriStopSuccess_Haptic.caf") )
+            }) {
+                HStack {
+                    Image(systemName: "play.circle")
+                    Text("Play the voice recognition end sound")
+                }
+            }
+            Button(action: {
+                modelData.share(user_info: SharedInfo(type: .RequestPlayAudio, value: "/System/Library/Audio/UISounds/nano/SiriStopFailure_Haptic.caf") )
+            }) {
+                HStack {
+                    Image(systemName: "play.circle")
+                    Text("Play the voice recognition timeout sound")
+                }
+            }
+        }
     }
 }
 

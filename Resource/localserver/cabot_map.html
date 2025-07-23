@@ -177,7 +177,7 @@ THE SOFTWARE.Copyright (c) 2023  Carnegie Mellon University and Miraikan
                 }
             } else if (tfClient.frameInfos.map) {
                 mapRefreshCount++;
-                if (mapRefreshCount % 10 == 5) {
+                if (mapRefreshCount % 30 == 5) {
                     setTimeout(() => tfClient.updateGoal(), 0);
                     console.log('Refresh TF Goal', Object.keys(tfClient.frameInfos), 'checkLoopCount', checkLoopCount);
                 }
