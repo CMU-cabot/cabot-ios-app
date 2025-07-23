@@ -132,7 +132,9 @@ class ChatClientOpenAI: ChatClient {
             appModel.sendingChatData = true
         }
         appModel.receivingChatContent = false
-        appModel.startBGM()
+        if let viewModel = ChatData.shared.viewModel, viewModel.playBGM {
+            appModel.startBGM()
+        }
         client?.chatsStream(query: query) { partialResult in
 //            appModel.stopBGM()
             print("chat stream partialResult \(partialResult)")
