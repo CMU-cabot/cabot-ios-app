@@ -43,19 +43,7 @@ class ChatViewModel: ObservableObject  {
     let inactive_delay = 20.0
     let welcome_delay = 5 * 60.0
 
-    private let playBGMKey = "playBGMKey"
-    @Published var playBGM: Bool = false {
-        didSet {
-            UserDefaults.standard.setValue(playBGM, forKey: playBGMKey)
-            UserDefaults.standard.synchronize()
-        }
-    }
-
-    init() {
-        if let playBGM = UserDefaults.standard.value(forKey: playBGMKey) as? Bool {
-            self.playBGM = playBGM
-        }
-    }
+    @Published var playBGM: Bool = true
 
     func toggleChat() {
         if self.stt?.recognizing == true {

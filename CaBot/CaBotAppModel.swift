@@ -2167,7 +2167,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         }
     }
 
-    func startBGM(_ fileName: String = "Marimba_double_C4") {
+    func startBGM(_ fileName: String = "Marimba_double_C4_short") {
         BGMPlayer.shared.start(fileName)
         #if USER
         self.share(user_info: SharedInfo(type: .StartBGM, value: fileName))
@@ -2585,7 +2585,7 @@ class BGMPlayer: NSObject, AVAudioPlayerDelegate {
     static let shared = BGMPlayer()
     var player: AVAudioPlayer?
     let startDuration: TimeInterval = 1.0
-    let silenceDuration: TimeInterval = 1.0
+    let silenceDuration: TimeInterval = 0.0
 
     func start(_ fileName: String) {
         guard let url = Bundle.main.url(forResource: "Resource/\(fileName)", withExtension: "wav") else { return }
