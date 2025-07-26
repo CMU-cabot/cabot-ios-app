@@ -1604,6 +1604,8 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                     self.possibleAudioFiles = []
                     _ = self.fallbackService.manage(command: .reqfeatures)
                 }
+            } else {
+                stopBGM()
             }
         }
     }
@@ -1665,6 +1667,12 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             break
         case "OBSTACLE_AHEAD":
             playAudio(file: detailSettingModel.obstacleAheadSound)
+            break
+        case "ImageDescRequestSent":
+            startBGM()
+            break
+        case "ImageDescResponseReceived":
+            stopBGM()
             break
         default:
             NSLog("\"\(soundRequest)\" is unknown sound")
@@ -2584,6 +2592,7 @@ class SilentAudioPlayer {
 class BGMPlayer: NSObject, AVAudioPlayerDelegate {
     static let shared = BGMPlayer()
     var player: AVAudioPlayer?
+    var timer: Timer?
     let startDuration: TimeInterval = 1.0
     let silenceDuration: TimeInterval = 0.0
 
@@ -2596,12 +2605,17 @@ class BGMPlayer: NSObject, AVAudioPlayerDelegate {
             DispatchQueue.main.asyncAfter(deadline: .now() + startDuration) {
                 self.player?.play()
             }
+            timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { timer in
+                self.player?.volume = PriorityQueueTTS.shared.isSpeaking ? 0.1 : 1.0
+            }
         } catch {
             print("Error loading sound: \(error)")
         }
     }
 
     func stop() {
+        timer?.invalidate()
+        timer = nil
         player?.stop()
         player = nil
     }
