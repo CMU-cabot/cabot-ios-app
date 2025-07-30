@@ -65,7 +65,7 @@ class ChatClientOpenAI: ChatClient {
                 token: config.apiKey,
                 organizationIdentifier: nil,
                 endpoint: url,
-                timeoutInterval: 15.0
+                timeoutInterval: 30.0
             )
             self.client = OpenAI(configuration: configuration)
         } else {
@@ -136,8 +136,13 @@ class ChatClientOpenAI: ChatClient {
         if let viewModel = ChatData.shared.viewModel, viewModel.playBGM {
             appModel.startBGM()
         }
+        var startDate:Date? = Date()
         client?.chatsStream(query: query) { partialResult in
 //            appModel.stopBGM()
+            if let start = startDate {
+                NSLog("chat response time \(String(format: "%.3f", -start.timeIntervalSinceNow)) sec for \"\(message.prefix(100))\"")
+                startDate = nil
+            }
             print("chat stream partialResult \(partialResult)")
             guard let pub = self.pub, appModel.showingChatView else { return }
             switch partialResult {
