@@ -64,7 +64,8 @@ class ChatClientOpenAI: ChatClient {
             let configuration = OpenAI.Configuration(
                 token: config.apiKey,
                 organizationIdentifier: nil,
-                endpoint: url
+                endpoint: url,
+                timeoutInterval: 15.0
             )
             self.client = OpenAI(configuration: configuration)
         } else {
