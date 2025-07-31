@@ -634,7 +634,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
 
 
     func getVoice(by id:String) -> Voice {
-        return TTSHelper.getVoice(by: id) ?? getDefaultVoice()
+        return TTSHelper.getVoice(by: id, locale: voiceLocale) ?? getDefaultVoice()
     }
 
     func getDefaultVoice() -> Voice {
@@ -2597,6 +2597,7 @@ class BGMPlayer: NSObject, AVAudioPlayerDelegate {
     let silenceDuration: TimeInterval = 0.0
 
     func start(_ fileName: String) {
+        NSLog("start BGM")
         guard let url = Bundle.main.url(forResource: "Resource/\(fileName)", withExtension: "wav") else { return }
 
         do {
@@ -2614,6 +2615,7 @@ class BGMPlayer: NSObject, AVAudioPlayerDelegate {
     }
 
     func stop() {
+        NSLog("stop BGM")
         timer?.invalidate()
         timer = nil
         player?.stop()

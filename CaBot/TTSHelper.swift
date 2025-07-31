@@ -214,6 +214,14 @@ struct Voice: Hashable {
 }
 
 class TTSHelper {
+    static func getVoice(by id:String, locale: Locale) -> Voice? {
+        for voice in getVoices(by: locale) {
+            if voice.id == id {
+                return voice
+            }
+        }
+        return nil
+    }
     static func getVoice(by id:String) -> Voice? {
         for voice in AVSpeechSynthesisVoice.speechVoices() {
             if voice.identifier == id {
