@@ -1668,10 +1668,10 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         case "OBSTACLE_AHEAD":
             playAudio(file: detailSettingModel.obstacleAheadSound)
             break
-        case "ImageDescRequestSent":
+        case "IMAGE_DESC_REQUEST_SENT":
             startBGM()
             break
-        case "ImageDescResponseReceived":
+        case "IMAGE_DESC_RESPONSE_RECEIVED":
             stopBGM()
             break
         default:
