@@ -219,7 +219,7 @@ class ResourceManager {
 
         let task = session.dataTask(with: url) { data, response, error in
             if let error = error {
-                NSLog("Error fetching data: \(error.localizedDescription)")
+                NSLog("Error fetching data: \(error.localizedDescription) \(url)")
                 semaphore.signal()
                 return
             }
