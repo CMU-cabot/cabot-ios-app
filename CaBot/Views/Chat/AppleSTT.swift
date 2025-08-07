@@ -59,7 +59,7 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
             try audioSession.setCategory(.playAndRecord, mode: .default, options: [.allowBluetooth, .allowBluetoothA2DP, .defaultToSpeaker])
             try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
         } catch {
-            NSLog("Audio session error")
+            NSLog("Audio session error on init: \(error)")
         }
 
         //self.initPWCaptureSession()
@@ -258,7 +258,7 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
                 try audioSession.setCategory(.playAndRecord, mode: .default, options: [.allowBluetooth, .allowBluetoothA2DP, .defaultToSpeaker])
                 try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
             } catch {
-                NSLog("Audio session error")
+                NSLog("Audio session error: \(error)")
             }
             pwCapturingStarted = false // Rerun AVCaptureSession.startRunning
         }
