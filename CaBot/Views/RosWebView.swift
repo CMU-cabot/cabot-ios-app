@@ -149,6 +149,7 @@ struct LocalWebView: UIViewRepresentable {
     enum ViewModeType {
         case rosMap
         case directionTest
+        case speedLimit
     }
 
     var address: String
@@ -164,6 +165,9 @@ struct LocalWebView: UIViewRepresentable {
             break
         case .directionTest:
             loadDirectionTest(webView: webView)
+            break
+        case .speedLimit:
+            loadSpeedLimit(webView: webView)
             break
         }
     }
@@ -183,6 +187,19 @@ struct LocalWebView: UIViewRepresentable {
 
     fileprivate func loadDirectionTest(webView: WKWebView) {
         if let htmlPath = Bundle.main.url(forResource: "Resource/localserver/cabot_direction_test", withExtension: "html"),
+           let baseUrl = Bundle.main.resourceURL?.appendingPathComponent("Resource/localserver") {
+           var components = URLComponents(url: htmlPath, resolvingAgainstBaseURL: false)
+            components?.query = "ip=" + address + "&port=" + port
+            if let queryURL = components?.url {
+                webView.loadFileURL(queryURL, allowingReadAccessTo: baseUrl)
+            }
+            webView.isOpaque = false
+            webView.isHidden = false
+        }
+    }
+
+    fileprivate func loadSpeedLimit(webView: WKWebView) {
+        if let htmlPath = Bundle.main.url(forResource: "Resource/localserver/cabot_speed", withExtension: "html"),
            let baseUrl = Bundle.main.resourceURL?.appendingPathComponent("Resource/localserver") {
            var components = URLComponents(url: htmlPath, resolvingAgainstBaseURL: false)
             components?.query = "ip=" + address + "&port=" + port

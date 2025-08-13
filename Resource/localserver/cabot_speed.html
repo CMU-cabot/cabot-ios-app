@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CaBot Speed Limit</title>
+  <script src="js/eventemitter2.min.js"></script>
+  <script src="js/roslib.js"></script>
+  <script src="js/chart.js"></script>
+  <script src="js/date-fns.js"></script>
+  <script src="js/chartjs-adapter-date-fns.js"></script>
+  <script src="js/chartjs-plugin-streaming.js"></script>
+  <style>
+    :root { color-scheme: light dark; }
+    table { margin: 0 auto;}
+    td { width: 200px;}
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; padding: 16px; }
+    .wrap { max-width: 960px; width: min(960px, 100vw - 32px); margin: 0 auto; }
+    h1 { font-size: 1.25rem; margin: 0 0 12px; }
+    .toolbar { display:flex; gap: 8px; align-items:center; margin: 8px 0 16px; flex-wrap: wrap; }
+    button { padding: 8px 12px; border-radius: 10px; border: 1px solid #8883; background: #eee; cursor: pointer; }
+    button:hover { filter: brightness(0.98); }
+    .stat { font-variant-numeric: tabular-nums; opacity: 0.8; }
+    .chartBox { position: relative; width: 100%; height: 260px; max-height: 28vh; overflow: clip; margin-bottom:16px; }
+    canvas { width: 100%; height: 100%; display:block; }
+  </style>
+</head>
+<body>
+  <table>
+    <tr>
+      <td id="msg"> </td>
+      <td id="touch"> </td>
+      <td id="user"> </td>
+    </tr>
+  </table>
+  <div id="loading"></div>
+　<div class="wrap">
+    <div class="chartBox"><canvas id="chart1"></canvas></div>
+    <div class="chartBox"><canvas id="chart2"></canvas></div>
+    <div class="chartBox"><canvas id="chart3"></canvas></div>
+  </div>
+
+<script>
+
+      
+(function(){
+  const MAX_CANVAS_DIM = 8192;
+  const DPR_CAP = 2;
+  const DPR_MIN = 0.25;
+  const INTERVAL_MS = 100; // 10Hz = 100ms間隔
+
+
+  const urlParams = new URLSearchParams(window.location.search);
+    window.onload = function() {
+        const ip = urlParams.get('ip');
+        const url = `ws://${ip}:9091`;
+        msg.innerText = "connecting to "+url;
+        connection(url);
+    }
+
+    function connection(url) {
+        // Connect to ROS.
+        const ros = new ROSLIB.Ros({
+            // set this to false to use the new service interface to
+            // tf2_web_republisher. true is the default and means roslibjs
+            // will use the action interface
+            groovyCompatibility : false
+        });
+
+        // If there is an error on the backend, an 'error' emit will be emitted.
+        ros.on('error', function(error) {
+            console.log(error);
+            msg.innerText = error;
+            window.webkit?.messageHandlers?.callbackHandler?.postMessage('connection error');
+        });
+
+        // Find out exactly when we made a connection.
+        ros.on('connection', function() {
+            console.log('Connection made!');
+            msg.innerText = 'Connection made!';
+            //document.querySelector('#map').innerHTML = ``;
+            topicInit(ros);
+            window.webkit?.messageHandlers?.callbackHandler?.postMessage('connection success');
+            window.webkit?.messageHandlers?.StartIdleTimer?.postMessage('');
+        });
+
+        ros.on('close', function() {
+            console.log('Connection closed.');
+            msg.innerText = 'Connection closed.';
+            window.webkit?.messageHandlers?.callbackHandler?.postMessage('connection closed');
+        });
+
+        // Create a connection to the rosbridge WebSocket server.
+        msg.innerText = 'waiting  ' + url;
+        ros.connect(url);
+        window.onunload = function() {
+            ros.close();
+        };
+    }
+
+    function topicInit(ros) {
+        let firstTime = true;
+        const touchTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: '/cabot/touch',
+            messageType: 'std_msgs/Int16'
+        });
+        touchTopic.subscribe(function(message) {
+            touch.innerText = (message.data === 1) ? 'Touch' : 'No Touch';
+        });
+        const userTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: '/cabot/user_speed',
+            messageType: 'std_msgs/Float32'
+        });
+        userTopic.subscribe(function(message) {
+            user.innerText = `User Speed: ${message.data.toFixed(2)} m/s`;
+        });
+
+        const topics = [
+          { label: 'LiDAR', name: '/cabot/lidar_speed', messageType: 'std_msgs/Float32' },
+          { label: 'Low LiDAR', name: '/cabot/low_lidar_speed', messageType: 'std_msgs/Float32' },
+          { label: 'Velocity Obst.', name: '/cabot/pure_velocity_obstacle_speed', messageType: 'std_msgs/Float32' },
+          { label: 'Social Dist.', name: '/cabot/social_distance_speed', messageType: 'std_msgs/Float32' },
+          { label: 'TF', name: '/cabot/tf_speed', messageType: 'std_msgs/Float32' },
+          { label: 'Wheelie', name: '/cabot/wheelie_speed', messageType: 'std_msgs/Float32' },
+          { label: 'Map', name: '/cabot/map_speed', messageType: 'std_msgs/Float32' },
+          { label: "cmd_vel", name: '/cabot/cmd_vel', messageType: 'geometry_msgs/Twist', value: (cmd_vel) => cmd_vel.linear.x },
+          { label: "odom", name: '/odom', messageType: 'nav_msgs/Odometry', value: (odom) => odom.twist.twist.linear },
+        ];
+
+        // グループ定義 (2,2,3)
+        const groups = [
+          { canvasId: 'chart1', topicIdx: [7,8,0,1] },
+          { canvasId: 'chart2', topicIdx: [7,8,2,3] },
+          { canvasId: 'chart3', topicIdx: [7,8,4,5,6] }
+        ];
+
+        // チャート生成
+        const charts = [];
+        const topicIndexToChartMap = {}; // topicIdx -> { chart, dsIndex }
+
+        groups.forEach(group => {
+          const ds = group.topicIdx.map(idx => ({
+            label: topics[idx].label,
+            data: [],
+            parsing: false,
+            pointRadius: 0,
+            borderWidth: 2,
+            tension: 0.2
+          }));
+          const ctx = document.getElementById(group.canvasId).getContext('2d');
+            const chart = new Chart(ctx, {
+              type: 'line',
+              data: { datasets: ds },
+              options: {
+                animation: false,
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                  x: {
+                    type: 'realtime',
+                    realtime: {
+                      duration: 30000
+                    },
+                    display: false
+                  },
+                  y: {
+                    title: { text: 'm/s', display: true },
+                    suggestedMin: 0,
+                    suggestedMax: 1.0
+                  }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            boxWidth: 10
+                        }
+                    }
+                }
+              }
+            });
+          charts.push(chart);
+          group.topicIdx.forEach((tIdx, dsIndex) => {
+            if (topicIndexToChartMap[tIdx] == null) {
+                topicIndexToChartMap[tIdx] = [];
+            }
+            topicIndexToChartMap[tIdx].push({ chart, dsIndex });
+          });
+        });
+
+        function pushPoint(val, tIdx) {
+          const now = new Date();
+          const maxPoints = 1500;
+          const maps = topicIndexToChartMap[tIdx];
+          maps.forEach((map) => {
+              const dataset = map.chart.data.datasets[map.dsIndex];
+              dataset.data.push({ x: now, y: val });
+              if (dataset.data.length > maxPoints) {
+                dataset.data.splice(0, dataset.data.length - maxPoints);
+              }
+              });
+        }
+
+        rosTopics = {}
+
+        // ROS購読
+        topics.forEach((topic, idx) => {
+          if (rosTopics[topic.name] != null) {
+              return;
+          }
+          const rosTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: topic.name,
+            messageType: topic.messageType
+          });
+          rosTopic.subscribe(message => {
+            if (topic.value) {
+              pushPoint(topic.value(message), idx);
+            } else {
+              pushPoint(message.data, idx);
+            }
+            const maps = topicIndexToChartMap[idx];
+            maps.forEach((map) => {
+                map.chart.update('quiet');
+                });
+          });
+          rosTopics[topic.name] = rosTopic;
+        });
+      }
+})();
+</script>
+</body>
+</html>

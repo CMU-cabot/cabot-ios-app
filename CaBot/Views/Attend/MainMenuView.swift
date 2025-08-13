@@ -600,6 +600,12 @@ struct MapMenus: View {
                         label: {
                             Text("Direction Test")
                         })
+                    NavigationLink(
+                        destination: RosWebView(address: modelData.getCurrentAddress(), port: modelData.rosPort, type: .speedLimit)
+                            .environmentObject(modelData).heartbeat("RosWebView"),
+                        label: {
+                            Text("Speed Limit")
+                        })
                 }
             }
         }
