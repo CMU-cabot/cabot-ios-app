@@ -120,20 +120,21 @@
         const topics = [
           { label: 'LiDAR', name: '/cabot/lidar_speed', messageType: 'std_msgs/Float32' },
           { label: 'Low LiDAR', name: '/cabot/low_lidar_speed', messageType: 'std_msgs/Float32' },
-          { label: 'Velocity Obst.', name: '/cabot/pure_velocity_obstacle_speed', messageType: 'std_msgs/Float32' },
-          { label: 'Social Dist.', name: '/cabot/social_distance_speed', messageType: 'std_msgs/Float32' },
+          { label: 'VO', name: '/cabot/pure_velocity_obstacle_speed', messageType: 'std_msgs/Float32' },
+          { label: 'SD', name: '/cabot/social_distance_speed', messageType: 'std_msgs/Float32' },
+          { label: 'People', name: '/cabot/people_speed', messageType: 'std_msgs/Float32' },
           { label: 'TF', name: '/cabot/tf_speed', messageType: 'std_msgs/Float32' },
           { label: 'Wheelie', name: '/cabot/wheelie_speed', messageType: 'std_msgs/Float32' },
           { label: 'Map', name: '/cabot/map_speed', messageType: 'std_msgs/Float32' },
           { label: "cmd_vel", name: '/cabot/cmd_vel', messageType: 'geometry_msgs/Twist', value: (cmd_vel) => cmd_vel.linear.x },
-          { label: "odom", name: '/odom', messageType: 'nav_msgs/Odometry', value: (odom) => odom.twist.twist.linear },
+          { label: "odom", name: '/odom', messageType: 'nav_msgs/Odometry', value: (odom) => odom.twist.twist.linear.x },
         ];
 
         // グループ定義 (2,2,3)
         const groups = [
-          { canvasId: 'chart1', topicIdx: [7,8,0,1] },
-          { canvasId: 'chart2', topicIdx: [7,8,2,3] },
-          { canvasId: 'chart3', topicIdx: [7,8,4,5,6] }
+          { canvasId: 'chart1', topicIdx: [8,9,0,1] },
+          { canvasId: 'chart2', topicIdx: [8,9,2,3,4] },
+          { canvasId: 'chart3', topicIdx: [8,9,5,6,7] }
         ];
 
         // チャート生成
