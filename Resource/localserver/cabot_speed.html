@@ -147,7 +147,8 @@
             parsing: false,
             pointRadius: 0,
             borderWidth: 2,
-            tension: 0.2
+            tension: 0.2,
+            spanGaps: false
           }));
           const ctx = document.getElementById(group.canvasId).getContext('2d');
             const chart = new Chart(ctx, {
@@ -192,7 +193,7 @@
 
         function pushPoint(val, tIdx) {
           const now = new Date();
-          const maxPoints = 1500;
+          const maxPoints = 500;
           const maps = topicIndexToChartMap[tIdx];
           maps.forEach((map) => {
               const dataset = map.chart.data.datasets[map.dsIndex];
@@ -213,7 +214,8 @@
           const rosTopic = new ROSLIB.Topic({
             ros: ros,
             name: topic.name,
-            messageType: topic.messageType
+            messageType: topic.messageType,
+            throttle_rate: 100
           });
           rosTopic.subscribe(message => {
             if (topic.value) {
