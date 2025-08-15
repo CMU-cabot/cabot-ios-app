@@ -605,6 +605,12 @@ struct MapMenus: View {
         }
         if modelData.isUserAppConnected {
             Button(action: {
+                modelData.sendAttendResponse();
+            }) {
+                    Text("Respond to the user")
+            }
+            
+            Button(action: {
                 modelData.share(user_info: SharedInfo(type: .RequestPlayAudio, value: "/System/Library/Audio/UISounds/nano/SiriStart_Haptic.caf") )
             }) {
                 HStack {

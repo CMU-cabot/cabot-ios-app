@@ -158,6 +158,11 @@ class FallbackService: CaBotServiceProtocol {
         guard let service = getService() else { return false }
         return service.camera_image_request()
     }
+    
+    func attend_speech_response() -> Bool {
+        guard let service = getService() else { return false }
+        return service.attend_speech_response()
+    }
 }
 
 final class DetailSettingModel: ObservableObject, NavigationSettingProtocol {
@@ -2138,6 +2143,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         _ = self.fallbackService.camera_image_request()
     }
 
+    func sendAttendResponse () {
+        _ = self.fallbackService.attend_speech_response()
+    }
     struct ChatStatusParam: Codable {
         let visible: Bool
         let messages: [ChatStatusMessage]

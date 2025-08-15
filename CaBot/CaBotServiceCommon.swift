@@ -91,6 +91,7 @@ protocol CaBotServiceProtocol {
     func isConnected() -> Bool
     func share(user_info: SharedInfo) -> Bool
     func camera_image_request() -> Bool
+    func attend_speech_response() -> Bool
 }
 
 protocol CaBotTransportProtocol: CaBotServiceProtocol {

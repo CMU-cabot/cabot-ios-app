@@ -18,6 +18,8 @@
 	<string>0.1</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>GitCommitHash</key>
+	<string>123456789</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -29,6 +31,10 @@
 	<string>This app works as an peripheral device of your robot.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>This app works as an peripheral device of your robot.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app uses your camera</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This app uses your contacts</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This app uses your location always and When in use</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -37,14 +43,10 @@
 	<string>This app uses your location when in use</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app uses your microphone</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app uses your photo library</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>This app uses speech recognition</string>
-	<key>NSCameraUsageDescription</key>
-	<string>This app uses your camera</string>
-	<key>NSContactsUsageDescription</key>
-	<string>This app uses your contacts</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>This app uses your photo library</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
@@ -60,15 +62,13 @@
 			<key>UILaunchImageMinimumOSVersion</key>
 			<string>14.0</string>
 			<key>UILaunchImageName</key>
-			<string>LaunchImage</string>
+			<string>AppIcon</string>
 		</dict>
 		<key>UILaunchScreenBackgroundColor</key>
 		<string>UIColor.systemBackgroundColor</string>
 	</dict>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-	<key>GitCommitHash</key>
-	<string>123456789</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
@@ -76,13 +76,7 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-        <!--
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-        -->
 	</array>
-	<key>GitCommitHash</key>
-	<string>123456789</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -90,17 +84,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>UILaunchScreen</key>
-	<dict>
-	    <key>UILaunchScreenBackgroundColor</key>
-	    <string>UIColor.systemBackgroundColor</string>
-	    <key>UILaunchImage</key>
-	    <dict>
-	        <key>UILaunchImageName</key>
-	        <string>AppIcon</string>
-	        <key>UILaunchImageMinimumOSVersion</key>
-	        <string>14.0</string>
-	    </dict>
-	</dict>
 </dict>
 </plist>

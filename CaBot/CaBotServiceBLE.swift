@@ -270,6 +270,11 @@ extension CaBotServiceBLE: CaBotServiceProtocol {
         NSLog("BLE camera_image_request is not implemented")
         return false
     }
+    
+    func attend_speech_response() -> Bool {
+        NSLog("BLE attend_speech_response is not implemented")
+        return false
+    }
 }
 
 

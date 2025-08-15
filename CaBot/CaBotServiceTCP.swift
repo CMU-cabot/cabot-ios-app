@@ -253,10 +253,17 @@ class CaBotServiceTCP: NSObject {
             guard let data = String(text).data(using:.utf8) else { return }
             guard let weakself = self else { return }
             NSLog("<Socket on: speak>")
+            
+            // Attend App with the tour guide - only for signaling
+            if (!text.contains("Notifying the tour guide")) { return }
+            
             guard let delegate = weakself.delegate else { return }
             do {
                 let request = try JSONDecoder().decode(SpeakRequest.self, from: data)
                 weakself.actions.handle(service: weakself, delegate: delegate, tts: weakself.tts, request: request)
+                
+                NSLog("Robot data:" + String(text))
+                
             } catch {
                 print(text)
                 NSLog(error.localizedDescription)
@@ -296,6 +303,10 @@ class CaBotServiceTCP: NSObject {
             guard let data = String(text).data(using:.utf8) else { return }
             guard let weakself = self else { return }
             guard let delegate = weakself.delegate else { return }
+            
+            // Attend App with the tour guide - only for signaling
+            if (!text.contains("Notifying the tour guide")) { return }
+            
             do {
                 let decodedData = try JSONDecoder().decode(SharedInfo.self, from: data)
                 NSLog("<Socket on: share> \(decodedData)")
@@ -568,6 +579,26 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
         NSLog("camera_image_request")
         self.emit("camera_image_request", true)
         return true
+    }
+    
+    func attend_speech_response() -> Bool {
+        NSLog("tourguide emit")
+        
+        
+        // test using log_request to emit
+        do {
+            let guide_dict: [String: Any] = ["guide_response": "coming"]
+            let jsonDataGuide = try JSONSerialization.data(withJSONObject: guide_dict, options: [])
+            // self.emit("log_request", jsonDataGuide)
+            
+            self.emit("tourguide", jsonDataGuide)
+            
+            return true
+        }
+        catch {
+            NSLog("failed to send log_request for tourguide emit")
+        }
+        return false
     }
 }
 
