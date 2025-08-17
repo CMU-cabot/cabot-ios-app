@@ -1590,6 +1590,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             #endif
 
             if self.suitcaseConnected {
+                ResourceManager.shared.invalidate()
                 loadFromServer() {
                     if self.modeType != .Normal{
                         self.share(user_info: SharedInfo(type: .RequestUserInfo, value: "", flag1: false)) // do not speak
