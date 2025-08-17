@@ -76,7 +76,7 @@ class ResourceManager {
     private let loadSemaphore = DispatchSemaphore(value: 1)
     public func load() throws -> Result {
         if let lastResult {
-            print("loading cache")
+            NSLog("loading cache")
             return lastResult
         }
         loadSemaphore.wait()
@@ -87,24 +87,24 @@ class ResourceManager {
         do {
             // need to load in this order to build structure correctly
             // make suer the server is initialized with the user ID
-            print("Initializing server...")
+            NSLog("Initializing server...")
             let _ = try initServer()
             // features are not depending on other data, so load it first
-            print("Loading features...")
+            NSLog("Loading features...")
             let _ = try Features.load()
             // tour data depends on features, it provides messages
-            print("Loading tour data...")
+            NSLog("Loading tour data...")
             let tourData = try TourData.load()
-            // directory depends on features and messages
-            print("Loading directory...")
+            // directory depends on features and messages
+            NSLog("Loading directory...")
             let directory = try Directory.load()
             lastResult = Result(tours: tourData.tours, directory: directory)
-            print("Loading Processes completed.")
+            NSLog("Loading Processes completed.")
             if let lastResult {
                 return lastResult
             }
         } catch {
-            print("Error occurred: \(error)")
+            NSLog("Error occurred: \(error)")
         }
         throw ResourceManagerError.contentLoadError
     }
@@ -208,7 +208,7 @@ class ResourceManager {
         case .features:
             baseURL = "http://\(currentAddress):9090/map/routesearch?action=features&lat=\(lat)&lng=\(lng)&user=\(user)&dist=\(dist)"
         }
-        print("URL: \(baseURL)")
+        NSLog("URL: \(baseURL)")
 
         guard let url = URL(string: baseURL) else {
             throw ResourceManagerError.contentLoadError
