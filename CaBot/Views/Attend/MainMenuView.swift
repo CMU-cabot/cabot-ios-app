@@ -125,83 +125,6 @@ struct UserInfoView: View {
 
     var body: some View {
         Section(header: Text("User App Info")) {
-            Label {
-                if let tour = modelData.userInfo.selectedTour {
-                    Text(tour.title.text)
-                } else {
-                    if (modelData.userInfo.destinations.count == 0) {
-                        Text("PLACEHOLDER_TOUR_TITLE").foregroundColor(.gray)
-                    } else {
-                        Text("CUSTOMIZED_TOUR")
-                    }
-                }
-            } icon: {
-                Image(systemName: "list.bullet.rectangle.portrait")
-            }
-            .translationPresentation(isPresented: $translationShown, text: translationText)
-            Label {
-                if let dest = modelData.userInfo.currentDestination {
-                    Text(dest.title.text)
-                } else if let dest = modelData.userInfo.nextDestination {
-                    Text(dest.title.text)
-                } else {
-                    Text("PLACEHOLDER_DESTINATION_TITLE").foregroundColor(.gray)
-                }
-                if modelData.systemStatus.level == .Active /*|| modelData.systemStatus.components.isEmpty*/ {
-                    Spacer()
-                    HStack {
-                        (modelData.touchStatus.level != .Stale ? Image(systemName: modelData.touchStatus.level.icon) : Image(modelData.touchStatus.level.icon, bundle: Bundle.main))
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 24, height: 24)
-                    }
-                    .foregroundColor(modelData.touchStatus.level.color)
-                }
-            } icon: {
-                if modelData.userInfo.currentDestination != nil {
-                    Image(systemName: "arrow.triangle.turn.up.right.diamond")
-                } else {
-                    Image(systemName: "mappin.and.ellipse")
-                }
-            }
-            if modelData.userInfo.nextDestination != nil {
-                Button(action: {
-                    isConfirmingSkip = true
-                }) {
-                    Label{
-                        if let dest = modelData.userInfo.currentDestination {
-                            Text("Skip Label \(dest.title.text)")
-                        } else if let dest = modelData.userInfo.nextDestination {
-                            Text("Skip Label \(dest.title.text)")
-                        }
-                    } icon: {
-                        Image(systemName: "arrow.right.to.line")
-                    }
-                }
-                .confirmationDialog(Text("Skip Destination"), isPresented: $isConfirmingSkip) {
-                    Button {
-                        modelData.share(user_info: SharedInfo(type: .Skip, value: ""))
-                    } label: {
-                        if let dest = modelData.userInfo.currentDestination {
-                            Text("Skip Label \(dest.title.text)")
-                        } else if let dest = modelData.userInfo.nextDestination {
-                            Text("Skip Label \(dest.title.text)")
-                        }
-                    }
-                    Button("Cancel", role: .cancel) {
-                    }
-                } message: {
-                    Text("Do you really want to skip the destination?")
-                }
-            }
-            if (modelData.userInfo.destinations.count > 1) {
-                NavigationLink(destination: UserInfoDestinations().environmentObject(modelData).heartbeat("UserInfoDestinations"), label: {
-                    HStack {
-                        Spacer()
-                        Text("See detail")
-                    }
-                })
-            }
             if modelData.userInfo.speakingText.count == 0 {
                 Label {
                     Text("PLACEHOLDER_SPEAKING_TEXT").foregroundColor(.gray)
@@ -420,31 +343,31 @@ struct DestinationMenus: View {
         }
     }
 }
-
+//
 struct MainMenus: View {
     @EnvironmentObject var modelData: CaBotAppModel
-
+//
     var body: some View {
-        Section(header: Text("Navigation")) {
-            NavigationLink(
-                destination: DestinationsView()
-                    .environmentObject(modelData).heartbeat("DestinationsView"),
-                label: {
-                    Text("SELECT_DESTINATION")
-                })
-            .disabled(!modelData.isUserAppConnected)
-            NavigationLink(
-                destination: ToursView()
-                    .environmentObject(modelData).heartbeat("ToursView"),
-                label: {
-                    Text("SELECT_TOUR")
-                })
-            .disabled(!modelData.isUserAppConnected)
-            Toggle(isOn: $modelData.toggleChatView) {
-                Text("START_CONVERSATION")
-            }
-            .disabled(!modelData.isUserAppConnected)
-        }
+//        Section(header: Text("Navigation")) {
+//            NavigationLink(
+//                destination: DestinationsView()
+//                    .environmentObject(modelData).heartbeat("DestinationsView"),
+//                label: {
+//                    Text("SELECT_DESTINATION")
+//                })
+//            .disabled(!modelData.isUserAppConnected)
+//            NavigationLink(
+//                destination: ToursView()
+//                    .environmentObject(modelData).heartbeat("ToursView"),
+//                label: {
+//                    Text("SELECT_TOUR")
+//                })
+//            .disabled(!modelData.isUserAppConnected)
+//            Toggle(isOn: $modelData.toggleChatView) {
+//                Text("START_CONVERSATION")
+//            }
+//            .disabled(!modelData.isUserAppConnected)
+//        }
     }
 }
 

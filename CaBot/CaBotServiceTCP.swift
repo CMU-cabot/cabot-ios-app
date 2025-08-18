@@ -254,8 +254,8 @@ class CaBotServiceTCP: NSObject {
             guard let weakself = self else { return }
             NSLog("<Socket on: speak>")
             
-            // Attend App with the tour guide - only for signaling
-            if (!text.contains("Notifying the tour guide")) { return }
+            // Teleop App showing all messages
+            // if (!text.contains("Notifying the tour guide")) { return }
             
             guard let delegate = weakself.delegate else { return }
             do {
@@ -304,8 +304,8 @@ class CaBotServiceTCP: NSObject {
             guard let weakself = self else { return }
             guard let delegate = weakself.delegate else { return }
             
-            // Attend App with the tour guide - only for signaling
-            if (!text.contains("Notifying the tour guide")) { return }
+            // Teleop App with the tour guide - show all texts
+//            if (!text.contains("Notifying the tour guide")) { return }
             
             do {
                 let decodedData = try JSONDecoder().decode(SharedInfo.self, from: data)
@@ -589,14 +589,13 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
         do {
             let guide_dict: [String: Any] = ["guide_response": "coming"]
             let jsonDataGuide = try JSONSerialization.data(withJSONObject: guide_dict, options: [])
-            // self.emit("log_request", jsonDataGuide)
             
             self.emit("tourguide", jsonDataGuide)
             
             return true
         }
         catch {
-            NSLog("failed to send log_request for tourguide emit")
+            NSLog("failed to send data using tourguide emit")
         }
         return false
     }
