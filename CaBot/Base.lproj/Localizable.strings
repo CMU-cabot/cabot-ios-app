@@ -31,7 +31,7 @@
 // CaBotAppModel
 "SELECT_RESOURCE"="Select Resource";
 "MAIN_MENU"="Main Menu";
-"ATTEND_MENU"="Attend Menu";
+"ATTEND_MENU"="Teleop Menu";
 
 /// func summon
 "Sending the command to the suitcase"="Sending the command to the suitcase. Please let the suitcase go.";

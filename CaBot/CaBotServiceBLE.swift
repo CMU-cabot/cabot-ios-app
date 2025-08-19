@@ -271,7 +271,7 @@ extension CaBotServiceBLE: CaBotServiceProtocol {
         return false
     }
     
-    func attend_speech_response() -> Bool {
+    func attend_speech_response(prompt: String) -> Bool {
         NSLog("BLE attend_speech_response is not implemented")
         return false
     }

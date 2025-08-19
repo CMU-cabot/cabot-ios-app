@@ -581,13 +581,13 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
         return true
     }
     
-    func attend_speech_response() -> Bool {
+    func attend_speech_response(prompt: String) -> Bool {
         NSLog("tourguide emit")
         
         
         // test using log_request to emit
         do {
-            let guide_dict: [String: Any] = ["guide_response": "coming"]
+            let guide_dict: [String: Any] = ["guide_response": prompt]
             let jsonDataGuide = try JSONSerialization.data(withJSONObject: guide_dict, options: [])
             
             self.emit("tourguide", jsonDataGuide)

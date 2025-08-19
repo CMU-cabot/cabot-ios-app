@@ -159,9 +159,9 @@ class FallbackService: CaBotServiceProtocol {
         return service.camera_image_request()
     }
     
-    func attend_speech_response() -> Bool {
+    func attend_speech_response(prompt: String) -> Bool {
         guard let service = getService() else { return false }
-        return service.attend_speech_response()
+        return service.attend_speech_response(prompt: prompt)
     }
 }
 
@@ -318,6 +318,8 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
 
     @Published var debugSystemStatusLevel: CaBotSystemLevel = .Unknown
     @Published var debugDeviceStatusLevel: DeviceStatusLevel = .Unknown
+
+    @Published var promptLanguage: String = "English"
 
     @Published var locationState: GrantState = .Init {
         didSet {
@@ -2143,8 +2145,8 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         _ = self.fallbackService.camera_image_request()
     }
 
-    func sendAttendResponse () {
-        _ = self.fallbackService.attend_speech_response()
+    func sendAttendResponse (prompt: String) {
+        _ = self.fallbackService.attend_speech_response(prompt: prompt)
     }
     struct ChatStatusParam: Codable {
         let visible: Bool

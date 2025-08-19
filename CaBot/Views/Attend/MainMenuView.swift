@@ -44,9 +44,9 @@ struct MainMenuView: View {
             MainMenus()
                 .environmentObject(modelData)
                 .disabled((!modelData.suitcaseConnected && !modelData.menuDebug) || modelData.serverIsReady != .Ready)
-            StatusMenus()
-                .environmentObject(modelData)
             MapMenus()
+                .environmentObject(modelData)
+            StatusMenus()
                 .environmentObject(modelData)
             SettingMenus()
                 .environmentObject(modelData)
@@ -348,26 +348,6 @@ struct MainMenus: View {
     @EnvironmentObject var modelData: CaBotAppModel
 //
     var body: some View {
-//        Section(header: Text("Navigation")) {
-//            NavigationLink(
-//                destination: DestinationsView()
-//                    .environmentObject(modelData).heartbeat("DestinationsView"),
-//                label: {
-//                    Text("SELECT_DESTINATION")
-//                })
-//            .disabled(!modelData.isUserAppConnected)
-//            NavigationLink(
-//                destination: ToursView()
-//                    .environmentObject(modelData).heartbeat("ToursView"),
-//                label: {
-//                    Text("SELECT_TOUR")
-//                })
-//            .disabled(!modelData.isUserAppConnected)
-//            Toggle(isOn: $modelData.toggleChatView) {
-//                Text("START_CONVERSATION")
-//            }
-//            .disabled(!modelData.isUserAppConnected)
-//        }
     }
 }
 
@@ -506,58 +486,57 @@ struct StatusMenus: View {
 
 struct MapMenus: View {
     @EnvironmentObject var modelData: CaBotAppModel
+    @State private var selectedLang = "English"
+    @State private var selectedOption = "Option 1"
 
     var body: some View {
-        if modelData.suitcaseConnected{
-            Section(header:Text("ROS")) {
-                List {
-                    NavigationLink(
-                        destination: RosWebView(address: modelData.getCurrentAddress(), port: modelData.rosPort, type: .rosMap)
-                            .environmentObject(modelData).heartbeat("RosWebView"),
-                        label: {
-                            Text("ROS Map")
-                        })
-                    NavigationLink(
-                        destination: RosWebView(address: modelData.getCurrentAddress(), port: modelData.rosPort, type: .directionTest)
-                            .environmentObject(modelData).heartbeat("RosWebView"),
-                        label: {
-                            Text("Direction Test")
-                        })
-                }
+       
+        if (!modelData.isUserAppConnected) {
+            Text("User not connected")
+        }
+        
+        Picker("Language", selection: $selectedLang) {
+        Text("English").tag("English")
+        Text("Japanese").tag("Japanese")
+        }
+        .pickerStyle(SegmentedPickerStyle())
+        .onChange(of: selectedLang) { newLang in
+            modelData.promptLanguage = newLang
+        }
+
+        var buttonOptions: [String] {
+            modelData.promptLanguage == "Japanese"
+                ? ["オプション 1", "オプション 2", "オプション 3"]
+                : ["The guide is coming", "We are heading to the next destination", "Waiting for other passersby to pass"]
+        }
+        
+        ForEach(buttonOptions, id: \ .self) { option in
+            Button(action: {
+                modelData.sendAttendResponse(prompt: option)
+            }) {
+                Text(option)
             }
         }
-        if modelData.isUserAppConnected {
-            Button(action: {
-                modelData.sendAttendResponse();
-            }) {
-                    Text("Respond to the user")
-            }
-            
-            Button(action: {
-                modelData.share(user_info: SharedInfo(type: .RequestPlayAudio, value: "/System/Library/Audio/UISounds/nano/SiriStart_Haptic.caf") )
-            }) {
-                HStack {
-                    Image(systemName: "play.circle")
-                    Text("Play the voice recognition start sound")
-                }
-            }
-            Button(action: {
-                modelData.share(user_info: SharedInfo(type: .RequestPlayAudio, value: "/System/Library/Audio/UISounds/nano/SiriStopSuccess_Haptic.caf") )
-            }) {
-                HStack {
-                    Image(systemName: "play.circle")
-                    Text("Play the voice recognition end sound")
-                }
-            }
-            Button(action: {
-                modelData.share(user_info: SharedInfo(type: .RequestPlayAudio, value: "/System/Library/Audio/UISounds/nano/SiriStopFailure_Haptic.caf") )
-            }) {
-                HStack {
-                    Image(systemName: "play.circle")
-                    Text("Play the voice recognition timeout sound")
-                }
-            }
+        
+        var options: [String] {
+            modelData.promptLanguage == "Japanese"
+                ? ["オプション 1", "オプション 2", "オプション 3"]
+                : ["Option 1", "Option 2", "Option 3"]
         }
+        
+        Menu {
+            ForEach(options, id: \.self) { option in
+                Button(option) {
+                    selectedOption = option
+                    modelData.sendAttendResponse(prompt: option);
+                }
+            }
+        } label: {
+            Label("Select an Option", systemImage: "chevron.down")
+        }
+        Text("Selected: \(selectedOption)")
+
+
     }
 }
 
