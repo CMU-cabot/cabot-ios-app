@@ -767,6 +767,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             }
             #if ATTEND
             if newUserAppConnected != isUserAppConnected {
+                stopBGM()
                 let text = CustomLocalizedString(newUserAppConnected ? "USER_APP_CONNECTED" : "USER_APP_NOT_CONNECTED", lang: self.selectedLanguage)
                 self.tts.speakForAdvanced(text, force: false) { _, _ in }
             }
