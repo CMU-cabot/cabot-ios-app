@@ -22,7 +22,7 @@
 
 import Foundation
 import SocketIO
-import Network
+import SwiftUI
 
 
 class CaBotServiceTCP: NSObject {
@@ -571,41 +571,6 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
     }
 }
 
-class NetworkMonitor {
-    private let monitor = NWPathMonitor()
-    private let queue = DispatchQueue(label: "NetworkMonitor")
-
-    init() {
-        monitor.pathUpdateHandler = { path in
-            if path.status == .satisfied {
-                NSLog("Network connection is available.")
-            } else {
-                NSLog("Network connection is unavailable.")
-            }
-
-            // Check the type of interface being used
-            if path.usesInterfaceType(.wifi) {
-                NSLog("Connection type: Wi-Fi")
-            } else if path.usesInterfaceType(.cellular) {
-                NSLog("Connection type: Cellular")
-            } else if path.usesInterfaceType(.wiredEthernet) {
-                NSLog("Connection type: Wired Ethernet")
-            } else if path.usesInterfaceType(.other) {
-                NSLog("Connection type: Other")
-            }
-        }
-    }
-
-    func startMonitoring() {
-        monitor.start(queue: queue)
-    }
-
-    func stopMonitoring() {
-        monitor.cancel()
-    }
-}
-
-import SwiftUI
 
 final class GlobalOverlay {
     private static var window: UIWindow?

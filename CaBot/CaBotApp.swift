@@ -59,6 +59,7 @@ struct SuitcaseStatusView: View {
                     .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
                     .padding(.trailing, 8)
                     .overlay(Text(modelData.iconText).foregroundColor(modelData.iconTextColor).font(.footnote).fontWeight(.bold).background(.white.opacity(0.8)).offset(y: 0).padding(.leading, -8), alignment: .center)
+                    .opacity(modelData.reconnecting ? 0 : 1)
             } else {
                 Image("suitcase.rolling.slash", bundle: Bundle.main)
                     .font(.title2)
@@ -68,6 +69,7 @@ struct SuitcaseStatusView: View {
                     .clipShape(Circle())
                     .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
                     .padding(.trailing, 8)
+                    .opacity(modelData.reconnecting ? 0 : 1)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
@@ -123,7 +125,6 @@ struct CaBotApp: App {
 
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    var networkMonitor: NetworkMonitor?
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         Logging.startLog(true)
         let versionNo = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
@@ -137,14 +138,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             NSLog( "<UncaughtException> \n\(exception)\n\(stacktrace)")
         }
         
-        networkMonitor = NetworkMonitor()
-        networkMonitor?.startMonitoring()
         return true
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
         NSLog( "<Terminate>" )
         Logging.stopLog()
-        networkMonitor?.stopMonitoring()
     }
 }

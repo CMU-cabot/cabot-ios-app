@@ -36,6 +36,7 @@ import ChatView
 import PriorityQueueTTS
 import Contacts
 import Photos
+import Network
 
 enum GrantState {
     case Init
@@ -985,7 +986,36 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             self.speakerVolume = speakerVolume
         }
         #endif
+
+        // Network monitor
+        let monitor = NWPathMonitor()
+        monitor.pathUpdateHandler = { path in
+            if path.status == .satisfied {
+                NSLog("Network connection is available.")
+            } else {
+                NSLog("Network connection is unavailable.")
+            }
+
+            // Check the type of interface being used
+            if path.usesInterfaceType(.wifi) {
+                NSLog("Connection type: Wi-Fi")
+            } else if path.usesInterfaceType(.cellular) {
+                NSLog("Connection type: Cellular")
+            } else if path.usesInterfaceType(.wiredEthernet) {
+                NSLog("Connection type: Wired Ethernet")
+            } else if path.usesInterfaceType(.other) {
+                NSLog("Connection type: Other")
+            }
+            DispatchQueue.main.async() {
+                self.reconnecting = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.reconnecting = false
+                }
+            }
+        }
+        monitor.start(queue: DispatchQueue(label: "NetworkMonitor"))
     }
+    @Published private(set) var reconnecting = false
 
 
     func updateNetworkConfig() {
