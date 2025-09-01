@@ -334,6 +334,20 @@ class CaBotServiceTCP: NSObject {
                 NSLog(error.localizedDescription)
             }
         }
+        socket.on("signal_request_button_press"){[weak self] dt, ack in
+            guard let text = dt[0] as? String else { return }
+            guard let data = String(text).data(using:.utf8) else { return }
+            guard let weakself = self else { return }
+            NSLog("<Socket on: signal_request_button_press> \(data)")
+            guard let delegate = weakself.delegate else { return }
+            do {
+                let data = try JSONDecoder().decode(SignalButtonRequest.self, from: data)
+                print("TODO: call buttonRequest(intersectionID: \"\(data.intersection_id)\", buttonNumber: \(data.button_number))")
+            } catch {
+                print(text)
+                NSLog(error.localizedDescription)
+            }
+        }
         socket.connect(timeoutAfter: 2.0) { [weak self] in
             guard let weakself = self else { return }
             weakself.stop()
@@ -567,6 +581,12 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
     func camera_image_request() -> Bool {
         NSLog("camera_image_request")
         self.emit("camera_image_request", true)
+        return true
+    }
+
+    func updateIntersectionInfo(data: String) -> Bool {
+        NSLog("signal_response_intersection_status \(data)")
+        self.emit("signal_response_intersection_status", data)
         return true
     }
 }

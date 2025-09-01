@@ -159,6 +159,11 @@ class FallbackService: CaBotServiceProtocol {
         guard let service = getService() else { return false }
         return service.camera_image_request()
     }
+
+    func updateIntersectionInfo(data: String) -> Bool {
+        guard let service = getService() else { return false }
+        return service.updateIntersectionInfo(data: data)
+    }
 }
 
 final class DetailSettingModel: ObservableObject, NavigationSettingProtocol {
@@ -2219,6 +2224,10 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         #if USER
         self.share(user_info: SharedInfo(type: .StopBGM, value: ""))
         #endif
+    }
+
+    func updateIntersectionInfo(data: String) {
+        _ = self.fallbackService.updateIntersectionInfo(data: data)
     }
 }
 

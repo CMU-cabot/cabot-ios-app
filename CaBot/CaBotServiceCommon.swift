@@ -91,6 +91,7 @@ protocol CaBotServiceProtocol {
     func isConnected() -> Bool
     func share(user_info: SharedInfo) -> Bool
     func camera_image_request() -> Bool
+    func updateIntersectionInfo(data: String) -> Bool
 }
 
 protocol CaBotTransportProtocol: CaBotServiceProtocol {
@@ -525,6 +526,11 @@ struct LogRequest: Codable {
     var log_name: String? = nil
     var title: String? = nil
     var detail: String? = nil
+}
+
+struct SignalButtonRequest: Decodable {
+    var intersection_id: String
+    var button_number: Int
 }
 
 class CaBotServiceActions {

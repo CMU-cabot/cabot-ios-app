@@ -270,6 +270,11 @@ extension CaBotServiceBLE: CaBotServiceProtocol {
         NSLog("BLE camera_image_request is not implemented")
         return false
     }
+
+    func updateIntersectionInfo(data: String) -> Bool {
+        NSLog("BLE updateIntersectionInfo is not implemented")
+        return false
+    }
 }
 
 
