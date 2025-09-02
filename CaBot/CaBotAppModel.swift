@@ -2243,7 +2243,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     }
 
     #if USE_PICS
-    var picsModel: MainViewModel?
+    var picsModel: PICSViewModel?
     #endif
 }
 

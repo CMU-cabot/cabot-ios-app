@@ -94,7 +94,7 @@ struct CaBotApp: App {
     let picsDelegate: PICSDelegate
     init() {
         self.picsDelegate = PICSDelegate(appModel: modelData)
-        self.modelData.picsModel = MainViewModel(delegate: self.picsDelegate)
+        self.modelData.picsModel = PICSViewModel(delegate: self.picsDelegate)
         PICSLoggingConfig.printOnLogger = true
     }
     #else
@@ -163,7 +163,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 
 #if USE_PICS
-class PICSDelegate: MainViewDelegate {
+class PICSDelegate: PICSModelDelegate {
     let appModel: CaBotAppModel
 
     init(appModel: CaBotAppModel) {
