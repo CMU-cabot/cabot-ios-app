@@ -342,7 +342,7 @@ class CaBotServiceTCP: NSObject {
             guard let delegate = weakself.delegate else { return }
             do {
                 let data = try JSONDecoder().decode(SignalButtonRequest.self, from: data)
-                print("TODO: call buttonRequest(intersectionID: \"\(data.intersection_id)\", buttonNumber: \(data.button_number))")
+                delegate.buttonRequest(intersectionID: data.intersection_id, buttonNumber: data.button_number)
             } catch {
                 print(text)
                 NSLog(error.localizedDescription)

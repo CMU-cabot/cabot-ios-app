@@ -115,6 +115,7 @@ protocol CaBotServiceDelegate {
     func cabot(service:any CaBotTransportProtocol, logInfo:LogEntry)
     func cabot(service:any CaBotTransportProtocol, userInfo:SharedInfo)
     func getModeType() -> ModeType
+    func buttonRequest(intersectionID: String, buttonNumber: Int)
 }
 
 enum NavigationNotification:String {

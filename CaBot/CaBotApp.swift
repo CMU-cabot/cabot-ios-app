@@ -25,26 +25,8 @@ import CoreBluetooth
 import CoreLocation
 import HealthKit
 import os.log
-#if canImport(CaBotPICSLibrary)
+#if USE_PICS
 import CaBotPICSLibrary
-
-class PICSDelegate: MainViewDelegate {
-    let appModel: CaBotAppModel
-
-    init(appModel: CaBotAppModel) {
-        self.appModel = appModel
-    }
-
-    func onIntersectionChange(intersections: [CaBotPICSLibrary.IntersectionInfo]) {
-        let encoder = JSONEncoder()
-        encoder.keyEncodingStrategy = .convertToSnakeCase
-        if let encoded = try? encoder.encode(intersections) {
-            if let data = String(data: encoded, encoding: .utf8) {
-                self.appModel.updateIntersectionInfo(data: data)
-            }
-        }
-    }
-}
 #endif
 
 // override NSLog
@@ -107,25 +89,26 @@ struct CaBotApp: App {
     #elseif USER
     var modelData: CaBotAppModel = CaBotAppModel(preview: false, mode: .Normal)
     #endif
-    #if canImport(CaBotPICSLibrary)
-    let picsDelegate: PICSDelegate
-    let picsModel: MainViewModel
-    #endif
 
+    #if USE_PICS
+    let picsDelegate: PICSDelegate
     init() {
-        #if canImport(CaBotPICSLibrary)
         self.picsDelegate = PICSDelegate(appModel: modelData)
-        self.picsModel = MainViewModel(delegate: self.picsDelegate)
-        #endif
+        self.modelData.picsModel = MainViewModel(delegate: self.picsDelegate)
+        PICSLoggingConfig.printOnLogger = true
     }
+    #else
+    init() {
+    }
+    #endif
 
     var body: some Scene {
         WindowGroup {
             RootView()
                 .environmentObject(modelData)
                 .overlay(SuitcaseStatusView().environmentObject(modelData), alignment: .topTrailing)
-                #if canImport(CaBotPICSLibrary)
-                .task { await picsModel.activate() }
+                #if USE_PICS
+                .task { await modelData.picsModel?.activate() }
                 #endif
         }.onChange(of: scenePhase) { newScenePhase in
             Logging.checkLogDate()
@@ -178,3 +161,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Logging.stopLog()
     }
 }
+
+#if USE_PICS
+class PICSDelegate: MainViewDelegate {
+    let appModel: CaBotAppModel
+
+    init(appModel: CaBotAppModel) {
+        self.appModel = appModel
+    }
+
+    func onIntersectionChange(intersections: [CaBotPICSLibrary.IntersectionInfo]) {
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        if let encoded = try? encoder.encode(intersections) {
+            if let data = String(data: encoded, encoding: .utf8) {
+                self.appModel.updateIntersectionInfo(data: data)
+            }
+        }
+    }
+}
+#endif

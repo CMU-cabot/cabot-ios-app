@@ -37,6 +37,9 @@ import PriorityQueueTTS
 import Contacts
 import Photos
 import Network
+#if USE_PICS
+import CaBotPICSLibrary
+#endif
 
 enum GrantState {
     case Init
@@ -2229,6 +2232,19 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     func updateIntersectionInfo(data: String) {
         _ = self.fallbackService.updateIntersectionInfo(data: data)
     }
+
+    func buttonRequest(intersectionID: String, buttonNumber: Int) {
+        #if USE_PICS
+        DispatchQueue.main.async {
+            NSLog("call buttonRequest(intersectionID: \"\(intersectionID)\", buttonNumber: \(buttonNumber))")
+            let _ = self.picsModel?.buttonRequest(intersectionID: intersectionID, buttonNumber: buttonNumber)
+        }
+        #endif
+    }
+
+    #if USE_PICS
+    var picsModel: MainViewModel?
+    #endif
 }
 
 class DiagnosticStatusData: NSObject, ObservableObject {
