@@ -75,7 +75,7 @@ class ResourceManager {
     private var lastResult: Result? = nil
     private let loadSemaphore = DispatchSemaphore(value: 1)
     public func load() throws -> Result {
-        if let lastResult {
+        if let lastResult, lastResult.directory.allDestinations().count > 0 {
             NSLog("loading cache")
             return lastResult
         }
@@ -98,6 +98,7 @@ class ResourceManager {
             // directory depends on features and messages
             NSLog("Loading directory...")
             let directory = try Directory.load()
+            NSLog("\(directory.allDestinations().count) destinations")
             lastResult = Result(tours: tourData.tours, directory: directory)
             NSLog("Loading Processes completed.")
             if let lastResult {

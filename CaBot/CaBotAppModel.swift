@@ -2600,9 +2600,9 @@ class SilentAudioPlayer {
                 audioPlayer?.prepareToPlay()
                 audioPlayer?.play()
                 playing = true
-                print("SilentAudioPlayer started")
+                NSLog("SilentAudioPlayer started")
             } catch {
-                print("SilentAudioPlayer error: \(error.localizedDescription)")
+                NSLog("SilentAudioPlayer error: \(error.localizedDescription)")
             }
         }
     }
@@ -2610,13 +2610,13 @@ class SilentAudioPlayer {
     func stop() {
         audioPlayer?.stop()
         playing = false
-        print("SilentAudioPlayer stopped")
+        NSLog("SilentAudioPlayer stopped")
     }
 
     func healthcheck() {
         if playing && !(audioPlayer?.isPlaying ?? true) {
             audioPlayer?.play()
-            print("restart audioPlayer")
+            NSLog("restart SilentAudioPlayer")
         }
     }
 }
