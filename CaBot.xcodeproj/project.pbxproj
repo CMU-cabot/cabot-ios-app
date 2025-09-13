@@ -90,6 +90,7 @@
 		A02372382E1528F100754038 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02372362E1528F100754038 /* CameraView.swift */; };
 		A0D51ED52DFA50DD001B9935 /* ContactsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D51ED42DFA50DD001B9935 /* ContactsUtil.swift */; };
 		A0D51ED62DFA50DD001B9935 /* ContactsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D51ED42DFA50DD001B9935 /* ContactsUtil.swift */; };
+		A0EB9CED2E76201A00C961B6 /* CaBotPICSLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = A0EB9CEC2E76201A00C961B6 /* CaBotPICSLibrary */; };
 		A97F30DF2CDDC9FA00BE5C43 /* PriorityQueueTTS in Frameworks */ = {isa = PBXBuildFile; productRef = A97F30DE2CDDC9FA00BE5C43 /* PriorityQueueTTS */; };
 		A97F30E12CDDCA0D00BE5C43 /* PriorityQueueTTS in Frameworks */ = {isa = PBXBuildFile; productRef = A97F30E02CDDCA0D00BE5C43 /* PriorityQueueTTS */; };
 		D7CC04F42BFB352700C0B10A /* DialogViewControllerCabot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09725B0924FE4AC300012D42 /* DialogViewControllerCabot.swift */; };
@@ -307,6 +308,7 @@
 				D7CC051B2BFB352700C0B10A /* Collections in Frameworks */,
 				A97F30E12CDDCA0D00BE5C43 /* PriorityQueueTTS in Frameworks */,
 				D7CC051C2BFB352700C0B10A /* Yams in Frameworks */,
+				A0EB9CED2E76201A00C961B6 /* CaBotPICSLibrary in Frameworks */,
 				30AFA5A02D00BD73004AFA98 /* ChatView in Frameworks */,
 				D7CC051D2BFB352700C0B10A /* NavigationBackport in Frameworks */,
 				D7CC051E2BFB352700C0B10A /* Gzip in Frameworks */,
@@ -631,6 +633,7 @@
 				A97F30E02CDDCA0D00BE5C43 /* PriorityQueueTTS */,
 				30AFA59F2D00BD73004AFA98 /* ChatView */,
 				30AFA5A42D00BDB4004AFA98 /* OpenAI */,
+				A0EB9CEC2E76201A00C961B6 /* CaBotPICSLibrary */,
 			);
 			productName = CaBot;
 			productReference = D7CC052B2BFB352700C0B10A /* CaBot-User.app */;
@@ -685,6 +688,7 @@
 				A97F30DD2CDDC9FA00BE5C43 /* XCRemoteSwiftPackageReference "PriorityQueueTTS" */,
 				30AFA59C2D00BD4E004AFA98 /* XCRemoteSwiftPackageReference "ChatView" */,
 				30AFA5A12D00BDAB004AFA98 /* XCRemoteSwiftPackageReference "OpenAI" */,
+				A0EB9CEB2E76201A00C961B6 /* XCRemoteSwiftPackageReference "CaBotPICSLibrary" */,
 			);
 			productRefGroup = 7E29F00A228B548100CA7DD6 /* Products */;
 			projectDirPath = "";
@@ -1304,7 +1308,7 @@
 					"@executable_path/Frameworks",
 				);
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_SWIFT_FLAGS = "\"-DUSER\"";
+				OTHER_SWIFT_FLAGS = "\"-DUSER\" \"-DUSE_PICS\"";
 				PRODUCT_BUNDLE_IDENTIFIER = CMU.CaBotRemote.CaBot.User;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1336,7 +1340,7 @@
 					"@executable_path/Frameworks",
 				);
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_SWIFT_FLAGS = "\"-DUSER\"";
+				OTHER_SWIFT_FLAGS = "\"-DUSER\" \"-DUSE_PICS\"";
 				PRODUCT_BUNDLE_IDENTIFIER = CMU.CaBotRemote.CaBot.User;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1479,6 +1483,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		A0EB9CEB2E76201A00C961B6 /* XCRemoteSwiftPackageReference "CaBotPICSLibrary" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/miraikan-research/CaBotPICSLibrary";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		A97F30DD2CDDC9FA00BE5C43 /* XCRemoteSwiftPackageReference "PriorityQueueTTS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/CMU-cabot/PriorityQueueTTS.git";
@@ -1597,6 +1609,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 306C7F6A265D435100E5928E /* XCRemoteSwiftPackageReference "Yams" */;
 			productName = Yams;
+		};
+		A0EB9CEC2E76201A00C961B6 /* CaBotPICSLibrary */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A0EB9CEB2E76201A00C961B6 /* XCRemoteSwiftPackageReference "CaBotPICSLibrary" */;
+			productName = CaBotPICSLibrary;
 		};
 		A97F30DE2CDDC9FA00BE5C43 /* PriorityQueueTTS */ = {
 			isa = XCSwiftPackageProductDependency;

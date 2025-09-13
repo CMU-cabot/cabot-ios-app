@@ -109,6 +109,7 @@ struct CaBotApp: App {
                 .overlay(SuitcaseStatusView().environmentObject(modelData), alignment: .topTrailing)
                 #if USE_PICS
                 .task { await modelData.picsModel?.activate() }
+                .task { await modelData.picsModel?.startSimulator() }
                 #endif
         }.onChange(of: scenePhase) { newScenePhase in
             Logging.checkLogDate()
