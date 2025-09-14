@@ -166,25 +166,6 @@ struct DetailSettingView: View {
                     }
                 }
             }
-            
-            #if USE_PICS
-            if let picsModel = cabotAppModel.picsModel {
-                @Bindable var viewModel = picsModel
-                Section("Traffic Signal Integration") {
-                    List {
-                        Toggle(isOn: $viewModel.runSimulation) {
-                            Text("Simulate Traffic Signal")
-                        }
-                        NavigationLink("JSON Debug View") {
-                            CaBotPICSLibrary.TestView(viewModel: viewModel)
-                        }
-                        NavigationLink("SDK Intersection View") {
-                            CaBotPICSLibrary.ContentView(viewModel: viewModel)
-                        }
-                    }
-                }
-            }
-            #endif
 
             Section(header: Text("Tour")) {
                 Toggle("Enable subtour on handle", isOn: $modelData.enableSubtourOnHandle)
@@ -238,6 +219,25 @@ struct DetailSettingView: View {
                     }
                 }
             }
+            
+            #if USE_PICS
+            if let picsModel = cabotAppModel.picsModel {
+                @Bindable var viewModel = picsModel
+                Section("Traffic Signal Integration") {
+                    List {
+                        Toggle(isOn: $viewModel.runSimulation) {
+                            Text("Simulate Traffic Signal")
+                        }
+                        NavigationLink("JSON") {
+                            CaBotPICSLibrary.TestView(viewModel: viewModel)
+                        }
+                        NavigationLink("SDK Sample") {
+                            CaBotPICSLibrary.ContentView(viewModel: viewModel)
+                        }
+                    }
+                }
+            }
+            #endif
         }
     }
 }
