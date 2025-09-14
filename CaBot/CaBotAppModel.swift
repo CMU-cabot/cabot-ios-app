@@ -164,8 +164,12 @@ class FallbackService: CaBotServiceProtocol {
     }
 
     func updateIntersectionInfo(data: String) -> Bool {
-        guard let service = getService() else { return false }
-        return service.updateIntersectionInfo(data: data)
+        if let service = getService() {
+            return service.updateIntersectionInfo(data: data)
+        } else {
+            NSLog("Suitcase Not Connected: updateIntersectionInfo(\(data))")
+            return false
+        }
     }
 }
 
