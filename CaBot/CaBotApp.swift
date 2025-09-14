@@ -95,7 +95,6 @@ struct CaBotApp: App {
     init() {
         self.picsDelegate = PICSDelegate(appModel: modelData)
         self.modelData.picsModel = PICSViewModel(delegate: self.picsDelegate)
-        PICSLoggingConfig.printOnLogger = true
     }
     #else
     init() {
