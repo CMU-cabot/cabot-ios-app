@@ -344,7 +344,7 @@ class CaBotServiceTCP: NSObject {
                 let data = try JSONDecoder().decode(SignalButtonRequest.self, from: data)
                 delegate.buttonRequest(intersectionID: data.intersection_id, buttonNumber: data.button_number)
             } catch {
-                print(text)
+                NSLog(text)
                 NSLog(error.localizedDescription)
             }
         }
