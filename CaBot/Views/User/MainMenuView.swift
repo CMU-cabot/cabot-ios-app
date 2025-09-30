@@ -252,7 +252,7 @@ struct DestinationMenus: View {
                 ForEach(modelData.tourManager.first(n: maxDestinationNumber-1), id: \.value) {dest in
                     Label(dest.title.text, systemImage: "mappin.and.ellipse")
                 }
-                if modelData.tourManager.destinations.count > 0 {
+                if modelData.tourManager.destinations.count > 0 || modelData.tourManager.currentDestination != nil {
                     NavigationLink(
                         destination: DynamicTourDetailView(tour: modelData.tourManager).heartbeat("DynamicTourDetailView"),
                         label: {
