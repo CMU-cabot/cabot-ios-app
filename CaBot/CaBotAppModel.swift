@@ -304,6 +304,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     private let enableSpeakerKey = "enableSpeakerKey"
     private let selectedSpeakerAudioFileKey = "selectedSpeakerAudioFileKey"
     private let speechVolumeKey = "speechVolumeKey"
+    private let elevatorClientIdKey = "elevatorClientIdKey"
+    private let elevatorClientSecretKey = "elevatorClientSecretKey"
+    private let elevatorEnabledKey = "elevatorEnabledKey"
 
     let detailSettingModel: DetailSettingModel
 
@@ -806,6 +809,28 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     @Published var userInfo: UserInfoBuffer
     @Published var attend_messages: [ChatMessage] = []
 
+    @Published var elevatorClientId: String = "" {
+        didSet {
+            print("Client ID: \(elevatorClientId)")
+            UserDefaults.standard.setValue(elevatorClientId, forKey: elevatorClientIdKey)
+            UserDefaults.standard.synchronize()
+        }
+    }
+    @Published var elevatorClientSecret: String = "" {
+        didSet {
+            print("Client Secret: \(elevatorClientSecret)")
+            UserDefaults.standard.setValue(elevatorClientSecret, forKey: elevatorClientSecretKey)
+            UserDefaults.standard.synchronize()
+        }
+    }
+    @Published var elevatorEnabled: Bool = false {
+        didSet {
+            print("Elevator Enabled: \(elevatorEnabled)")
+            UserDefaults.standard.setValue(elevatorEnabled, forKey: elevatorEnabledKey)
+            UserDefaults.standard.synchronize()
+        }
+    }
+
     var iconText: String {
         get {
             return self.batteryStatus.message.replacingOccurrences(of: "Unknown", with: "")
@@ -1014,6 +1039,17 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             }
         }
         monitor.start(queue: DispatchQueue(label: "NetworkMonitor"))
+
+        // Elevator
+        if let value = UserDefaults.standard.value(forKey: elevatorClientIdKey) as? String{
+            self.elevatorClientId = value
+        }
+        if let value = UserDefaults.standard.value(forKey: elevatorClientSecretKey) as? String{
+            self.elevatorClientSecret = value
+        }
+        if let value = UserDefaults.standard.value(forKey: elevatorEnabledKey) as? Bool{
+            self.elevatorEnabled = value
+        }
     }
     @Published private(set) var reconnecting = false
 

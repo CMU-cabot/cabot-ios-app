@@ -384,3 +384,8 @@
 "GREETING_1" = "請告訴我您的需求。";
 "GREETING_2" = "有什麼我可以幫忙的嗎？";
 "GREETING_3" = "發生什麼事了嗎？";
+
+// Elevator
+"Elevator Settings" = "电梯设置";
+"Authentication" = "认证";
+"Enable Control" = "启用控制";

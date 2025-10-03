@@ -384,3 +384,8 @@
 "GREETING_1" = "Please let me know your request.";
 "GREETING_2" = "Is there anything I can help you with?";
 "GREETING_3" = "What seems to be the matter?";
+
+// Elevator
+"Elevator Settings" = "Elevator Settings";
+"Authentication" = "Authentication";
+"Enable Control" = "Enable Control";

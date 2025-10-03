@@ -384,3 +384,8 @@
 "GREETING_1" = "ご用件をお聞かせください。";
 "GREETING_2" = "何かお手伝いできることはありますか？";
 "GREETING_3" = "どうされましたか？";
+
+// Elevator
+"Elevator Settings" = "エレベーター設定";
+"Authentication" = "認証";
+"Enable Control" = "制御を有効にする";
