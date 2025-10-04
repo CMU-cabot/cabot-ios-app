@@ -159,6 +159,15 @@ class FallbackService: CaBotServiceProtocol {
         guard let service = getService() else { return false }
         return service.camera_image_request()
     }
+
+    func updateElevatorSettings(data: String) -> Bool {
+        if let service = getService() {
+            return service.updateElevatorSettings(data: data)
+        } else {
+            NSLog("Suitcase Not Connected: updateElevatorSettings(\(data))")
+            return false
+        }
+    }
 }
 
 final class DetailSettingModel: ObservableObject, NavigationSettingProtocol {
@@ -814,6 +823,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             print("Client ID: \(elevatorClientId)")
             UserDefaults.standard.setValue(elevatorClientId, forKey: elevatorClientIdKey)
             UserDefaults.standard.synchronize()
+            updateElevatorSettings()
         }
     }
     @Published var elevatorClientSecret: String = "" {
@@ -821,6 +831,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             print("Client Secret: \(elevatorClientSecret)")
             UserDefaults.standard.setValue(elevatorClientSecret, forKey: elevatorClientSecretKey)
             UserDefaults.standard.synchronize()
+            updateElevatorSettings()
         }
     }
     @Published var elevatorEnabled: Bool = false {
@@ -828,6 +839,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             print("Elevator Enabled: \(elevatorEnabled)")
             UserDefaults.standard.setValue(elevatorEnabled, forKey: elevatorEnabledKey)
             UserDefaults.standard.synchronize()
+            updateElevatorSettings()
         }
     }
 
@@ -1671,6 +1683,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                     _ = self.fallbackService.manage(command: .lang, param: self.resourceLang)
                     self.possibleAudioFiles = []
                     _ = self.fallbackService.manage(command: .reqfeatures)
+                    self.updateElevatorSettings()
                 }
             } else {
                 stopBGM()
@@ -1868,6 +1881,10 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 self.updateSpeakerSettings()
             }
             break
+        case .getelevatorsettings:
+            DispatchQueue.main.async {
+                self.updateElevatorSettings()
+            }
         }
     }
 
@@ -2255,6 +2272,25 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         #if USER
         self.share(user_info: SharedInfo(type: .StopBGM, value: ""))
         #endif
+    }
+
+    func updateElevatorSettings() {
+        if self.modeType != .Normal {
+            return
+        }
+        let obj: [String : Any] = [
+            "enabled": elevatorEnabled,
+            "client_id": elevatorClientId,
+            "client_secret": elevatorClientSecret
+        ]
+        do {
+            let data = try JSONSerialization.data(withJSONObject: obj)
+            if let jsonData = String(data: data, encoding: .utf8) {
+                _ = self.fallbackService.updateElevatorSettings(data: jsonData)
+            }
+        } catch {
+            NSLog("Error getting elevator settings: \(obj) \(error)")
+        }
     }
 }
 
