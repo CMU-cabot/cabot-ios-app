@@ -88,6 +88,8 @@
 		7EF5F1EA228DB07100788987 /* NavUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EF5F1E8228DB07100788987 /* NavUtil.m */; };
 		A02372372E1528F100754038 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02372362E1528F100754038 /* CameraView.swift */; };
 		A02372382E1528F100754038 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A02372362E1528F100754038 /* CameraView.swift */; };
+		A0C5F6432EA113F000FE9900 /* SDK Kit.gpx in Resources */ = {isa = PBXBuildFile; fileRef = A0C5F6422EA113F000FE9900 /* SDK Kit.gpx */; };
+		A0C5F6442EA113F000FE9900 /* SDK Kit.gpx in Resources */ = {isa = PBXBuildFile; fileRef = A0C5F6422EA113F000FE9900 /* SDK Kit.gpx */; };
 		A0D51ED52DFA50DD001B9935 /* ContactsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D51ED42DFA50DD001B9935 /* ContactsUtil.swift */; };
 		A0D51ED62DFA50DD001B9935 /* ContactsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D51ED42DFA50DD001B9935 /* ContactsUtil.swift */; };
 		A0EB9CED2E76201A00C961B6 /* CaBotPICSLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = A0EB9CEC2E76201A00C961B6 /* CaBotPICSLibrary */; };
@@ -249,6 +251,7 @@
 		A056A36D2D8059DE0001FD38 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/User-InfoPlist.strings"; sourceTree = "<group>"; };
 		A056A36E2D8059DE0001FD38 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Attend-InfoPlist.strings"; sourceTree = "<group>"; };
 		A056A36F2D8059DE0001FD38 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		A0C5F6422EA113F000FE9900 /* SDK Kit.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "SDK Kit.gpx"; sourceTree = "<group>"; };
 		A0D51ED42DFA50DD001B9935 /* ContactsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsUtil.swift; sourceTree = "<group>"; };
 		D7CC052B2BFB352700C0B10A /* CaBot-User.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CaBot-User.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7CC05322BFB3BF900C0B10A /* DestinationDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DestinationDetailView.swift; sourceTree = "<group>"; };
@@ -385,6 +388,7 @@
 		7E29F000228B548100CA7DD6 = {
 			isa = PBXGroup;
 			children = (
+				A0C5F6422EA113F000FE9900 /* SDK Kit.gpx */,
 				3099132A265DE50A000C1BFE /* Resource */,
 				7E29F04B228B55C000CA7DD6 /* FromNavCog */,
 				7E29F00B228B548100CA7DD6 /* CaBot */,
@@ -708,6 +712,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A0C5F6432EA113F000FE9900 /* SDK Kit.gpx in Resources */,
 				3013614026A0BF590050CF9E /* PreviewResource in Resources */,
 				7E29F014228B548200CA7DD6 /* Assets.xcassets in Resources */,
 				097845C02531E65B004DE1F6 /* Attend-InfoPlist.strings in Resources */,
@@ -735,6 +740,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A0C5F6442EA113F000FE9900 /* SDK Kit.gpx in Resources */,
 				D7CC05232BFB352700C0B10A /* PreviewResource in Resources */,
 				D7CC05242BFB352700C0B10A /* Assets.xcassets in Resources */,
 				D7CC05382BFB688400C0B10A /* User-InfoPlist.strings in Resources */,
@@ -1302,7 +1308,7 @@
 				GCC_PREFIX_HEADER = $PROJECT_DIR/FromNavCog/NavCog3.pch;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = CaBot/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1334,7 +1340,7 @@
 				GCC_PREFIX_HEADER = $PROJECT_DIR/FromNavCog/NavCog3.pch;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = CaBot/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
