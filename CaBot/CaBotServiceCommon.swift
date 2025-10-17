@@ -91,6 +91,7 @@ protocol CaBotServiceProtocol {
     func isConnected() -> Bool
     func share(user_info: SharedInfo) -> Bool
     func camera_image_request() -> Bool
+    func updateElevatorSettings(data: String) -> Bool
 }
 
 protocol CaBotTransportProtocol: CaBotServiceProtocol {
@@ -125,6 +126,7 @@ enum NavigationNotification:String {
     case gethandleside
     case gettouchmode
     case getspeakeraudiofiles
+    case getelevatorsettings
 }
 
 enum CaBotManageCommand:String {
@@ -387,6 +389,7 @@ enum NavigationEventType:String, Decodable {
     case getspeakeraudiofiles
     case toggleconversation
     case togglespeakstate
+    case getelevatorsettings
     case unknown
 }
 
@@ -566,7 +569,7 @@ class CaBotServiceActions {
 
         DispatchQueue.main.async {
             switch(request.type) {
-            case .next, .arrived, .subtour, .skip, .getlanguage, .gethandleside, .gettouchmode, .getspeakeraudiofiles:
+            case .next, .arrived, .subtour, .skip, .getlanguage, .gethandleside, .gettouchmode, .getspeakeraudiofiles, .getelevatorsettings:
                 if let note = NavigationNotification(rawValue: request.type.rawValue) {
                     delegate.cabot(service: service, notification: note, param: request.param)
                 } else {

@@ -569,6 +569,12 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
         self.emit("camera_image_request", true)
         return true
     }
+
+    func updateElevatorSettings(data: String) -> Bool {
+        NSLog("elevator_settings \(data)")
+        self.emit("elevator_settings", data)
+        return true
+    }
 }
 
 
