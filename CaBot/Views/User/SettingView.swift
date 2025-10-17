@@ -179,7 +179,11 @@ struct SettingView: View {
                 } label: {
                     Text("Chat Settings")
                 }
-
+                NavigationLink {
+                    ElevatorSettingsView().environmentObject(modelData)
+                } label: {
+                    Text("Elevator Settings")
+                }
             }
         }
     }

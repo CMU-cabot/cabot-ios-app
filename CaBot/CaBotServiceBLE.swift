@@ -275,6 +275,11 @@ extension CaBotServiceBLE: CaBotServiceProtocol {
         NSLog("BLE updateIntersectionInfo is not implemented")
         return false
     }
+
+    func updateElevatorSettings(data: String) -> Bool {
+        NSLog("BLE updateElevatorSettings is not implemented")
+        return false
+    }
 }
 
 

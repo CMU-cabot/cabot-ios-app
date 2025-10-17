@@ -93,6 +93,7 @@
 		A0D51ED52DFA50DD001B9935 /* ContactsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D51ED42DFA50DD001B9935 /* ContactsUtil.swift */; };
 		A0D51ED62DFA50DD001B9935 /* ContactsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0D51ED42DFA50DD001B9935 /* ContactsUtil.swift */; };
 		A0EB9CED2E76201A00C961B6 /* CaBotPICSLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = A0EB9CEC2E76201A00C961B6 /* CaBotPICSLibrary */; };
+		A0EB9CF82E8FCCCB00C961B6 /* ElevatorSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0EB9CF72E8FCCCB00C961B6 /* ElevatorSettingsView.swift */; };
 		A97F30DF2CDDC9FA00BE5C43 /* PriorityQueueTTS in Frameworks */ = {isa = PBXBuildFile; productRef = A97F30DE2CDDC9FA00BE5C43 /* PriorityQueueTTS */; };
 		A97F30E12CDDCA0D00BE5C43 /* PriorityQueueTTS in Frameworks */ = {isa = PBXBuildFile; productRef = A97F30E02CDDCA0D00BE5C43 /* PriorityQueueTTS */; };
 		D7CC04F42BFB352700C0B10A /* DialogViewControllerCabot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09725B0924FE4AC300012D42 /* DialogViewControllerCabot.swift */; };
@@ -253,6 +254,7 @@
 		A056A36F2D8059DE0001FD38 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		A0C5F6422EA113F000FE9900 /* SDK Kit.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "SDK Kit.gpx"; sourceTree = "<group>"; };
 		A0D51ED42DFA50DD001B9935 /* ContactsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsUtil.swift; sourceTree = "<group>"; };
+		A0EB9CF72E8FCCCB00C961B6 /* ElevatorSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElevatorSettingsView.swift; sourceTree = "<group>"; };
 		D7CC052B2BFB352700C0B10A /* CaBot-User.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CaBot-User.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7CC05322BFB3BF900C0B10A /* DestinationDetailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DestinationDetailView.swift; sourceTree = "<group>"; };
 		D7CC05342BFB419900C0B10A /* DestinationsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DestinationsView.swift; sourceTree = "<group>"; };
@@ -519,6 +521,7 @@
 				D7F6BE6D2C2A57C300CD8258 /* SettingView.swift */,
 				D7D7A6FA2BFECB490072ADF6 /* TourDetailView.swift */,
 				0D05CB7A2D01DCF80077CAA1 /* DetailSettingView.swift */,
+				A0EB9CF72E8FCCCB00C961B6 /* ElevatorSettingsView.swift */,
 			);
 			path = User;
 			sourceTree = "<group>";
@@ -901,6 +904,7 @@
 				D7CC04F52BFB352700C0B10A /* LogFilesView.swift in Sources */,
 				D7CC04F62BFB352700C0B10A /* CaBotAppModel.swift in Sources */,
 				D7CC04F72BFB352700C0B10A /* OnboardGrantAccess.swift in Sources */,
+				A0EB9CF82E8FCCCB00C961B6 /* ElevatorSettingsView.swift in Sources */,
 				D7CC05332BFB3BF900C0B10A /* DestinationDetailView.swift in Sources */,
 				D7CC04FA2BFB352700C0B10A /* LocalConversation.swift in Sources */,
 				D7CC05352BFB419900C0B10A /* DestinationsView.swift in Sources */,

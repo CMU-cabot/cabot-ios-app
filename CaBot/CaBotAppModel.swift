@@ -171,6 +171,15 @@ class FallbackService: CaBotServiceProtocol {
             return false
         }
     }
+
+    func updateElevatorSettings(data: String) -> Bool {
+        if let service = getService() {
+            return service.updateElevatorSettings(data: data)
+        } else {
+            NSLog("Suitcase Not Connected: updateElevatorSettings(\(data))")
+            return false
+        }
+    }
 }
 
 final class DetailSettingModel: ObservableObject, NavigationSettingProtocol {
@@ -316,6 +325,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     private let enableSpeakerKey = "enableSpeakerKey"
     private let selectedSpeakerAudioFileKey = "selectedSpeakerAudioFileKey"
     private let speechVolumeKey = "speechVolumeKey"
+    private let elevatorClientIdKey = "elevatorClientIdKey"
+    private let elevatorClientSecretKey = "elevatorClientSecretKey"
+    private let elevatorEnabledKey = "elevatorEnabledKey"
 
     let detailSettingModel: DetailSettingModel
 
@@ -818,6 +830,31 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     @Published var userInfo: UserInfoBuffer
     @Published var attend_messages: [ChatMessage] = []
 
+    @Published var elevatorClientId: String = "" {
+        didSet {
+            print("Client ID: \(elevatorClientId)")
+            UserDefaults.standard.setValue(elevatorClientId, forKey: elevatorClientIdKey)
+            UserDefaults.standard.synchronize()
+            updateElevatorSettings()
+        }
+    }
+    @Published var elevatorClientSecret: String = "" {
+        didSet {
+            print("Client Secret: \(elevatorClientSecret)")
+            UserDefaults.standard.setValue(elevatorClientSecret, forKey: elevatorClientSecretKey)
+            UserDefaults.standard.synchronize()
+            updateElevatorSettings()
+        }
+    }
+    @Published var elevatorEnabled: Bool = false {
+        didSet {
+            print("Elevator Enabled: \(elevatorEnabled)")
+            UserDefaults.standard.setValue(elevatorEnabled, forKey: elevatorEnabledKey)
+            UserDefaults.standard.synchronize()
+            updateElevatorSettings()
+        }
+    }
+
     var iconText: String {
         get {
             return self.batteryStatus.message.replacingOccurrences(of: "Unknown", with: "")
@@ -1026,6 +1063,17 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             }
         }
         monitor.start(queue: DispatchQueue(label: "NetworkMonitor"))
+
+        // Elevator
+        if let value = UserDefaults.standard.value(forKey: elevatorClientIdKey) as? String{
+            self.elevatorClientId = value
+        }
+        if let value = UserDefaults.standard.value(forKey: elevatorClientSecretKey) as? String{
+            self.elevatorClientSecret = value
+        }
+        if let value = UserDefaults.standard.value(forKey: elevatorEnabledKey) as? Bool{
+            self.elevatorEnabled = value
+        }
     }
     @Published private(set) var reconnecting = false
 
@@ -1647,6 +1695,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                     _ = self.fallbackService.manage(command: .lang, param: self.resourceLang)
                     self.possibleAudioFiles = []
                     _ = self.fallbackService.manage(command: .reqfeatures)
+                    self.updateElevatorSettings()
                 }
             } else {
                 stopBGM()
@@ -1844,6 +1893,10 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 self.updateSpeakerSettings()
             }
             break
+        case .getelevatorsettings:
+            DispatchQueue.main.async {
+                self.updateElevatorSettings()
+            }
         }
     }
 
@@ -2249,6 +2302,25 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     #if USE_PICS
     var picsModel: PICSViewModel?
     #endif
+
+    func updateElevatorSettings() {
+        if self.modeType != .Normal {
+            return
+        }
+        let obj: [String : Any] = [
+            "enabled": elevatorEnabled,
+            "client_id": elevatorClientId,
+            "client_secret": elevatorClientSecret
+        ]
+        do {
+            let data = try JSONSerialization.data(withJSONObject: obj)
+            if let jsonData = String(data: data, encoding: .utf8) {
+                _ = self.fallbackService.updateElevatorSettings(data: jsonData)
+            }
+        } catch {
+            NSLog("Error getting elevator settings: \(obj) \(error)")
+        }
+    }
 }
 
 class DiagnosticStatusData: NSObject, ObservableObject {

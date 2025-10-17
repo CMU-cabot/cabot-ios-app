@@ -589,6 +589,12 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
         self.emit("signal_response_intersection_status", data)
         return true
     }
+
+    func updateElevatorSettings(data: String) -> Bool {
+        NSLog("elevator_settings \(data)")
+        self.emit("elevator_settings", data)
+        return true
+    }
 }
 
 
