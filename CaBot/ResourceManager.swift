@@ -613,12 +613,14 @@ class Tour: Decodable, Hashable{
     let defaultVar: String?
     let introduction: I18NText
     let error: String?
+    let debug: Bool?
 
     // MARK: - Coding Keys
     enum CodingKeys: String, CodingKey {
         case id = "tour_id"
         case destinations
         case defaultVar = "default_var"
+        case debug
     }
 
     required init(from decoder: Decoder) throws {
@@ -627,6 +629,7 @@ class Tour: Decodable, Hashable{
         id = try container.decode(String.self, forKey: .id)
         destinations = try container.decode([TourDestination].self, forKey: .destinations)
         defaultVar = try container.decodeIfPresent(String.self, forKey: .defaultVar)
+        debug = try container.decodeIfPresent(Bool.self, forKey: .debug)
         title = I18NText.decode(decoder: decoder, baseKey: "title")
 
         introduction = I18NText(text: [:], pron: [:])
