@@ -30,11 +30,13 @@ struct ToursView: View {
         Form {
             Section(header: Text("SELECT_TOUR")) {
                 ForEach(tours, id: \.id) { tour in
-                    NavigationLink(
-                        destination: StaticTourDetailView(tour: tour).heartbeat("StaticTourDetailView"),
-                        label: {
-                            Text(tour.title.text)
-                        })
+                    if tour.debug != true || modelData.modeType != .Normal {
+                        NavigationLink(
+                            destination: StaticTourDetailView(tour: tour).heartbeat("StaticTourDetailView"),
+                            label: {
+                                Text(tour.title.text)
+                            })
+                    }
                 }
             }
         }
