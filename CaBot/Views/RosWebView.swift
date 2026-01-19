@@ -71,7 +71,7 @@ struct RosWebView: View, LocalizationStatusDelegate {
                 Button(action: {
                     isConfirming = true
                 }, label: {
-                    if (localizationStatus == 2) {
+                    if (localizationStatus == 3 || localizationStatus == 2) {
                         Image(systemName: "mappin.and.ellipse")
                         Text("Restart Localization")
                     } else if (localizationStatus != 1) {
@@ -82,7 +82,7 @@ struct RosWebView: View, LocalizationStatusDelegate {
                         Text("Restarting Localization")
                     }
                 })
-                .disabled(localizationStatus != 2)
+                .disabled(localizationStatus != 3 && localizationStatus != 2)
                 .confirmationDialog(Text("Restart Localization"), isPresented: $isConfirming) {
                     Button {
                         localizationStatus = 0
