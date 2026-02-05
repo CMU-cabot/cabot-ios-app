@@ -234,6 +234,9 @@ struct DetailSettingView: View {
                         NavigationLink("SDK Sample") {
                             CaBotPICSLibrary.ContentView(viewModel: viewModel)
                         }
+                        Toggle(isOn: $viewModel.fixLightData) {
+                            Text("Fix Traffic Light Data")
+                        }
                     }
                 }
             }
