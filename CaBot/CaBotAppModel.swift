@@ -2167,6 +2167,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                         self.clearAll()
                         tourManager.addToLast(destination: dest)
                     }else if userInfo.flag2 {
+                        tourManager.stopCurrent()
                         tourManager.addToFirst(destination: dest)
                     } else {
                         tourManager.addToLast(destination: dest)
@@ -2195,6 +2196,15 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         }
         if userInfo.type == .RequestPlayAudio {
             self.playAudio(file: userInfo.value)
+        }
+        if userInfo.type == .PauseNavigation {
+            if tourManager.currentDestination != nil {
+                tourManager.stopCurrent()
+                tourUpdated(manager: tourManager)
+                if userInfo.flag1 {
+                    needToStartAnnounce(wait: true)
+                }
+            }
         }
     }
 
