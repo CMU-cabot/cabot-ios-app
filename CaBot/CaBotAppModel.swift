@@ -623,6 +623,15 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         }
     }
 
+    @Published var ignorePeopleEnabled: Bool = false {
+        willSet {
+            if silentForChange == false {
+                self.systemManageCommand(command: newValue ? .ignorePeopleOn : .ignorePeopleOff)
+            }
+            silentForChange = false
+        }
+    }
+
 #if ATTEND
     @Published var useAttendVoice: Bool = false {
         didSet {
@@ -1495,6 +1504,10 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 break
             case .disablewifi:
                 break
+            case .ignorePeopleOn:
+                break
+            case .ignorePeopleOff:
+                break
             case .release_emergencystop:
                 break
             }
@@ -1867,6 +1880,11 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 _ = self.fallbackService.manage(command: .touchmode, param: self.suitcaseFeatures.selectedTouchMode.rawValue)
                 self.share(user_info: SharedInfo(type: .PossibleTouchMode, value: self.suitcaseFeatures.possibleTouchModes.map({ m in m.rawValue }).joined(separator: ",")))
                 self.share(user_info: SharedInfo(type: .ChangeTouchMode, value: self.suitcaseFeatures.selectedTouchMode.rawValue))
+            }
+            break
+        case .getignorepeople:
+            DispatchQueue.main.async {
+                _ = self.fallbackService.manage(command: self.ignorePeopleEnabled ? .ignorePeopleOn : .ignorePeopleOff)
             }
             break
         case .getspeakeraudiofiles:

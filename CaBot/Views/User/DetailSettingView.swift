@@ -148,6 +148,11 @@ struct DetailSettingView: View {
                     Text("WiFi")
                 }
                 .disabled(!cabotAppModel.suitcaseConnected || !cabotAppModel.wifiDetected)
+
+                Toggle(isOn: $cabotAppModel.ignorePeopleEnabled) {
+                    Text("Ignore People")
+                }
+                .disabled(!cabotAppModel.suitcaseConnected)
             }
             
             if cabotAppModel.suitcaseConnected {
