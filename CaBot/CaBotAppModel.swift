@@ -2258,6 +2258,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         self.share(user_info: SharedInfo(type: .ChangeEnableSpeaker, value: String(self.enableSpeaker)))
         self.share(user_info: SharedInfo(type: .ChangeSelectedSpeakerAudioFile, value: self.selectedSpeakerAudioFile))
         self.share(user_info: SharedInfo(type: .ChangeSpeakerVolume, value: String(self.speakerVolume)))
+        self.share(user_info: SharedInfo(type: .ChangeIgnorePeople, value: self.ignorePeopleEnabled ? "on" : "off"))
 
     }
 
