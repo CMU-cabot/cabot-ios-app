@@ -310,6 +310,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     private let modeTypeKey = "modeTypeKey"
     private let notificationCenterID = "cabot_state_notification"
     private let voiceSettingKey = "voiceSettingKey"
+    private let ignorePeopleEnabledKey = "ignorePeopleEnabledKey"
     private let enableSpeakerKey = "enableSpeakerKey"
     private let selectedSpeakerAudioFileKey = "selectedSpeakerAudioFileKey"
     private let speechVolumeKey = "speechVolumeKey"
@@ -626,9 +627,14 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     @Published var ignorePeopleEnabled: Bool = false {
         willSet {
             if silentForChange == false {
+                _ = self.fallbackService.share(user_info: SharedInfo(type: .ChangeIgnorePeople, value: newValue ? "on" : "off"))
                 self.systemManageCommand(command: newValue ? .ignorePeopleOn : .ignorePeopleOff)
             }
             silentForChange = false
+        }
+        didSet {
+            UserDefaults.standard.setValue(ignorePeopleEnabled, forKey: ignorePeopleEnabledKey)
+            UserDefaults.standard.synchronize()
         }
     }
 
@@ -960,6 +966,10 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         }
         if let isTTSEnabled = UserDefaults.standard.value(forKey: isTTSEnabledKey) as? Bool {
             self.isTTSEnabledForAdvanced = isTTSEnabled
+        }
+        if let storedIgnorePeople = UserDefaults.standard.value(forKey: ignorePeopleEnabledKey) as? Bool {
+            self.silentForChange = true
+            self.ignorePeopleEnabled = storedIgnorePeople
         }
         #if ATTEND
         if let voiceSetting = UserDefaults.standard.value(forKey: voiceSettingKey) as? String {
@@ -1884,7 +1894,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             break
         case .getignorepeople:
             DispatchQueue.main.async {
-                _ = self.fallbackService.manage(command: self.ignorePeopleEnabled ? .ignorePeopleOn : .ignorePeopleOff)
+                let enabled = self.ignorePeopleEnabled
+                _ = self.fallbackService.share(user_info: SharedInfo(type: .ChangeIgnorePeople, value: enabled ? "on" : "off"))
+                _ = self.fallbackService.manage(command: enabled ? .ignorePeopleOn : .ignorePeopleOff)
             }
             break
         case .getspeakeraudiofiles:
@@ -2079,6 +2091,12 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         }
         if userInfo.type == .ChangeTouchMode {
             self.suitcaseFeatures.silentUpdate(mode: SuitcaseFeatures.TouchMode(rawValue: userInfo.value) ?? .cap)
+        }
+        if userInfo.type == .ChangeIgnorePeople {
+            let value = userInfo.value.lowercased()
+            let enabled = (value == "on" || value == "true" || value == "1")
+            self.silentForChange = true
+            self.ignorePeopleEnabled = enabled
         }
         switch userInfo.type {
         case .ChangeEnableSpeaker:

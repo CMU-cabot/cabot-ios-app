@@ -51,6 +51,7 @@ struct SharedInfo: Codable {
         case PossibleTouchMode
         case ChangeHandleSide
         case ChangeTouchMode
+        case ChangeIgnorePeople
         case ChatRequest
         case ChatStatus
         case ChangeEnableSpeaker

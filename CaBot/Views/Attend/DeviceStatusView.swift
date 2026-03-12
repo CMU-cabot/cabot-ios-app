@@ -114,11 +114,6 @@ struct DeviceStatusView: View {
                         Text("WiFi")
                     }
                     .disabled(!modelData.suitcaseConnected || !modelData.wifiDetected)
-
-                    Toggle(isOn: $modelData.ignorePeopleEnabled) {
-                        Text("Ignore People")
-                    }
-                    .disabled(!modelData.suitcaseConnected)
                 }
             }
             .navigationTitle("Device Status")
