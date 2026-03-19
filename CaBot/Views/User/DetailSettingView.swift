@@ -148,6 +148,7 @@ struct DetailSettingView: View {
                     Text("WiFi")
                 }
                 .disabled(!cabotAppModel.suitcaseConnected || !cabotAppModel.wifiDetected)
+
             }
             
             if cabotAppModel.suitcaseConnected {
@@ -215,6 +216,13 @@ struct DetailSettingView: View {
                             .accessibility(hidden: true)
                     }
                 }
+            }
+
+            Section(header: Text("Navigation")) {
+                Toggle(isOn: $cabotAppModel.ignorePeopleEnabled) {
+                    Text("Ignore People")
+                }
+                .disabled(!cabotAppModel.suitcaseConnected)
             }
         }
     }
