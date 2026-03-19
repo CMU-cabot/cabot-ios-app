@@ -10,6 +10,7 @@ import SwiftUI
 
 struct DetailSettingView: View {
     @EnvironmentObject var modelData: DetailSettingModel
+    @EnvironmentObject var cabotAppModel: CaBotAppModel
 
     let startSounds:[String] = [
         "/System/Library/Audio/UISounds/nano/3rdParty_Success_Haptic.caf",
@@ -92,6 +93,13 @@ struct DetailSettingView: View {
                     }
                 }
             }
+
+            Section(header: Text("Navigation")) {
+                Toggle(isOn: $cabotAppModel.ignorePeopleEnabled) {
+                    Text("Ignore People")
+                }
+                .disabled(!cabotAppModel.suitcaseConnected)
+            }
         }
     }
 }
@@ -101,5 +109,6 @@ struct NavigationSettingView_Previews: PreviewProvider {
         let modelData = CaBotAppModel()
         DetailSettingView()
             .environmentObject(modelData.detailSettingModel)
+            .environmentObject(modelData)
     }
 }

@@ -51,6 +51,7 @@ struct SharedInfo: Codable {
         case PossibleTouchMode
         case ChangeHandleSide
         case ChangeTouchMode
+        case ChangeIgnorePeople
         case ChatRequest
         case ChatStatus
         case ChangeEnableSpeaker
@@ -128,6 +129,7 @@ enum NavigationNotification:String {
     case getlanguage
     case gethandleside
     case gettouchmode
+    case getignorepeople
     case getspeakeraudiofiles
     case getelevatorsettings
 }
@@ -149,6 +151,8 @@ enum CaBotManageCommand:String {
     case speaker_alert
     case enablewifi
     case disablewifi
+    case ignorePeopleOn = "ignore-people:on"
+    case ignorePeopleOff = "ignore-people:off"
     case release_emergencystop
 }
 
@@ -389,6 +393,7 @@ enum NavigationEventType:String, Decodable {
     case getlanguage
     case gethandleside
     case gettouchmode
+    case getignorepeople
     case getspeakeraudiofiles
     case toggleconversation
     case togglespeakstate
@@ -577,7 +582,7 @@ class CaBotServiceActions {
 
         DispatchQueue.main.async {
             switch(request.type) {
-            case .next, .arrived, .subtour, .skip, .getlanguage, .gethandleside, .gettouchmode, .getspeakeraudiofiles, .getelevatorsettings:
+            case .next, .arrived, .subtour, .skip, .getlanguage, .gethandleside, .gettouchmode, .getignorepeople, .getspeakeraudiofiles, .getelevatorsettings:
                 if let note = NavigationNotification(rawValue: request.type.rawValue) {
                     delegate.cabot(service: service, notification: note, param: request.param)
                 } else {
