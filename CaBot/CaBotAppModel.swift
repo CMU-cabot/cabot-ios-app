@@ -1514,9 +1514,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 break
             case .disablewifi:
                 break
-            case .ignorePeopleOn:
+            case .followExactPathOn:
                 break
-            case .ignorePeopleOff:
+            case .followExactPathOff:
                 break
             case .release_emergencystop:
                 break
