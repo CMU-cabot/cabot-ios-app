@@ -310,7 +310,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     private let modeTypeKey = "modeTypeKey"
     private let notificationCenterID = "cabot_state_notification"
     private let voiceSettingKey = "voiceSettingKey"
-    private let ignorePeopleEnabledKey = "ignorePeopleEnabledKey"
+    private let followExactPathEnabledKey = "followExactPathEnabledKey"
     private let enableSpeakerKey = "enableSpeakerKey"
     private let selectedSpeakerAudioFileKey = "selectedSpeakerAudioFileKey"
     private let speechVolumeKey = "speechVolumeKey"
@@ -624,16 +624,16 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         }
     }
 
-    @Published var ignorePeopleEnabled: Bool = false {
+    @Published var followExactPathEnabled: Bool = false {
         willSet {
             if silentForChange == false {
-                _ = self.fallbackService.share(user_info: SharedInfo(type: .ChangeIgnorePeople, value: newValue ? "on" : "off"))
-                self.systemManageCommand(command: newValue ? .ignorePeopleOn : .ignorePeopleOff)
+                _ = self.fallbackService.share(user_info: SharedInfo(type: .ChangeFollowExactPath, value: newValue ? "on" : "off"))
+                self.systemManageCommand(command: newValue ? .followExactPathOn : .followExactPathOff)
             }
             silentForChange = false
         }
         didSet {
-            UserDefaults.standard.setValue(ignorePeopleEnabled, forKey: ignorePeopleEnabledKey)
+            UserDefaults.standard.setValue(followExactPathEnabled, forKey: followExactPathEnabledKey)
             UserDefaults.standard.synchronize()
         }
     }
@@ -967,9 +967,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         if let isTTSEnabled = UserDefaults.standard.value(forKey: isTTSEnabledKey) as? Bool {
             self.isTTSEnabledForAdvanced = isTTSEnabled
         }
-        if let storedIgnorePeople = UserDefaults.standard.value(forKey: ignorePeopleEnabledKey) as? Bool {
+        if let storedFollowExactPath = UserDefaults.standard.value(forKey: followExactPathEnabledKey) as? Bool {
             self.silentForChange = true
-            self.ignorePeopleEnabled = storedIgnorePeople
+            self.followExactPathEnabled = storedFollowExactPath
         }
         #if ATTEND
         if let voiceSetting = UserDefaults.standard.value(forKey: voiceSettingKey) as? String {
@@ -1514,9 +1514,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 break
             case .disablewifi:
                 break
-            case .ignorePeopleOn:
+            case .followExactPathOn:
                 break
-            case .ignorePeopleOff:
+            case .followExactPathOff:
                 break
             case .release_emergencystop:
                 break
@@ -1892,11 +1892,11 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 self.share(user_info: SharedInfo(type: .ChangeTouchMode, value: self.suitcaseFeatures.selectedTouchMode.rawValue))
             }
             break
-        case .getignorepeople:
+        case .getfollowexactpath:
             DispatchQueue.main.async {
-                let enabled = self.ignorePeopleEnabled
-                _ = self.fallbackService.share(user_info: SharedInfo(type: .ChangeIgnorePeople, value: enabled ? "on" : "off"))
-                _ = self.fallbackService.manage(command: enabled ? .ignorePeopleOn : .ignorePeopleOff)
+                let enabled = self.followExactPathEnabled
+                _ = self.fallbackService.share(user_info: SharedInfo(type: .ChangeFollowExactPath, value: enabled ? "on" : "off"))
+                _ = self.fallbackService.manage(command: enabled ? .followExactPathOn : .followExactPathOff)
             }
             break
         case .getspeakeraudiofiles:
@@ -2092,11 +2092,11 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         if userInfo.type == .ChangeTouchMode {
             self.suitcaseFeatures.silentUpdate(mode: SuitcaseFeatures.TouchMode(rawValue: userInfo.value) ?? .cap)
         }
-        if userInfo.type == .ChangeIgnorePeople {
+        if userInfo.type == .ChangeFollowExactPath {
             let value = userInfo.value.lowercased()
             let enabled = (value == "on" || value == "true" || value == "1")
             self.silentForChange = true
-            self.ignorePeopleEnabled = enabled
+            self.followExactPathEnabled = enabled
         }
         switch userInfo.type {
         case .ChangeEnableSpeaker:
@@ -2258,7 +2258,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         self.share(user_info: SharedInfo(type: .ChangeEnableSpeaker, value: String(self.enableSpeaker)))
         self.share(user_info: SharedInfo(type: .ChangeSelectedSpeakerAudioFile, value: self.selectedSpeakerAudioFile))
         self.share(user_info: SharedInfo(type: .ChangeSpeakerVolume, value: String(self.speakerVolume)))
-        self.share(user_info: SharedInfo(type: .ChangeIgnorePeople, value: self.ignorePeopleEnabled ? "on" : "off"))
+        self.share(user_info: SharedInfo(type: .ChangeFollowExactPath, value: self.followExactPathEnabled ? "on" : "off"))
 
     }
 
