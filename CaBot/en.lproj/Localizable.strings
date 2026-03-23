@@ -143,6 +143,7 @@
 "GRIP_HAND_LEFT"="Left Hand Grip";
 "GRIP_HAND_RIGHT"="Right Hand Grip";
 "Touch Mode"="Touch Mode";
+"FOLLOW_EXACT_PATH_MODE"="Avoidance Off";
 "Capacitive"="Capacitive";
 "Time of Flight"="Time of Flight";
 "Dual"="Dual";

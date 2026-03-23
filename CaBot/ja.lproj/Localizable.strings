@@ -143,6 +143,7 @@
 "GRIP_HAND_LEFT"="左手持ち";
 "GRIP_HAND_RIGHT"="右手持ち";
 "Touch Mode"="タッチモード";
+"FOLLOW_EXACT_PATH_MODE"="避けないモード";
 "Capacitive"="静電容量";
 "Time of Flight"="距離センサー(ToF)";
 "Dual"="両方";

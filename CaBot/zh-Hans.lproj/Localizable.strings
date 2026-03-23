@@ -143,6 +143,7 @@
 "GRIP_HAND_LEFT"="左手握持";
 "GRIP_HAND_RIGHT"="右手握持";
 "Touch Mode"="触摸模式";
+"FOLLOW_EXACT_PATH_MODE"="不避让模式";
 "Capacitive"="电容感应";
 "Time of Flight"="飞行时间传感器（ToF）";
 "Dual"="双模式";

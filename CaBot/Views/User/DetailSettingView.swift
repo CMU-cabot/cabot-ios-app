@@ -219,8 +219,8 @@ struct DetailSettingView: View {
             }
 
             Section(header: Text("Navigation")) {
-                Toggle(isOn: $cabotAppModel.ignorePeopleEnabled) {
-                    Text("Ignore People")
+                Toggle(isOn: $cabotAppModel.followExactPathEnabled) {
+                    Text("FOLLOW_EXACT_PATH_MODE")
                 }
                 .disabled(!cabotAppModel.suitcaseConnected)
             }
