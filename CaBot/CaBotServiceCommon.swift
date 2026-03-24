@@ -149,8 +149,7 @@ enum CaBotManageCommand:String {
     case speaker_alert
     case enablewifi
     case disablewifi
-    case followExactPathOn = "follow-exact-path:on"
-    case followExactPathOff = "follow-exact-path:off"
+    case follow_exact_path
     case release_emergencystop
 }
 

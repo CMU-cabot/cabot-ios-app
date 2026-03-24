@@ -628,7 +628,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         willSet {
             if silentForChange == false {
                 _ = self.fallbackService.share(user_info: SharedInfo(type: .ChangeFollowExactPath, value: newValue ? "on" : "off"))
-                self.systemManageCommand(command: newValue ? .followExactPathOn : .followExactPathOff)
+                self.systemManageCommand(command: .follow_exact_path, param: newValue ? "on" : "off")
             }
             silentForChange = false
         }
@@ -1514,9 +1514,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 break
             case .disablewifi:
                 break
-            case .followExactPathOn:
-                break
-            case .followExactPathOff:
+            case .follow_exact_path:
                 break
             case .release_emergencystop:
                 break
@@ -1899,7 +1897,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             DispatchQueue.main.async {
                 let enabled = self.followExactPathEnabled
                 _ = self.fallbackService.share(user_info: SharedInfo(type: .ChangeFollowExactPath, value: enabled ? "on" : "off"))
-                _ = self.fallbackService.manage(command: enabled ? .followExactPathOn : .followExactPathOff)
+                _ = self.fallbackService.manage(command: .follow_exact_path, param: enabled ? "on" : "off")
             }
             break
         case .getspeakeraudiofiles:
