@@ -1478,8 +1478,8 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         }
     }
 
-    func systemManageCommand(command: CaBotManageCommand) {
-        if self.fallbackService.manage(command: command) {
+    func systemManageCommand(command: CaBotManageCommand, param: String? = nil) {
+        if self.fallbackService.manage(command: command, param: param) {
             switch(command) {
             case .poweroff, .reboot:
                 deviceStatus.level = .Unknown
