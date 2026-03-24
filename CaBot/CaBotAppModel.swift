@@ -1799,6 +1799,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             }
             break
         case .next:
+            if tourManager.currentDestination != nil {
+                fallthrough // skip to .arrived
+            }
             self.announceToPushRightButtonTime = CFAbsoluteTimeGetCurrent() - 20
             self.shouldNoAnnounceToPushRightButton = true
             if tourManager.proceedToNextDestination() {
