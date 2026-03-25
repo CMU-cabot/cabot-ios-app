@@ -1702,6 +1702,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 }
                 DispatchQueue.main.async {
                     _ = self.fallbackService.manage(command: .lang, param: self.resourceLang)
+                    _ = self.fallbackService.manage(command: .follow_exact_path, param: self.followExactPathEnabled ? "on" : "off")
                     self.possibleAudioFiles = []
                     _ = self.fallbackService.manage(command: .reqfeatures)
                     self.updateElevatorSettings()
