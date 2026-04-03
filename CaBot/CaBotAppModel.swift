@@ -285,7 +285,14 @@ class AddressCandidate {
         return getCurrent()
     }
     func update(addresses: [String]) {
-        self.addresses = addresses
+        guard !addresses.isEmpty else { return }
+        let current = getCurrent()
+        self.addresses = Array(NSOrderedSet(array: addresses)) as? [String] ?? addresses
+        if let currentIndex = self.addresses.firstIndex(of: current) {
+            self.index = currentIndex
+        } else {
+            self.index = 0
+        }
     }
 }
 
@@ -1084,14 +1091,28 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     }
     @Published private(set) var reconnecting = false
 
+    private static func isCompleteIPAddress(_ address: String) -> Bool {
+        let trimmed = address.trimmingCharacters(in: .whitespacesAndNewlines)
+        let octets = trimmed.split(separator: ".", omittingEmptySubsequences: false)
+        guard octets.count == 4 else { return false }
+        return octets.allSatisfy { octet in
+            guard let value = Int(octet), (0...255).contains(value) else { return false }
+            return String(value) == octet || octet == "0"
+        }
+    }
 
     func updateNetworkConfig() {
         NSLog("updateNetworkConfig \([self.primaryAddr, self.secondaryAddr])")
+        let validAddresses = [self.primaryAddr, self.secondaryAddr].filter { Self.isCompleteIPAddress($0) }
+        guard !validAddresses.isEmpty else {
+            NSLog("skip updateNetworkConfig until a complete IP address is available")
+            return
+        }
         let current = self.addressCandidate.getCurrent()
-        if current != self.primaryAddr && current != self.secondaryAddr {
+        if !validAddresses.contains(current) {
             self.tcpService.stop()
         }
-        self.addressCandidate.update(addresses: [self.primaryAddr, self.secondaryAddr])
+        self.addressCandidate.update(addresses: validAddresses)
     }
 
     func getCurrentAddress() -> String {

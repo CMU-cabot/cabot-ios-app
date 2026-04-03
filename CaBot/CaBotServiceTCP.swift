@@ -125,6 +125,10 @@ class CaBotServiceTCP: NSObject {
     }
 
     var last_data_received_time: TimeInterval = 0
+
+    private func markDataReceived() {
+        last_data_received_time = Date().timeIntervalSince1970
+    }
      
     private func connectToServer() {
         guard let address = address else { return }
@@ -146,6 +150,7 @@ class CaBotServiceTCP: NSObject {
             guard let socket = weakself.socket else { return }
             guard let delegate = weakself.delegate else { return }
             NSLog("<Socket: connected>: \(data)")
+            weakself.markDataReceived()
             DispatchQueue.main.async {
                 weakself.connected = true
                 delegate.caBot(service: weakself, centralConnected: weakself.connected)
@@ -176,12 +181,13 @@ class CaBotServiceTCP: NSObject {
             DispatchQueue.main.async {
                 delegate.caBot(service: weakself, versionMatched: text == weakself.version, with: text)
             }
-            weakself.last_data_received_time = Date().timeIntervalSince1970
+            weakself.markDataReceived()
         }
         socket.on("device_status"){[weak self] dt, ack in
             guard let text = dt[0] as? String else { return }
             guard let data = String(text).data(using:.utf8) else { return }
             guard let weakself = self else { return }
+            weakself.markDataReceived()
             weakself.deviceStatusLogPack.log(text:text)
             guard let delegate = weakself.delegate else { return }
             do {
@@ -204,6 +210,7 @@ class CaBotServiceTCP: NSObject {
             guard let text = dt[0] as? String else { return }
             guard let data = String(text).data(using:.utf8) else { return }
             guard let weakself = self else { return }
+            weakself.markDataReceived()
             weakself.systemStatusLogPack.log(text:text)
             guard let delegate = weakself.delegate else { return }
             do {
@@ -220,6 +227,7 @@ class CaBotServiceTCP: NSObject {
             guard let text = dt[0] as? String else { return }
             guard let data = String(text).data(using:.utf8) else { return }
             guard let weakself = self else { return }
+            weakself.markDataReceived()
             weakself.batteryStatusLogPack.log(text:text)
             guard let delegate = weakself.delegate else { return }
             do {
@@ -236,6 +244,7 @@ class CaBotServiceTCP: NSObject {
             guard let text = dt[0] as? String else { return }
             guard let data = String(text).data(using:.utf8) else { return }
             guard let weakself = self else { return }
+            weakself.markDataReceived()
             weakself.touchLogPack.log(text:text)
             guard let delegate = weakself.delegate else { return }
             do {
@@ -252,6 +261,7 @@ class CaBotServiceTCP: NSObject {
             guard let text = dt[0] as? String else { return }
             guard let data = String(text).data(using:.utf8) else { return }
             guard let weakself = self else { return }
+            weakself.markDataReceived()
             NSLog("<Socket on: speak>")
             guard let delegate = weakself.delegate else { return }
             do {
@@ -266,6 +276,7 @@ class CaBotServiceTCP: NSObject {
             guard let text = dt[0] as? String else { return }
             guard let data = String(text).data(using:.utf8) else { return }
             guard let weakself = self else { return }
+            weakself.markDataReceived()
             guard let delegate = weakself.delegate else { return }
             do {
                 let request = try JSONDecoder().decode(NavigationEventRequest.self, from: data)
@@ -281,6 +292,7 @@ class CaBotServiceTCP: NSObject {
             guard let text = dt[0] as? String else { return }
             guard let data = String(text).data(using:.utf8) else { return }
             guard let weakself = self else { return }
+            weakself.markDataReceived()
             NSLog("<Socket on: log_response>")
             guard let delegate = weakself.delegate else { return }
             do {
@@ -295,6 +307,7 @@ class CaBotServiceTCP: NSObject {
             guard let text = dt[0] as? String else { return }
             guard let data = String(text).data(using:.utf8) else { return }
             guard let weakself = self else { return }
+            weakself.markDataReceived()
             guard let delegate = weakself.delegate else { return }
             do {
                 let decodedData = try JSONDecoder().decode(SharedInfo.self, from: data)
@@ -309,6 +322,8 @@ class CaBotServiceTCP: NSObject {
         socket.on("location"){[weak self] dt, ack in
             guard let text = dt[0] as? String else { return }
             guard let data = String(text).data(using:.utf8) else { return }
+            guard let weakself = self else { return }
+            weakself.markDataReceived()
             do {
                 ChatData.shared.lastLocation = try JSONDecoder().decode(ChatData.CurrentLocation.self, from: data)
             } catch {
@@ -318,15 +333,21 @@ class CaBotServiceTCP: NSObject {
         }
         socket.on("cabot_name"){[weak self] dt, ack in
             guard let text = dt[0] as? String else { return }
+            guard let weakself = self else { return }
+            weakself.markDataReceived()
             ChatData.shared.suitcase_id = text
         }
         socket.on("camera_image"){[weak self] dt, ack in
             guard let text = dt[0] as? String else { return }
+            guard let weakself = self else { return }
+            weakself.markDataReceived()
             ChatData.shared.lastCameraImage = text
         }
         socket.on("camera_orientation"){[weak self] dt, ack in
             guard let text = dt[0] as? String else { return }
             guard let data = String(text).data(using:.utf8) else { return }
+            guard let weakself = self else { return }
+            weakself.markDataReceived()
             do {
                 ChatData.shared.lastCameraOrientation = try JSONDecoder().decode(ChatData.CameraOrientation.self, from: data)
             } catch {
