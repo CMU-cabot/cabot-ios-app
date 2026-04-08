@@ -37,6 +37,7 @@ import PriorityQueueTTS
 import Contacts
 import Photos
 import Network
+import NetworkExtension
 
 enum GrantState {
     case Init
@@ -892,6 +893,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     let dialogViewHelper: DialogViewHelper
     private let feedbackGenerator = UINotificationFeedbackGenerator()
     let notificationCenter = UNUserNotificationCenter.current()
+    private var wifiInfoTimer: Timer?
 
     let locationManager: CLLocationManager
     let locationUpdateTimeLimit: CFAbsoluteTime = 60*15
@@ -956,6 +958,8 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             self.secondaryAddr = secondaryAddr
         }
         updateNetworkConfig()
+        startWiFiInfoMonitor()
+        refreshCurrentWiFiInfo()
         if let menuDebug = UserDefaults.standard.value(forKey: menuDebugKey) as? Bool {
             self.menuDebug = menuDebug
         }
@@ -1071,6 +1075,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             }
             DispatchQueue.main.async() {
                 self.reconnecting = true
+                self.refreshCurrentWiFiInfo()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     self.reconnecting = false
                 }
@@ -1090,6 +1095,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         }
     }
     @Published private(set) var reconnecting = false
+    @Published private(set) var currentWiFiSSID = "Unavailable"
+    @Published private(set) var currentWiFiBSSID = "Unavailable"
+    @Published private(set) var currentWiFiUpdatedAt: Date?
 
     private static func isCompleteIPAddress(_ address: String) -> Bool {
         let trimmed = address.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -1098,6 +1106,35 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         return octets.allSatisfy { octet in
             guard let value = Int(octet), (0...255).contains(value) else { return false }
             return String(value) == octet || octet == "0"
+        }
+    }
+
+    private func startWiFiInfoMonitor() {
+        DispatchQueue.main.async {
+            self.wifiInfoTimer?.invalidate()
+            self.wifiInfoTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
+                self?.refreshCurrentWiFiInfo()
+            }
+            if let wifiInfoTimer = self.wifiInfoTimer {
+                RunLoop.main.add(wifiInfoTimer, forMode: .common)
+            }
+        }
+    }
+
+    func refreshCurrentWiFiInfo() {
+        NEHotspotNetwork.fetchCurrent { [weak self] network in
+            guard let self else { return }
+            let ssid = network?.ssid ?? "Unavailable"
+            let bssid = network?.bssid ?? "Unavailable"
+            DispatchQueue.main.async {
+                let changed = self.currentWiFiSSID != ssid || self.currentWiFiBSSID != bssid
+                self.currentWiFiSSID = ssid
+                self.currentWiFiBSSID = bssid
+                self.currentWiFiUpdatedAt = Date()
+                if changed {
+                    NSLog("Current Wi-Fi SSID: \(ssid), BSSID: \(bssid)")
+                }
+            }
         }
     }
 

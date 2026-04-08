@@ -31,6 +31,8 @@ struct MainMenuView: View {
 
     var body: some View {
         Form {
+            WiFiMonitorSection()
+                .environmentObject(modelData)
             UserInfoView()
                 .environmentObject(modelData)
             if modelData.noSuitcaseDebug {
@@ -68,6 +70,32 @@ struct MainMenuView: View {
             }
         }
         return false
+    }
+}
+
+struct WiFiMonitorSection: View {
+    @EnvironmentObject var modelData: CaBotAppModel
+
+    var body: some View {
+        Section(header: Text("Wi-Fi Monitor")) {
+            LabeledContent("SSID") {
+                Text(modelData.currentWiFiSSID)
+                    .font(.footnote.monospaced())
+            }
+            LabeledContent("BSSID") {
+                Text(modelData.currentWiFiBSSID)
+                    .font(.footnote.monospaced())
+            }
+            LabeledContent("Updated") {
+                if let updatedAt = modelData.currentWiFiUpdatedAt {
+                    Text(updatedAt.formatted(date: .omitted, time: .standard))
+                        .font(.footnote.monospaced())
+                } else {
+                    Text("-")
+                        .font(.footnote.monospaced())
+                }
+            }
+        }
     }
 }
 
