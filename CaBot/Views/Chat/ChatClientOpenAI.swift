@@ -158,6 +158,7 @@ class ChatClientOpenAI: ChatClient {
                     appModel.receivingChatContent = success_count > 0
                 }
                 if let toolCalls = result.choices[0].delta.toolCalls {
+                    ChatData.shared.startNavigate = false
                     toolCalls.forEach {tool_call in
                         if let fn = tool_call.function, let name = fn.name, let arguments = fn.arguments?.data(using: .utf8) {
                             switch name {
@@ -303,7 +304,9 @@ class ChatClientOpenAI: ChatClient {
                     ChatData.shared.startNavigate = true
                 } else {
                     tourManager.addToLast(destination: dest)
-                    ChatData.shared.startNavigate = tourManager.destinationCount == 1
+                    if tourManager.destinationCount == 1 {
+                        ChatData.shared.startNavigate = true
+                    }
                 }
                 NSLog("chat add destination \(dest.value)")
                 break
