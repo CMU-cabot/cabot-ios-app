@@ -89,7 +89,7 @@ protocol CaBotServiceProtocol {
     func summon(destination: String) -> Bool
     func manage(command: CaBotManageCommand, param: String?) -> Bool
     func log_request(request: LogRequest) -> Bool
-    func send_log(log_info: LogRequest, app_log: [String], urls: [URL]) -> Bool
+    func send_log(log_info: LogRequest, files: [LogTransferFile]) -> Bool
     func isConnected() -> Bool
     func share(user_info: SharedInfo) -> Bool
     func camera_image_request() -> Bool
@@ -451,6 +451,45 @@ enum CaBotLogRequestType:String, Decodable {
     case appLog
 }
 
+enum LogTransferAssetType: String {
+    case appLog
+    case attachmentImage
+}
+
+struct LogTransferFile: Hashable {
+    var fileName: String
+    var originalName: String? = nil
+    var url: URL
+    var assetType: LogTransferAssetType
+}
+
+struct LogAttachment: Codable, Hashable, Identifiable {
+    var file_name: String
+    var original_name: String
+    var order: Int
+    var image_data: String? = nil
+    var local_url: URL? = nil
+
+    enum CodingKeys: String, CodingKey {
+        case file_name
+        case original_name
+        case order
+        case image_data
+    }
+
+    var id: String {
+        file_name
+    }
+
+    var displayName: String {
+        original_name.isEmpty ? file_name : original_name
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(file_name)
+    }
+}
+
 struct LogEntry: Decodable, Hashable {
     var name: String
     var nanoseconds: Int?
@@ -458,6 +497,8 @@ struct LogEntry: Decodable, Hashable {
     var detail: String?
     var is_report_submitted: Bool? = false
     var is_uploaded_to_box: Bool? = false
+    var attachments: [LogAttachment]? = nil
+    var missing_attachment_names: [String]? = nil
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(name)
@@ -533,6 +574,7 @@ struct LogRequest: Codable {
     var log_name: String? = nil
     var title: String? = nil
     var detail: String? = nil
+    var attachments: [LogAttachment]? = nil
 }
 
 class CaBotServiceActions {

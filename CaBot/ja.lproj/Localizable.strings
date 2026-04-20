@@ -278,6 +278,13 @@
 "SUBMIT_REPORT" = "レポートを提出";
 "UPDATE_REPORT" = "レポートを更新";
 "REPORT_IS_UPLOADED" = "レポートは既にアップロードされました";
+"ATTACHED_IMAGES" = "添付画像";
+"ATTACH_IMAGES" = "画像を添付";
+"NO_IMAGES_ATTACHED" = "添付画像はありません";
+"ATTACHMENT_LIMIT_EXCEEDED" = "添付できる画像は5枚までです。";
+"ATTACHMENT_SIZE_LIMIT_EXCEEDED" = "選択した画像の合計サイズが大きすぎます。";
+"ATTACHMENT_DUPLICATE_IMAGE" = "この画像は既に添付されています。";
+"ATTACHMENT_IMPORT_FAILED" = "選択した画像を取り込めませんでした。";
 "SUBMIT" = "提出";
 "CONFIRM_DISCARD_SUBMISSION" = "レポートを破棄しても良いですか？";
 "SUITCASE_DOES_NOT_ACCEPT_NEW_REPORT" = "スーツケースはレポートの提出を受け付けていません";

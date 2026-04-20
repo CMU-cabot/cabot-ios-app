@@ -278,6 +278,13 @@
 "SUBMIT_REPORT" = "Submit your report";
 "UPDATE_REPORT" = "Update your report";
 "REPORT_IS_UPLOADED" = "Report has already uploaded";
+"ATTACHED_IMAGES" = "Attached Images";
+"ATTACH_IMAGES" = "Attach Images";
+"NO_IMAGES_ATTACHED" = "No images attached";
+"ATTACHMENT_LIMIT_EXCEEDED" = "You can attach up to 5 images.";
+"ATTACHMENT_SIZE_LIMIT_EXCEEDED" = "The selected images are too large.";
+"ATTACHMENT_DUPLICATE_IMAGE" = "This image is already attached.";
+"ATTACHMENT_IMPORT_FAILED" = "Failed to import the selected image.";
 "SUBMIT" = "Submit";
 "CONFIRM_DISCARD_SUBMISSION" = "Do you want to discard the report?";
 "SUITCASE_DOES_NOT_ACCEPT_NEW_REPORT" = "The suitcase does not accept new report";

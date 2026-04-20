@@ -444,10 +444,12 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
         return false
     }
     
-    func send_log(log_info: LogRequest, app_log: [String], urls: [URL]) -> Bool {
+    func send_log(log_info: LogRequest, files: [LogTransferFile]) -> Bool {
         NSLog("send log_info \(log_info)")
-        NSLog("app_log_list \(app_log)")
-        let zipped = zip(app_log ,urls)
+        NSLog("file_list \(files.map { $0.fileName })")
+        guard let cabotLogName = log_info.log_name else {
+            return false
+        }
         let emitCondition = NSCondition()
         var emitCounter = 0
         DispatchQueue.main.async {
@@ -471,9 +473,24 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
             }
             NSLog("send_log finished")
         }
-        for (fileName, url) in zipped {
+
+        if files.isEmpty {
+            let dict: [String: Any] = [
+                "type": log_info.type,
+                "cabotLogName": cabotLogName,
+                "totalChunks": 0,
+                "isLastFile": true
+            ]
+
+            if let jsonData = try? JSONSerialization.data(withJSONObject: dict, options: []) {
+                self.emit("log_request", jsonData)
+            }
+            return true
+        }
+
+        for (fileIndex, file) in files.enumerated() {
             let chunkSize = 256 * 1024
-            guard let fileHandle = try? FileHandle(forReadingFrom: url) else {
+            guard let fileHandle = try? FileHandle(forReadingFrom: file.url) else {
                 return false
             }
 
@@ -485,13 +502,17 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
                 }
                 
                 let base64String = data.base64EncodedString()
-                let dict: [String: Any] = [
+                var dict: [String: Any] = [
                     "type": "data-chunk",
                     "chunkIndex": chunkIndex,
                     "data": base64String,
-                    "appLogName": fileName,
-                    "cabotLogName": log_info.log_name
+                    "fileName": file.fileName,
+                    "cabotLogName": cabotLogName,
+                    "fileType": file.assetType.rawValue
                 ]
+                if let originalName = file.originalName {
+                    dict["originalName"] = originalName
+                }
                 
                 do {
                     let jsonData = try JSONSerialization.data(withJSONObject: dict, options: [])
@@ -510,7 +531,7 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
                     self.last_chunk_send_time = Date().timeIntervalSince1970
                     self.emit("log_request_chunk", jsonData, timeout: 10.0) {
                         self.last_chunk_send_time = Date().timeIntervalSince1970
-                        NSLog("log_request_chunk \(fileName):\(chunkIndex):\(emitCounter), \(jsonData.count) bytes, \(-start.timeIntervalSinceNow) sec")
+                        NSLog("log_request_chunk \(file.fileName):\(chunkIndex):\(emitCounter), \(jsonData.count) bytes, \(-start.timeIntervalSinceNow) sec")
                         emitCondition.lock()
                         emitCounter -= 1
                         emitCondition.signal()
@@ -526,20 +547,30 @@ extension CaBotServiceTCP: CaBotServiceProtocol {
                 }
             }
 
-            let dict2: [String: Any] = ["type": log_info.type, "cabotLogName": log_info.log_name, "appLogName": fileName, "totalChunks": chunkIndex]
+            var dict2: [String: Any] = [
+                "type": log_info.type,
+                "cabotLogName": cabotLogName,
+                "fileName": file.fileName,
+                "fileType": file.assetType.rawValue,
+                "totalChunks": chunkIndex,
+                "isLastFile": fileIndex == files.count - 1
+            ]
+            if let originalName = file.originalName {
+                dict2["originalName"] = originalName
+            }
 
             do {
                 let jsonData2 = try JSONSerialization.data(withJSONObject: dict2, options: [])
 
                 let start = Date()
                 self.emit("log_request", jsonData2) {
-                    NSLog("log_request \(fileName), \(jsonData2.count) bytes, \(-start.timeIntervalSinceNow) sec")
+                    NSLog("log_request \(file.fileName), \(jsonData2.count) bytes, \(-start.timeIntervalSinceNow) sec")
                 }
             } catch {
                 NSLog("log_request fail to serialize JSON: \(error)")
             }
 
-            NSLog("chunk end \(fileName)")
+            NSLog("chunk end \(file.fileName)")
         }
         return true
     }

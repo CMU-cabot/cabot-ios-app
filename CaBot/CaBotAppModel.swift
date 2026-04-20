@@ -25,6 +25,7 @@ import Collections
 import CoreData
 import SwiftUI
 import Foundation
+import CryptoKit
 import CoreBluetooth
 import CoreLocation
 import UserNotifications
@@ -144,10 +145,10 @@ class FallbackService: CaBotServiceProtocol {
         return service.log_request(request: request)
     }
     
-    func send_log(log_info: LogRequest, app_log: [String], urls: [URL]) -> Bool {
+    func send_log(log_info: LogRequest, files: [LogTransferFile]) -> Bool {
         guard let service = getService() else { return false }
         NSLog("fallback send_log \(log_info)")
-        return service.send_log(log_info: log_info, app_log: app_log, urls: urls)
+        return service.send_log(log_info: log_info, files: files)
     }
 
     func share(user_info: SharedInfo) -> Bool {
@@ -1305,23 +1306,30 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         _ = self.fallbackService.log_request(request: request)
     }
 
-    func submitLogReport(log_name: String, title: String, detail: String) {
+    func submitLogReport(log_name: String, title: String, detail: String, attachments: [LogAttachment]) {
         var request = LogRequest(
             type: CaBotLogRequestType.report.rawValue,
             log_name: log_name,
             title: title,
-            detail: detail
+            detail: detail,
+            attachments: attachments.map { attachment in
+                LogAttachment(
+                    file_name: attachment.file_name,
+                    original_name: attachment.original_name,
+                    order: attachment.order
+                )
+            }
         )
         _ = self.fallbackService.log_request(request: request)
     }
     
-    func submitAppLog(app_log: [String], urls: [URL], log_name: String) {
-        NSLog("submitAppLog")
+    func submitLogFiles(files: [LogTransferFile], log_name: String) {
+        NSLog("submitLogFiles")
         var log_info = LogRequest(
             type: CaBotLogRequestType.appLog.rawValue,
             log_name: log_name
         )
-        _ = self.fallbackService.send_log(log_info: log_info, app_log: app_log, urls: urls)
+        _ = self.fallbackService.send_log(log_info: log_info, files: files)
     }
 
     // MARK: LocationManagerDelegate
@@ -2061,10 +2069,21 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 appLogs.insert(firstLog, at: 0)
             }
             
-            let appLogURLs = appLogs.map { documentsURL.appendingPathComponent($0) }
+            let appLogTransfers = appLogs.map {
+                LogTransferFile(
+                    fileName: $0,
+                    url: documentsURL.appendingPathComponent($0),
+                    assetType: .appLog
+                )
+            }
+            let attachmentTransfers = self.logList.transferFiles(
+                for: logName,
+                missingAttachmentNames: Set(logInfo.missing_attachment_names ?? [])
+            )
+            let transferFiles = appLogTransfers + attachmentTransfers
 
             DispatchQueue.global(qos: .background).async {
-                self.submitAppLog(app_log: appLogs, urls: appLogURLs, log_name: logName)
+                self.submitLogFiles(files: transferFiles, log_name: logName)
             }
         } catch {
             print("error: \(error)")
@@ -2478,16 +2497,20 @@ protocol LogReportModelDelegate {
     func refreshLogList()
     func isSuitcaseConnected() -> Bool
     func requestDetail(log_name: String)
-    func submitLogReport(log_name: String, title: String, detail: String)
+    func submitLogReport(log_name: String, title: String, detail: String, attachments: [LogAttachment])
 }
 
 class LogReportModel: NSObject, ObservableObject {
+    private let maxAttachmentCount = 5
+    private let maxAttachmentTotalBytes = 25 * 1024 * 1024
+
     @Published var log_list: [LogEntry]
     @Published var isListReady: Bool = false
     @Published var status: CaBotLogStatus = .OK
     @Published var selectedLog: LogEntry = LogEntry(name: "dummy")
     private var originalLog: LogEntry = LogEntry(name: "dummy")
     @Published var isDetailReady: Bool = false
+    @Published var attachmentErrorMessageKey: String? = nil
     var delegate: LogReportModelDelegate? = nil
     var debug: Bool = false
 
@@ -2505,15 +2528,18 @@ class LogReportModel: NSObject, ObservableObject {
     }
 
     func set(detail: LogEntry) {
-        self.selectedLog = detail
-        self.originalLog.title = detail.title
-        self.originalLog.detail = detail.detail
+        let materializedLog = materializeAttachments(for: detail)
+        self.selectedLog = materializedLog
+        self.originalLog = materializedLog
         self.isDetailReady = true
+        self.attachmentErrorMessageKey = nil
     }
 
     func clear(){
         self.log_list = []
         self.isListReady = false
+        self.isDetailReady = false
+        self.attachmentErrorMessageKey = nil
     }
 
     func refreshLogList() {
@@ -2528,7 +2554,102 @@ class LogReportModel: NSObject, ObservableObject {
     func submit(log: LogEntry) {
         if let title = log.title,
            let detail = log.detail {
-            self.delegate?.submitLogReport(log_name: log.name, title: title, detail: detail)
+            self.delegate?.submitLogReport(
+                log_name: log.name,
+                title: title,
+                detail: detail,
+                attachments: renumberedAttachments(selectedLog.attachments ?? [])
+            )
+        }
+    }
+
+    func addAttachments(from urls: [URL]) {
+        attachmentErrorMessageKey = nil
+        guard !urls.isEmpty else { return }
+
+        var attachments = renumberedAttachments(selectedLog.attachments ?? [])
+        if attachments.count >= maxAttachmentCount {
+            attachmentErrorMessageKey = "ATTACHMENT_LIMIT_EXCEEDED"
+            return
+        }
+
+        var seenFileNames = Set(attachments.map(\.file_name))
+        var totalBytes = attachments.reduce(0) { partialResult, attachment in
+            partialResult + attachmentFileSize(for: attachment, logName: selectedLog.name)
+        }
+
+        for url in urls {
+            if attachments.count >= maxAttachmentCount {
+                attachmentErrorMessageKey = "ATTACHMENT_LIMIT_EXCEEDED"
+                break
+            }
+
+            do {
+                var attachment = try prepareAttachment(from: url, logName: selectedLog.name)
+                if seenFileNames.contains(attachment.file_name) {
+                    attachmentErrorMessageKey = "ATTACHMENT_DUPLICATE_IMAGE"
+                    continue
+                }
+
+                let fileSize = attachmentFileSize(for: attachment, logName: selectedLog.name)
+                if totalBytes + fileSize > maxAttachmentTotalBytes {
+                    attachmentErrorMessageKey = "ATTACHMENT_SIZE_LIMIT_EXCEEDED"
+                    continue
+                }
+
+                attachment.order = attachments.count + 1
+                attachments.append(attachment)
+                seenFileNames.insert(attachment.file_name)
+                totalBytes += fileSize
+            } catch {
+                NSLog("Failed to import attachment \(url): \(error)")
+                attachmentErrorMessageKey = "ATTACHMENT_IMPORT_FAILED"
+            }
+        }
+
+        selectedLog.attachments = renumberedAttachments(attachments)
+    }
+
+    func removeAttachments(at offsets: IndexSet) {
+        var attachments = renumberedAttachments(selectedLog.attachments ?? [])
+        attachments.remove(atOffsets: offsets)
+        selectedLog.attachments = renumberedAttachments(attachments)
+    }
+
+    func moveAttachments(from source: IndexSet, to destination: Int) {
+        var attachments = renumberedAttachments(selectedLog.attachments ?? [])
+        attachments.move(fromOffsets: source, toOffset: destination)
+        selectedLog.attachments = renumberedAttachments(attachments)
+    }
+
+    func previewData(for attachment: LogAttachment) -> Data? {
+        if let localURL = localURL(for: attachment, logName: selectedLog.name) {
+            return try? Data(contentsOf: localURL)
+        }
+        if let imageData = attachment.image_data {
+            return Data(base64Encoded: imageData)
+        }
+        return nil
+    }
+
+    func transferFiles(for logName: String, missingAttachmentNames: Set<String>) -> [LogTransferFile] {
+        guard selectedLog.name == logName else { return [] }
+        guard !missingAttachmentNames.isEmpty else { return [] }
+
+        return renumberedAttachments(selectedLog.attachments ?? []).compactMap { attachment in
+            guard missingAttachmentNames.contains(attachment.file_name) else {
+                return nil
+            }
+            guard let localURL = localURL(for: attachment, logName: logName) else {
+                NSLog("No local data for attachment \(attachment.file_name)")
+                return nil
+            }
+            return LogTransferFile(
+                fileName: attachment.file_name,
+                originalName: attachment.original_name,
+                url: localURL,
+                assetType: .attachmentImage
+            )
         }
     }
 
@@ -2552,8 +2673,139 @@ class LogReportModel: NSObject, ObservableObject {
 
     var isDetailModified: Bool {
         get {
-            originalLog.title != selectedLog.title || originalLog.detail != selectedLog.detail
+            originalLog.title != selectedLog.title ||
+            originalLog.detail != selectedLog.detail ||
+            attachmentSignature(originalLog.attachments) != attachmentSignature(selectedLog.attachments)
         }
+    }
+
+    private func attachmentSignature(_ attachments: [LogAttachment]?) -> [String] {
+        renumberedAttachments(attachments ?? []).map {
+            "\($0.file_name)|\($0.original_name)|\($0.order)"
+        }
+    }
+
+    private func renumberedAttachments(_ attachments: [LogAttachment]) -> [LogAttachment] {
+        attachments
+            .sorted {
+                if $0.order == $1.order {
+                    return $0.file_name < $1.file_name
+                }
+                return $0.order < $1.order
+            }
+            .enumerated()
+            .map { index, attachment in
+                var mutableAttachment = attachment
+                mutableAttachment.order = index + 1
+                return mutableAttachment
+            }
+    }
+
+    private func materializeAttachments(for log: LogEntry) -> LogEntry {
+        var mutableLog = log
+        mutableLog.attachments = renumberedAttachments(log.attachments ?? []).map { attachment in
+            materializeAttachment(attachment, logName: log.name)
+        }
+        return mutableLog
+    }
+
+    private func materializeAttachment(_ attachment: LogAttachment, logName: String) -> LogAttachment {
+        var mutableAttachment = attachment
+        let cacheURL = attachmentCacheURL(for: logName, fileName: attachment.file_name)
+        if FileManager.default.fileExists(atPath: cacheURL.path) {
+            mutableAttachment.local_url = cacheURL
+            mutableAttachment.image_data = nil
+            return mutableAttachment
+        }
+
+        if let imageData = attachment.image_data,
+           let data = Data(base64Encoded: imageData) {
+            do {
+                try FileManager.default.createDirectory(
+                    at: cacheURL.deletingLastPathComponent(),
+                    withIntermediateDirectories: true
+                )
+                try data.write(to: cacheURL, options: .atomic)
+                mutableAttachment.local_url = cacheURL
+            } catch {
+                NSLog("Failed to cache detail attachment \(attachment.file_name): \(error)")
+            }
+        }
+        mutableAttachment.image_data = nil
+        return mutableAttachment
+    }
+
+    private func prepareAttachment(from url: URL, logName: String) throws -> LogAttachment {
+        let hasScopedAccess = url.startAccessingSecurityScopedResource()
+        defer {
+            if hasScopedAccess {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+
+        let data = try Data(contentsOf: url)
+        let digest = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+        let fileExtension = sanitizedExtension(url.pathExtension)
+        let fileName = fileExtension.isEmpty ? digest : "\(digest).\(fileExtension)"
+        let cacheURL = attachmentCacheURL(for: logName, fileName: fileName)
+
+        try FileManager.default.createDirectory(
+            at: cacheURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        if !FileManager.default.fileExists(atPath: cacheURL.path) {
+            try data.write(to: cacheURL, options: .atomic)
+        }
+
+        return LogAttachment(
+            file_name: fileName,
+            original_name: url.lastPathComponent,
+            order: 0,
+            local_url: cacheURL
+        )
+    }
+
+    private func attachmentFileSize(for attachment: LogAttachment, logName: String) -> Int {
+        if let localURL = localURL(for: attachment, logName: logName) {
+            if let values = try? localURL.resourceValues(forKeys: [.fileSizeKey]),
+               let fileSize = values.fileSize {
+                return fileSize
+            }
+            if let data = try? Data(contentsOf: localURL) {
+                return data.count
+            }
+        }
+        if let imageData = attachment.image_data,
+           let data = Data(base64Encoded: imageData) {
+            return data.count
+        }
+        return 0
+    }
+
+    private func localURL(for attachment: LogAttachment, logName: String) -> URL? {
+        if let localURL = attachment.local_url,
+           FileManager.default.fileExists(atPath: localURL.path) {
+            return localURL
+        }
+
+        let cacheURL = attachmentCacheURL(for: logName, fileName: attachment.file_name)
+        if FileManager.default.fileExists(atPath: cacheURL.path) {
+            return cacheURL
+        }
+        return nil
+    }
+
+    private func attachmentCacheURL(for logName: String, fileName: String) -> URL {
+        let cachesURL = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        return cachesURL
+            .appendingPathComponent("report_attachments", isDirectory: true)
+            .appendingPathComponent(logName, isDirectory: true)
+            .appendingPathComponent(fileName, isDirectory: false)
+    }
+
+    private func sanitizedExtension(_ pathExtension: String) -> String {
+        let cleaned = pathExtension.lowercased().filter { $0.isLetter || $0.isNumber }
+        return cleaned.isEmpty ? "img" : cleaned
     }
 }
 

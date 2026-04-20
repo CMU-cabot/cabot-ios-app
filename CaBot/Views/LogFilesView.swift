@@ -7,6 +7,8 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
+import UIKit
 
 
 @available(iOS 15.0, *)
@@ -113,14 +115,59 @@ public extension Text {
 }
 
 @available(iOS 15.0, *)
+private struct AttachmentRowView: View {
+    let attachment: LogAttachment
+    let previewData: Data?
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 12) {
+            Group {
+                if let previewData,
+                   let image = UIImage(data: previewData) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                } else {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.gray.opacity(0.15))
+                        Image(systemName: "photo")
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            .frame(width: 72, height: 72)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(attachment.displayName)
+                    .font(.body)
+                    .lineLimit(2)
+                Text("#\(attachment.order)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Spacer()
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+@available(iOS 15.0, *)
 struct ReportSubmissionForm: View {
     @State var langOverride:String
 
     @Environment(\.dismiss) var dismiss
     @State private var showingConfirmationAlert = false
+    @State private var isImportingImages = false
     @EnvironmentObject var modelData: LogReportModel
     //@State var inputTitleText: String
     //@State var inputDetailsText: String
+
+    private var attachments: [LogAttachment] {
+        modelData.selectedLog.attachments ?? []
+    }
     
     var body: some View {
         VStack {
@@ -153,6 +200,40 @@ struct ReportSubmissionForm: View {
                                     RoundedRectangle(cornerRadius: 10)
                                         .stroke(Color.gray, lineWidth: 0.25)
                                 )
+                        }
+                    }
+                    Section(header: Text("ATTACHED_IMAGES")) {
+                        if attachments.isEmpty {
+                            Text("NO_IMAGES_ATTACHED")
+                                .foregroundColor(.secondary)
+                        } else {
+                            ForEach(attachments) { attachment in
+                                AttachmentRowView(
+                                    attachment: attachment,
+                                    previewData: modelData.previewData(for: attachment)
+                                )
+                            }
+                            .onDelete { indexSet in
+                                guard !(modelData.selectedLog.is_uploaded_to_box ?? false) else { return }
+                                modelData.removeAttachments(at: indexSet)
+                            }
+                            .onMove { indexSet, newOffset in
+                                guard !(modelData.selectedLog.is_uploaded_to_box ?? false) else { return }
+                                modelData.moveAttachments(from: indexSet, to: newOffset)
+                            }
+                        }
+
+                        if let errorKey = modelData.attachmentErrorMessageKey {
+                            Text(LocalizedStringKey(errorKey))
+                                .foregroundColor(.red)
+                        }
+
+                        if !(modelData.selectedLog.is_uploaded_to_box ?? false) {
+                            Button {
+                                isImportingImages = true
+                            } label: {
+                                Label("ATTACH_IMAGES", systemImage: "paperclip")
+                            }
                         }
                     }
                     if !(modelData.selectedLog.is_uploaded_to_box ?? false) {
@@ -203,6 +284,12 @@ struct ReportSubmissionForm: View {
         }
         .interactiveDismissDisabled(true)
         .toolbar {
+            ToolbarItem(placement: ToolbarItemPlacement.navigationBarLeading) {
+                if !(modelData.selectedLog.is_uploaded_to_box ?? false),
+                   !(modelData.selectedLog.attachments ?? []).isEmpty {
+                    EditButton()
+                }
+            }
             ToolbarItem(placement: ToolbarItemPlacement.navigationBarTrailing) {
                 Button {
                     if modelData.isDetailModified {
@@ -221,6 +308,19 @@ struct ReportSubmissionForm: View {
                         Text("Yes")
                     })
                 }
+            }
+        }
+        .fileImporter(
+            isPresented: $isImportingImages,
+            allowedContentTypes: [.image],
+            allowsMultipleSelection: true
+        ) { result in
+            switch result {
+            case .success(let urls):
+                modelData.addAttachments(from: urls)
+            case .failure(let error):
+                NSLog("Failed to import attachments: \(error)")
+                modelData.attachmentErrorMessageKey = "ATTACHMENT_IMPORT_FAILED"
             }
         }
     }
