@@ -280,6 +280,7 @@
 "REPORT_IS_UPLOADED" = "Report has already uploaded";
 "ATTACHED_IMAGES" = "Attached Images";
 "ATTACH_IMAGES" = "Attach Images";
+"ATTACH_FROM_PHOTOS" = "Choose from Photos";
 "NO_IMAGES_ATTACHED" = "No images attached";
 "ATTACHMENT_LIMIT_EXCEEDED" = "You can attach up to 5 images.";
 "ATTACHMENT_SIZE_LIMIT_EXCEEDED" = "The selected images are too large.";

@@ -2500,6 +2500,12 @@ protocol LogReportModelDelegate {
     func submitLogReport(log_name: String, title: String, detail: String, attachments: [LogAttachment])
 }
 
+struct ImportedAttachmentFile {
+    let originalName: String
+    let data: Data
+    let pathExtension: String
+}
+
 class LogReportModel: NSObject, ObservableObject {
     private let maxAttachmentCount = 5
     private let maxAttachmentTotalBytes = 25 * 1024 * 1024
@@ -2603,6 +2609,53 @@ class LogReportModel: NSObject, ObservableObject {
                 totalBytes += fileSize
             } catch {
                 NSLog("Failed to import attachment \(url): \(error)")
+                attachmentErrorMessageKey = "ATTACHMENT_IMPORT_FAILED"
+            }
+        }
+
+        selectedLog.attachments = renumberedAttachments(attachments)
+    }
+
+    func addAttachments(importedFiles: [ImportedAttachmentFile]) {
+        attachmentErrorMessageKey = nil
+        guard !importedFiles.isEmpty else { return }
+
+        var attachments = renumberedAttachments(selectedLog.attachments ?? [])
+        if attachments.count >= maxAttachmentCount {
+            attachmentErrorMessageKey = "ATTACHMENT_LIMIT_EXCEEDED"
+            return
+        }
+
+        var seenFileNames = Set(attachments.map(\.file_name))
+        var totalBytes = attachments.reduce(0) { partialResult, attachment in
+            partialResult + attachmentFileSize(for: attachment, logName: selectedLog.name)
+        }
+
+        for importedFile in importedFiles {
+            if attachments.count >= maxAttachmentCount {
+                attachmentErrorMessageKey = "ATTACHMENT_LIMIT_EXCEEDED"
+                break
+            }
+
+            do {
+                var attachment = try prepareAttachment(from: importedFile, logName: selectedLog.name)
+                if seenFileNames.contains(attachment.file_name) {
+                    attachmentErrorMessageKey = "ATTACHMENT_DUPLICATE_IMAGE"
+                    continue
+                }
+
+                let fileSize = attachmentFileSize(for: attachment, logName: selectedLog.name)
+                if totalBytes + fileSize > maxAttachmentTotalBytes {
+                    attachmentErrorMessageKey = "ATTACHMENT_SIZE_LIMIT_EXCEEDED"
+                    continue
+                }
+
+                attachment.order = attachments.count + 1
+                attachments.append(attachment)
+                seenFileNames.insert(attachment.file_name)
+                totalBytes += fileSize
+            } catch {
+                NSLog("Failed to import attachment \(importedFile.originalName): \(error)")
                 attachmentErrorMessageKey = "ATTACHMENT_IMPORT_FAILED"
             }
         }
@@ -2743,9 +2796,18 @@ class LogReportModel: NSObject, ObservableObject {
             }
         }
 
-        let data = try Data(contentsOf: url)
-        let digest = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
-        let fileExtension = sanitizedExtension(url.pathExtension)
+        let importedFile = ImportedAttachmentFile(
+            originalName: url.lastPathComponent,
+            data: try Data(contentsOf: url),
+            pathExtension: url.pathExtension
+        )
+
+        return try prepareAttachment(from: importedFile, logName: logName)
+    }
+
+    private func prepareAttachment(from importedFile: ImportedAttachmentFile, logName: String) throws -> LogAttachment {
+        let digest = SHA256.hash(data: importedFile.data).map { String(format: "%02x", $0) }.joined()
+        let fileExtension = sanitizedExtension(importedFile.pathExtension)
         let fileName = fileExtension.isEmpty ? digest : "\(digest).\(fileExtension)"
         let cacheURL = attachmentCacheURL(for: logName, fileName: fileName)
 
@@ -2754,12 +2816,12 @@ class LogReportModel: NSObject, ObservableObject {
             withIntermediateDirectories: true
         )
         if !FileManager.default.fileExists(atPath: cacheURL.path) {
-            try data.write(to: cacheURL, options: .atomic)
+            try importedFile.data.write(to: cacheURL, options: .atomic)
         }
 
         return LogAttachment(
             file_name: fileName,
-            original_name: url.lastPathComponent,
+            original_name: importedFile.originalName,
             order: 0,
             local_url: cacheURL
         )

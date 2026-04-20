@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-import UniformTypeIdentifiers
+import PhotosUI
 import UIKit
 
 
@@ -155,12 +155,113 @@ private struct AttachmentRowView: View {
 }
 
 @available(iOS 15.0, *)
+private struct PhotoLibraryPicker: UIViewControllerRepresentable {
+    let onComplete: ([ImportedAttachmentFile]) -> Void
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onComplete: onComplete)
+    }
+
+    func makeUIViewController(context: Context) -> PHPickerViewController {
+        var configuration = PHPickerConfiguration(photoLibrary: .shared())
+        configuration.filter = .images
+        configuration.selectionLimit = 0
+        configuration.preferredAssetRepresentationMode = .current
+
+        let controller = PHPickerViewController(configuration: configuration)
+        controller.delegate = context.coordinator
+        return controller
+    }
+
+    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
+
+    final class Coordinator: NSObject, PHPickerViewControllerDelegate {
+        private let onComplete: ([ImportedAttachmentFile]) -> Void
+
+        init(onComplete: @escaping ([ImportedAttachmentFile]) -> Void) {
+            self.onComplete = onComplete
+        }
+
+        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            guard !results.isEmpty else {
+                picker.dismiss(animated: true) {
+                    self.onComplete([])
+                }
+                return
+            }
+
+            let dispatchGroup = DispatchGroup()
+            let lock = NSLock()
+            var importedFiles: [(Int, ImportedAttachmentFile)] = []
+
+            for (index, result) in results.enumerated() {
+                let provider = result.itemProvider
+                let typeIdentifier = provider.registeredTypeIdentifiers.first(where: {
+                    UTType(importedAs: $0).conforms(to: .image)
+                }) ?? UTType.image.identifier
+
+                dispatchGroup.enter()
+                provider.loadDataRepresentation(forTypeIdentifier: typeIdentifier) { data, error in
+                    defer { dispatchGroup.leave() }
+                    guard error == nil, let data else { return }
+                    let importedFile = ImportedAttachmentFile(
+                        originalName: Self.originalName(for: provider, typeIdentifier: typeIdentifier, index: index),
+                        data: data,
+                        pathExtension: Self.pathExtension(for: provider, typeIdentifier: typeIdentifier)
+                    )
+                    lock.lock()
+                    importedFiles.append((index, importedFile))
+                    lock.unlock()
+                }
+            }
+
+            dispatchGroup.notify(queue: .main) {
+                let sortedFiles = importedFiles
+                    .sorted { $0.0 < $1.0 }
+                    .map(\.1)
+                picker.dismiss(animated: true) {
+                    self.onComplete(sortedFiles)
+                }
+            }
+        }
+
+        private static func originalName(for provider: NSItemProvider, typeIdentifier: String, index: Int) -> String {
+            let pathExtension = pathExtension(for: provider, typeIdentifier: typeIdentifier)
+            let suggestedName = provider.suggestedName?.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            if let suggestedName, !suggestedName.isEmpty {
+                if URL(fileURLWithPath: suggestedName).pathExtension.isEmpty, !pathExtension.isEmpty {
+                    return "\(suggestedName).\(pathExtension)"
+                }
+                return suggestedName
+            }
+
+            if pathExtension.isEmpty {
+                return "photo-\(index + 1)"
+            }
+            return "photo-\(index + 1).\(pathExtension)"
+        }
+
+        private static func pathExtension(for provider: NSItemProvider, typeIdentifier: String) -> String {
+            if let suggestedName = provider.suggestedName {
+                let existingExtension = URL(fileURLWithPath: suggestedName).pathExtension
+                if !existingExtension.isEmpty {
+                    return existingExtension
+                }
+            }
+
+            return UTType(importedAs: typeIdentifier).preferredFilenameExtension ?? ""
+        }
+    }
+}
+
+@available(iOS 15.0, *)
 struct ReportSubmissionForm: View {
     @State var langOverride:String
 
     @Environment(\.dismiss) var dismiss
     @State private var showingConfirmationAlert = false
-    @State private var isImportingImages = false
+    @State private var isShowingPhotoPicker = false
     @EnvironmentObject var modelData: LogReportModel
     //@State var inputTitleText: String
     //@State var inputDetailsText: String
@@ -230,9 +331,9 @@ struct ReportSubmissionForm: View {
 
                         if !(modelData.selectedLog.is_uploaded_to_box ?? false) {
                             Button {
-                                isImportingImages = true
+                                isShowingPhotoPicker = true
                             } label: {
-                                Label("ATTACH_IMAGES", systemImage: "paperclip")
+                                Label("ATTACH_FROM_PHOTOS", systemImage: "photo.on.rectangle")
                             }
                         }
                     }
@@ -310,17 +411,9 @@ struct ReportSubmissionForm: View {
                 }
             }
         }
-        .fileImporter(
-            isPresented: $isImportingImages,
-            allowedContentTypes: [.image],
-            allowsMultipleSelection: true
-        ) { result in
-            switch result {
-            case .success(let urls):
-                modelData.addAttachments(from: urls)
-            case .failure(let error):
-                NSLog("Failed to import attachments: \(error)")
-                modelData.attachmentErrorMessageKey = "ATTACHMENT_IMPORT_FAILED"
+        .sheet(isPresented: $isShowingPhotoPicker) {
+            PhotoLibraryPicker { importedFiles in
+                modelData.addAttachments(importedFiles: importedFiles)
             }
         }
     }
