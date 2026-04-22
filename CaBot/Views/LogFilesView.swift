@@ -7,6 +7,8 @@
 //
 
 import SwiftUI
+import PhotosUI
+import UIKit
 
 
 @available(iOS 15.0, *)
@@ -113,14 +115,197 @@ public extension Text {
 }
 
 @available(iOS 15.0, *)
+private struct AttachmentRowView: View {
+    let attachment: LogAttachment
+    let previewData: Data?
+    let canEdit: Bool
+    let canMoveUp: Bool
+    let canMoveDown: Bool
+    let onMoveUp: () -> Void
+    let onMoveDown: () -> Void
+    let onDelete: () -> Void
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 12) {
+            Group {
+                if let previewData,
+                   let image = UIImage(data: previewData) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                } else {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.gray.opacity(0.15))
+                        Image(systemName: "photo")
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            .frame(width: 72, height: 72)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(attachment.displayName)
+                    .font(.body)
+                    .lineLimit(2)
+                Text("#\(attachment.order)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Spacer()
+
+            if canEdit {
+                HStack(spacing: 4) {
+                    Button(action: onMoveUp) {
+                        Image(systemName: "arrow.up.circle")
+                    }
+                    .buttonStyle(.borderless)
+                    .disabled(!canMoveUp)
+                    .accessibilityLabel(Text("MOVE_IMAGE_UP"))
+
+                    Button(action: onMoveDown) {
+                        Image(systemName: "arrow.down.circle")
+                    }
+                    .buttonStyle(.borderless)
+                    .disabled(!canMoveDown)
+                    .accessibilityLabel(Text("MOVE_IMAGE_DOWN"))
+
+                    Button(role: .destructive, action: onDelete) {
+                        Image(systemName: "trash")
+                    }
+                    .buttonStyle(.borderless)
+                    .accessibilityLabel(Text("DELETE_IMAGE"))
+                }
+                .labelStyle(.iconOnly)
+                .font(.title3)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+@available(iOS 15.0, *)
+private struct PhotoLibraryPicker: UIViewControllerRepresentable {
+    let onComplete: ([ImportedAttachmentFile]) -> Void
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(onComplete: onComplete)
+    }
+
+    func makeUIViewController(context: Context) -> PHPickerViewController {
+        var configuration = PHPickerConfiguration(photoLibrary: .shared())
+        configuration.filter = .images
+        configuration.selectionLimit = 0
+        configuration.preferredAssetRepresentationMode = .current
+
+        let controller = PHPickerViewController(configuration: configuration)
+        controller.delegate = context.coordinator
+        return controller
+    }
+
+    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
+
+    final class Coordinator: NSObject, PHPickerViewControllerDelegate {
+        private let onComplete: ([ImportedAttachmentFile]) -> Void
+
+        init(onComplete: @escaping ([ImportedAttachmentFile]) -> Void) {
+            self.onComplete = onComplete
+        }
+
+        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            guard !results.isEmpty else {
+                picker.dismiss(animated: true) {
+                    self.onComplete([])
+                }
+                return
+            }
+
+            let dispatchGroup = DispatchGroup()
+            let lock = NSLock()
+            var importedFiles: [(Int, ImportedAttachmentFile)] = []
+
+            for (index, result) in results.enumerated() {
+                let provider = result.itemProvider
+                let typeIdentifier = provider.registeredTypeIdentifiers.first(where: {
+                    UTType(importedAs: $0).conforms(to: .image)
+                }) ?? UTType.image.identifier
+
+                dispatchGroup.enter()
+                provider.loadDataRepresentation(forTypeIdentifier: typeIdentifier) { data, error in
+                    defer { dispatchGroup.leave() }
+                    guard error == nil, let data else { return }
+                    let importedFile = ImportedAttachmentFile(
+                        originalName: Self.originalName(for: provider, typeIdentifier: typeIdentifier, index: index),
+                        data: data,
+                        pathExtension: Self.pathExtension(for: provider, typeIdentifier: typeIdentifier)
+                    )
+                    lock.lock()
+                    importedFiles.append((index, importedFile))
+                    lock.unlock()
+                }
+            }
+
+            dispatchGroup.notify(queue: .main) {
+                let sortedFiles = importedFiles
+                    .sorted { $0.0 < $1.0 }
+                    .map(\.1)
+                picker.dismiss(animated: true) {
+                    self.onComplete(sortedFiles)
+                }
+            }
+        }
+
+        private static func originalName(for provider: NSItemProvider, typeIdentifier: String, index: Int) -> String {
+            let pathExtension = pathExtension(for: provider, typeIdentifier: typeIdentifier)
+            let suggestedName = provider.suggestedName?.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            if let suggestedName, !suggestedName.isEmpty {
+                if URL(fileURLWithPath: suggestedName).pathExtension.isEmpty, !pathExtension.isEmpty {
+                    return "\(suggestedName).\(pathExtension)"
+                }
+                return suggestedName
+            }
+
+            if pathExtension.isEmpty {
+                return "photo-\(index + 1)"
+            }
+            return "photo-\(index + 1).\(pathExtension)"
+        }
+
+        private static func pathExtension(for provider: NSItemProvider, typeIdentifier: String) -> String {
+            if let suggestedName = provider.suggestedName {
+                let existingExtension = URL(fileURLWithPath: suggestedName).pathExtension
+                if !existingExtension.isEmpty {
+                    return existingExtension
+                }
+            }
+
+            return UTType(importedAs: typeIdentifier).preferredFilenameExtension ?? ""
+        }
+    }
+}
+
+@available(iOS 15.0, *)
 struct ReportSubmissionForm: View {
     @State var langOverride:String
 
     @Environment(\.dismiss) var dismiss
     @State private var showingConfirmationAlert = false
+    @State private var isShowingPhotoPicker = false
+    @State private var pendingDeleteAttachment: LogAttachment? = nil
     @EnvironmentObject var modelData: LogReportModel
     //@State var inputTitleText: String
     //@State var inputDetailsText: String
+
+    private var attachments: [LogAttachment] {
+        modelData.selectedLog.attachments ?? []
+    }
+
+    private var canEditAttachments: Bool {
+        !(modelData.selectedLog.is_uploaded_to_box ?? false)
+    }
     
     var body: some View {
         VStack {
@@ -153,6 +338,61 @@ struct ReportSubmissionForm: View {
                                     RoundedRectangle(cornerRadius: 10)
                                         .stroke(Color.gray, lineWidth: 0.25)
                                 )
+                        }
+                    }
+                    Section(header: Text("ATTACHED_IMAGES")) {
+                        if attachments.isEmpty {
+                            Text("NO_IMAGES_ATTACHED")
+                                .foregroundColor(.secondary)
+                        } else {
+                            ForEach(Array(attachments.enumerated()), id: \.element.id) { index, attachment in
+                                AttachmentRowView(
+                                    attachment: attachment,
+                                    previewData: modelData.previewData(for: attachment),
+                                    canEdit: canEditAttachments,
+                                    canMoveUp: index > 0,
+                                    canMoveDown: index < attachments.count - 1,
+                                    onMoveUp: {
+                                        guard index > 0 else { return }
+                                        modelData.moveAttachments(
+                                            from: IndexSet(integer: index),
+                                            to: index - 1
+                                        )
+                                    },
+                                    onMoveDown: {
+                                        guard index < attachments.count - 1 else { return }
+                                        modelData.moveAttachments(
+                                            from: IndexSet(integer: index),
+                                            to: index + 2
+                                        )
+                                    },
+                                    onDelete: {
+                                        pendingDeleteAttachment = attachment
+                                    }
+                                )
+                            }
+                            .onDelete { indexSet in
+                                guard !(modelData.selectedLog.is_uploaded_to_box ?? false) else { return }
+                                guard let index = indexSet.first, attachments.indices.contains(index) else { return }
+                                pendingDeleteAttachment = attachments[index]
+                            }
+                            .onMove { indexSet, newOffset in
+                                guard !(modelData.selectedLog.is_uploaded_to_box ?? false) else { return }
+                                modelData.moveAttachments(from: indexSet, to: newOffset)
+                            }
+                        }
+
+                        if let errorKey = modelData.attachmentErrorMessageKey {
+                            Text(LocalizedStringKey(errorKey))
+                                .foregroundColor(.red)
+                        }
+
+                        if !(modelData.selectedLog.is_uploaded_to_box ?? false) {
+                            Button {
+                                isShowingPhotoPicker = true
+                            } label: {
+                                Label("ATTACH_FROM_PHOTOS", systemImage: "photo.on.rectangle")
+                            }
                         }
                     }
                     if !(modelData.selectedLog.is_uploaded_to_box ?? false) {
@@ -202,7 +442,44 @@ struct ReportSubmissionForm: View {
             }
         }
         .interactiveDismissDisabled(true)
+        .alert(
+            Text("CONFIRM_DELETE_IMAGE_TITLE"),
+            isPresented: Binding(
+                get: { pendingDeleteAttachment != nil },
+                set: { isPresented in
+                    if !isPresented {
+                        pendingDeleteAttachment = nil
+                    }
+                }
+            ),
+            presenting: pendingDeleteAttachment
+        ) { attachment in
+            Button("DELETE_IMAGE", role: .destructive) {
+                guard let index = attachments.firstIndex(where: { $0.id == attachment.id }) else {
+                    pendingDeleteAttachment = nil
+                    return
+                }
+                modelData.removeAttachments(at: IndexSet(integer: index))
+                pendingDeleteAttachment = nil
+            }
+            Button("CANCEL", role: .cancel) {
+                pendingDeleteAttachment = nil
+            }
+        } message: { attachment in
+            Text(
+                String(
+                    format: NSLocalizedString("CONFIRM_DELETE_IMAGE_MESSAGE %@", comment: ""),
+                    attachment.displayName
+                )
+            )
+        }
         .toolbar {
+            ToolbarItem(placement: ToolbarItemPlacement.navigationBarLeading) {
+                if !(modelData.selectedLog.is_uploaded_to_box ?? false),
+                   !(modelData.selectedLog.attachments ?? []).isEmpty {
+                    EditButton()
+                }
+            }
             ToolbarItem(placement: ToolbarItemPlacement.navigationBarTrailing) {
                 Button {
                     if modelData.isDetailModified {
@@ -221,6 +498,11 @@ struct ReportSubmissionForm: View {
                         Text("Yes")
                     })
                 }
+            }
+        }
+        .sheet(isPresented: $isShowingPhotoPicker) {
+            PhotoLibraryPicker { importedFiles in
+                modelData.addAttachments(importedFiles: importedFiles)
             }
         }
     }

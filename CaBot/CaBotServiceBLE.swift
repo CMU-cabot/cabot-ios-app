@@ -201,7 +201,7 @@ class CaBotServiceBLE: NSObject {
 }
 
 extension CaBotServiceBLE: CaBotServiceProtocol {
-    func send_log(log_info: LogRequest, app_log: [String], urls: [URL]) -> Bool {
+    func send_log(log_info: LogRequest, files: [LogTransferFile]) -> Bool {
         return false
     }
     
