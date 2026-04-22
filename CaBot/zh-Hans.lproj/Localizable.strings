@@ -281,9 +281,16 @@
 "ATTACHED_IMAGES" = "附加图片";
 "ATTACH_FROM_PHOTOS" = "从照片中选择";
 "NO_IMAGES_ATTACHED" = "没有附加图片";
+"CONFIRM_DELETE_IMAGE_TITLE" = "要删除图片吗？";
+"CONFIRM_DELETE_IMAGE_MESSAGE %@" = "确定要从此报告中删除“%@”吗？";
+"CANCEL" = "取消";
 "MOVE_IMAGE_UP" = "上移图片";
 "MOVE_IMAGE_DOWN" = "下移图片";
 "DELETE_IMAGE" = "删除图片";
+"ATTACHMENT_LIMIT_EXCEEDED" = "最多只能附加 5 张图片。";
+"ATTACHMENT_SIZE_LIMIT_EXCEEDED" = "所选图片总大小过大。";
+"ATTACHMENT_DUPLICATE_IMAGE" = "该图片已被附加。";
+"ATTACHMENT_IMPORT_FAILED" = "无法导入所选图片。";
 "SUBMIT" = "提交";
 "CONFIRM_DISCARD_SUBMISSION" = "是否销毁报告？";
 "SUITCASE_DOES_NOT_ACCEPT_NEW_REPORT" = "行李箱未接收提交的报告";
