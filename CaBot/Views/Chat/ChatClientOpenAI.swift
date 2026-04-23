@@ -102,7 +102,8 @@ class ChatClientOpenAI: ChatClient {
             self.metadata["current_location"] = [
                 "lat": loc.lat,
                 "lng": loc.lng,
-                "floor": loc.floor
+                "floor": loc.floor,
+                "rotate": loc.rotate ?? loc.yaw ?? 0.0
             ]
         } else {
             self.metadata.removeValue(forKey: "current_location")
