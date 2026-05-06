@@ -483,4 +483,26 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
             self.timeoutTimer = nil
         }
     }
+
+    public func prepareAudioForChat() {
+        self.pwCaptureSession?.stopRunning()
+
+        let audioSession: AVAudioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setCategory(.playAndRecord, mode: .default, options: [.allowBluetooth, .allowBluetoothA2DP, .defaultToSpeaker])
+            try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+
+            let outputTypes = Set(audioSession.currentRoute.outputs.map(\.portType))
+            let usesExternalOutput = outputTypes.contains(.headphones)
+                || outputTypes.contains(.bluetoothA2DP)
+                || outputTypes.contains(.bluetoothHFP)
+                || outputTypes.contains(.airPlay)
+
+            try audioSession.overrideOutputAudioPort(usesExternalOutput ? .none : .speaker)
+        } catch {
+            NSLog("Audio session error on chat start: \(error)")
+        }
+
+        self.initPWCaptureSession()
+    }
 }

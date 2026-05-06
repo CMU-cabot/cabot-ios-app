@@ -79,6 +79,7 @@ public struct ContentView: View {
             welcome_message = true
         } else {
             model.stt?.resetLang()
+            model.stt?.prepareAudioForChat()
             if let inactive_at = ContentView.inactive_at, -inactive_at.timeIntervalSinceNow > model.inactive_delay {
                 ChatData.shared.clear()
                 model.chat?.restart(config:model.config)

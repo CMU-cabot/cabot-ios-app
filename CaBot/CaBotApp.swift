@@ -95,7 +95,7 @@ struct CaBotApp: App {
             RootView()
                 .environmentObject(modelData)
                 #if USER
-                .overlay(ZoomMeetingIndicatorView().environmentObject(modelData), alignment: .topLeading)
+                .overlay(ZoomMeetingIndicatorView().environmentObject(modelData), alignment: .top)
                 #endif
                 .overlay(SuitcaseStatusView().environmentObject(modelData), alignment: .topTrailing)
         }.onChange(of: scenePhase) { newScenePhase in
@@ -203,10 +203,9 @@ struct ZoomMeetingIndicatorView: View {
                     .foregroundColor(indicator.color)
                     .clipShape(Capsule())
                     .shadow(color: .black.opacity(0.15), radius: 4, x: 0, y: 2)
-                    .padding(.leading, 8)
                     .padding(.top, 8)
                     .allowsHitTesting(false)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
         }
     }

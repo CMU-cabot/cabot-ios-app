@@ -27,8 +27,12 @@ extension CaBotAppModel {
     func configureZoomMeetingShareBridge() {
         ZoomMeetingController.shared.onStatusChanged = { [weak self] status in
             DispatchQueue.main.async {
+                let previousStatus = self?.zoomMeetingStatusText
                 self?.zoomMeetingStatusText = status
                 self?.share(user_info: SharedInfo(type: .ZoomStatus, value: status))
+                if previousStatus == "leaving", status == "idle" {
+                    ChatData.shared.viewModel?.stt?.prepareAudioForChat()
+                }
             }
         }
     }
