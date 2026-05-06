@@ -81,6 +81,8 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
 
     private let meetingStatePollingInterval: TimeInterval = 1.0
     private let videoActivationRetryDelay: TimeInterval = 0.8
+    private let videoActivationPollingInterval: TimeInterval = 0.5
+    private let videoActivationMaxAttempts = 6
 
     override convenience init() {
         self.init(credentialProvider: BundleInfoZoomCredentialProvider(), urlSession: .shared)
@@ -281,6 +283,10 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
 
     @objc func onMeetingError(_ error: Int, message: String?) {
         DispatchQueue.main.async {
+            if error == 0 {
+                NSLog("Zoom meeting callback reported success.")
+                return
+            }
             let detail = message?.trimmedNonEmpty ?? "Unknown error"
             self.fail("Zoom meeting error (\(error)): \(detail)")
         }
@@ -480,20 +486,75 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
             onTarget: meetingService,
             boolArg: !request.useVideo
         )
+        NSLog(
+            "Zoom muteMyVideo(%@) returned %@",
+            request.useVideo ? "false" : "true",
+            muteResult == NSNotFound ? "NSNotFound" : String(muteResult)
+        )
         if muteResult == NSNotFound {
             NSLog("Zoom video preference could not be applied.")
         }
 
         if request.useVideo {
-            DispatchQueue.main.asyncAfter(deadline: .now() + self.videoActivationRetryDelay) { [weak self] in
-                guard let self, self.pendingJoinRequest?.useVideo == true else { return }
-                _ = ZoomObjCRuntime.invokeIntegerSelector(
-                    "muteMyVideo:",
-                    onTarget: meetingService,
-                    boolArg: false
-                )
-            }
+            scheduleVideoActivationCheck(attempt: 1)
         }
+    }
+
+    private func scheduleVideoActivationCheck(attempt: Int) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + self.videoActivationPollingInterval) { [weak self] in
+            self?.runVideoActivationCheck(attempt: attempt)
+        }
+    }
+
+    private func runVideoActivationCheck(attempt: Int) {
+        guard
+            status == .in_meeting,
+            let request = pendingJoinRequest,
+            request.useVideo,
+            let meetingService = meetingService()
+        else {
+            return
+        }
+
+        let isSendingMyVideo = ZoomObjCRuntime.invokeBoolSelector(
+            "isSendingMyVideo",
+            onTarget: meetingService,
+            objectArg: nil
+        )
+        let canUnmuteMyVideo = ZoomObjCRuntime.invokeBoolSelector(
+            "canUnmuteMyVideo",
+            onTarget: meetingService,
+            objectArg: nil
+        )
+
+        NSLog(
+            "Zoom video activation check %d/%d: isSendingMyVideo=%@ canUnmuteMyVideo=%@",
+            attempt,
+            videoActivationMaxAttempts,
+            isSendingMyVideo ? "YES" : "NO",
+            canUnmuteMyVideo ? "YES" : "NO"
+        )
+
+        if isSendingMyVideo {
+            return
+        }
+
+        if canUnmuteMyVideo {
+            let result = ZoomObjCRuntime.invokeIntegerSelector(
+                "muteMyVideo:",
+                onTarget: meetingService,
+                boolArg: false
+            )
+            NSLog(
+                "Zoom muteMyVideo(false) activation check returned %@",
+                result == NSNotFound ? "NSNotFound" : String(result)
+            )
+        }
+
+        guard attempt < videoActivationMaxAttempts else {
+            return
+        }
+        scheduleVideoActivationCheck(attempt: attempt + 1)
     }
 
     private func startMeetingStatePolling() {
