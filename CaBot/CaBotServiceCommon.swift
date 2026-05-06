@@ -24,6 +24,7 @@
 import Foundation
 import SwiftUI
 import CoreBluetooth
+import AVFoundation
 import PriorityQueueTTS
 
 enum ConnectionType:String, CaseIterable{
@@ -66,6 +67,7 @@ struct SharedInfo: Codable {
         case PauseNavigation
         case ZoomStatus
         case JoinZoom
+        case SwitchZoomCamera
         case LeaveZoom
     }
     init(type: InfoType, value: String, flag1: Bool = false, flag2: Bool = false, location: Int = 0, length: Int = 0) {
@@ -798,5 +800,26 @@ struct HeartbeatViewModifier: ViewModifier {
 extension View {
     func heartbeat( _ label:String, period sec:Double = 3.0 ) -> some View {
         modifier(HeartbeatViewModifier(label:label, period:UInt64(sec * 1_000_000_000)))
+    }
+}
+
+enum AudioSessionRouteHelper {
+    static func restorePreferredOutputRoute() {
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setCategory(.playAndRecord, mode: .default, options: [.allowBluetooth, .allowBluetoothA2DP, .defaultToSpeaker])
+            try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+
+            let outputTypes = Set(audioSession.currentRoute.outputs.map(\.portType))
+            let usesExternalOutput = outputTypes.contains(.headphones)
+                || outputTypes.contains(.bluetoothA2DP)
+                || outputTypes.contains(.bluetoothHFP)
+                || outputTypes.contains(.airPlay)
+
+            let overridePort: AVAudioSession.PortOverride = usesExternalOutput ? .none : .speaker
+            try audioSession.overrideOutputAudioPort(overridePort)
+        } catch {
+            NSLog("Audio session route restore error: \(error)")
+        }
     }
 }

@@ -2260,7 +2260,14 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         }
         #if USER
         if userInfo.type == .JoinZoom {
-            _ = self.joinZoomMeeting(inviteLink: userInfo.value, useVideo: userInfo.flag1)
+            _ = self.joinZoomMeeting(
+                inviteLink: userInfo.value,
+                useMic: userInfo.flag1,
+                useCamera: userInfo.flag2
+            )
+        }
+        if userInfo.type == .SwitchZoomCamera {
+            _ = self.switchZoomCamera()
         }
         if userInfo.type == .LeaveZoom {
             _ = self.leaveZoomMeeting()

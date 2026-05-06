@@ -26,7 +26,10 @@ import UIKit
 
 protocol ZoomMeetingControlling {
     @discardableResult
-    func join(inviteLink: String, useVideo: Bool) -> Bool
+    func join(inviteLink: String, useMic: Bool, useCamera: Bool) -> Bool
+
+    @discardableResult
+    func switchCamera() -> Bool
 
     @discardableResult
     func leave() -> Bool
@@ -53,7 +56,8 @@ private enum ZoomSDKMeetingState: Int {
 
 private struct PendingJoinRequest {
     let inviteLink: String
-    let useVideo: Bool
+    let useMic: Bool
+    let useCamera: Bool
 }
 
 private struct BundleInfoZoomCredentialProvider: ZoomCredentialProviding {
@@ -116,7 +120,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
     }
 
     @discardableResult
-    func join(inviteLink: String, useVideo: Bool) -> Bool {
+    func join(inviteLink: String, useMic: Bool, useCamera: Bool) -> Bool {
         guard let trimmedLink = inviteLink.trimmedNonEmpty else {
             fail("Zoom join failed: invite link is empty.")
             return false
@@ -129,12 +133,16 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
             fail("Zoom join failed: already busy with status \(status.rawValue).")
             return false
         }
-        if useVideo && AVCaptureDevice.authorizationStatus(for: .video) != .authorized {
+        if useCamera && AVCaptureDevice.authorizationStatus(for: .video) != .authorized {
             fail("Zoom join failed: camera permission is not granted.")
             return false
         }
 
-        pendingJoinRequest = PendingJoinRequest(inviteLink: url.absoluteString, useVideo: useVideo)
+        pendingJoinRequest = PendingJoinRequest(
+            inviteLink: url.absoluteString,
+            useMic: useMic,
+            useCamera: useCamera
+        )
         updateStatus(.authenticating)
 
         guard ensureSDKInitialized(reportErrors: true) else {
@@ -212,7 +220,12 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
             updateStatus(.idle)
             return true
         }
-        guard status != .idle && status != .error else {
+        let hasActiveMeetingSession = self.hasActiveMeetingSession()
+        guard status != .idle || hasActiveMeetingSession else {
+            NSLog("Zoom leave ignored: current status is %@ and no active meeting session exists", status.rawValue)
+            return false
+        }
+        guard status != .error || hasActiveMeetingSession else {
             NSLog("Zoom leave ignored: current status is %@", status.rawValue)
             return false
         }
@@ -225,6 +238,33 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         updateStatus(.leaving)
         ZoomObjCRuntime.invokeVoidSelector("leaveMeetingWithCmd:", onTarget: meetingService, integerArg: 0)
         startMeetingStatePolling()
+        return true
+    }
+
+    @discardableResult
+    func switchCamera() -> Bool {
+        guard hasActiveMeetingSession() else {
+            NSLog("Zoom switch camera ignored: no active meeting session")
+            return false
+        }
+        guard let meetingService = meetingService() else {
+            NSLog("Zoom switch camera failed: meeting service is unavailable")
+            return false
+        }
+
+        let result = ZoomObjCRuntime.invokeIntegerSelector(
+            "switchMyCamera",
+            onTarget: meetingService,
+            objectArg: nil
+        )
+        if result == NSNotFound {
+            NSLog("Zoom switch camera failed: switchMyCamera is unavailable")
+            return false
+        }
+        if result != 0 {
+            NSLog("Zoom switch camera failed with code %@", String(result))
+            return false
+        }
         return true
     }
 
@@ -338,7 +378,11 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
             fail("Zoom join failed: meeting service is unavailable.")
             return
         }
-        guard let joinParam = makeJoinParam(inviteLink: request.inviteLink, useVideo: request.useVideo) else {
+        guard let joinParam = makeJoinParam(
+            inviteLink: request.inviteLink,
+            useMic: request.useMic,
+            useCamera: request.useCamera
+        ) else {
             fail("Zoom join failed: invite link could not be parsed for direct join.")
             return
         }
@@ -431,7 +475,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         }
     }
 
-    private func makeJoinParam(inviteLink: String, useVideo: Bool) -> NSObject? {
+    private func makeJoinParam(inviteLink: String, useMic: Bool, useCamera: Bool) -> NSObject? {
         guard
             let url = URL(string: inviteLink),
             let parsedLink = parseInviteLink(url)
@@ -445,7 +489,8 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         let joinParam = joinParamClass.init()
         _ = ZoomObjCRuntime.setValue(parsedLink.meetingNumber as NSString, forKey: "meetingNumber", onTarget: joinParam)
         _ = ZoomObjCRuntime.setValue(zoomDisplayName as NSString, forKey: "userName", onTarget: joinParam)
-        _ = ZoomObjCRuntime.setValue(NSNumber(value: !useVideo), forKey: "noVideo", onTarget: joinParam)
+        _ = ZoomObjCRuntime.setValue(NSNumber(value: false), forKey: "noAudio", onTarget: joinParam)
+        _ = ZoomObjCRuntime.setValue(NSNumber(value: !useCamera), forKey: "noVideo", onTarget: joinParam)
         if let password = parsedLink.password {
             _ = ZoomObjCRuntime.setValue(password as NSString, forKey: "password", onTarget: joinParam)
         }
@@ -457,20 +502,21 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         ZoomObjCRuntime.invokeVoidSelector("disableDriveMode:", onTarget: settings, boolArg: true)
         ZoomObjCRuntime.invokeVoidSelector("disableShowVideoPreviewWhenJoinMeeting:", onTarget: settings, boolArg: true)
         ZoomObjCRuntime.invokeVoidSelector("setAutoConnectInternetAudio:", onTarget: settings, boolArg: true)
-        ZoomObjCRuntime.invokeVoidSelector("setMuteAudioWhenJoinMeeting:", onTarget: settings, boolArg: false)
-        ZoomObjCRuntime.invokeVoidSelector("setMuteVideoWhenJoinMeeting:", onTarget: settings, boolArg: !request.useVideo)
+        ZoomObjCRuntime.invokeVoidSelector("setMuteAudioWhenJoinMeeting:", onTarget: settings, boolArg: !request.useMic)
+        ZoomObjCRuntime.invokeVoidSelector("setMuteVideoWhenJoinMeeting:", onTarget: settings, boolArg: !request.useCamera)
     }
 
     private func connectAudioIfNeeded() {
-        guard let meetingService = meetingService() else {
+        guard let request = pendingJoinRequest, let meetingService = meetingService() else {
             return
         }
+
         _ = ZoomObjCRuntime.invokeBoolSelector("connectMyAudio:", onTarget: meetingService, boolArg: true)
 
         let muteAudioResult = ZoomObjCRuntime.invokeIntegerSelector(
             "muteMyAudio:",
             onTarget: meetingService,
-            boolArg: false
+            boolArg: !request.useMic
         )
         if muteAudioResult == NSNotFound {
             NSLog("Zoom audio preference could not be applied.")
@@ -484,18 +530,18 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         let muteResult = ZoomObjCRuntime.invokeIntegerSelector(
             "muteMyVideo:",
             onTarget: meetingService,
-            boolArg: !request.useVideo
+            boolArg: !request.useCamera
         )
         NSLog(
             "Zoom muteMyVideo(%@) returned %@",
-            request.useVideo ? "false" : "true",
+            request.useCamera ? "false" : "true",
             muteResult == NSNotFound ? "NSNotFound" : String(muteResult)
         )
         if muteResult == NSNotFound {
             NSLog("Zoom video preference could not be applied.")
         }
 
-        if request.useVideo {
+        if request.useCamera {
             scheduleVideoActivationCheck(attempt: 1)
         }
     }
@@ -510,7 +556,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         guard
             status == .in_meeting,
             let request = pendingJoinRequest,
-            request.useVideo,
+            request.useCamera,
             let meetingService = meetingService()
         else {
             return
@@ -571,11 +617,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
     }
 
     private func pollMeetingState() {
-        guard let meetingService = meetingService() else {
-            return
-        }
-        let state = ZoomObjCRuntime.invokeIntegerSelector("getMeetingState", onTarget: meetingService, objectArg: nil)
-        guard state != NSNotFound else {
+        guard let state = currentMeetingState() else {
             return
         }
         if status != .leaving && state == ZoomSDKMeetingState.inMeeting.rawValue {
@@ -632,6 +674,21 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
     private func meetingSettings() -> NSObject? {
         guard let sharedRTC = sharedRTC() else { return nil }
         return ZoomObjCRuntime.invokeObjectSelector("getMeetingSettings", onTarget: sharedRTC) as? NSObject
+    }
+
+    private func currentMeetingState() -> Int? {
+        guard let meetingService = meetingService() else {
+            return nil
+        }
+        let state = ZoomObjCRuntime.invokeIntegerSelector("getMeetingState", onTarget: meetingService, objectArg: nil)
+        return state == NSNotFound ? nil : state
+    }
+
+    private func hasActiveMeetingSession() -> Bool {
+        guard let state = currentMeetingState() else {
+            return false
+        }
+        return !Self.isMeetingExitState(state)
     }
 
     private func invokeRTCVoid(selector: String) {

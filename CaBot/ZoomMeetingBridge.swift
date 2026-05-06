@@ -30,21 +30,30 @@ extension CaBotAppModel {
                 let previousStatus = self?.zoomMeetingStatusText
                 self?.zoomMeetingStatusText = status
                 self?.share(user_info: SharedInfo(type: .ZoomStatus, value: status))
-                if previousStatus == "leaving", status == "idle" {
-                    ChatData.shared.viewModel?.stt?.prepareAudioForChat()
+                if status == "in_meeting" || (previousStatus == "leaving" && status == "idle") {
+                    if let stt = ChatData.shared.viewModel?.stt {
+                        stt.prepareAudioForChat()
+                    } else {
+                        AudioSessionRouteHelper.restorePreferredOutputRoute()
+                    }
                 }
             }
         }
     }
 
     @discardableResult
-    func joinZoomMeeting(inviteLink: String, useVideo: Bool) -> Bool {
-        ZoomMeetingController.shared.join(inviteLink: inviteLink, useVideo: useVideo)
+    func joinZoomMeeting(inviteLink: String, useMic: Bool, useCamera: Bool) -> Bool {
+        ZoomMeetingController.shared.join(inviteLink: inviteLink, useMic: useMic, useCamera: useCamera)
     }
 
     @discardableResult
     func leaveZoomMeeting() -> Bool {
         ZoomMeetingController.shared.leave()
+    }
+
+    @discardableResult
+    func switchZoomCamera() -> Bool {
+        ZoomMeetingController.shared.switchCamera()
     }
 }
 #endif
