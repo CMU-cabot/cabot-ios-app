@@ -360,10 +360,14 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             self.checkOnboardCondition()
         }
     }
+    @Published var cameraState: AVAuthorizationStatus = AVCaptureDevice.authorizationStatus(for: .video) {
+        didSet {
+            self.checkOnboardCondition()
+        }
+    }
+    @Published var photoLibraryState: PHAuthorizationStatus = .authorized
     #else
     @Published var contactsState: CNAuthorizationStatus = .authorized
-    #endif
-    #if ATTEND
     @Published var cameraState: AVAuthorizationStatus = AVCaptureDevice.authorizationStatus(for: .video) {
         didSet {
             self.checkOnboardCondition()
@@ -374,9 +378,6 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             self.checkOnboardCondition()
         }
     }
-    #else
-    @Published var cameraState: AVAuthorizationStatus = .authorized
-    @Published var photoLibraryState: PHAuthorizationStatus = .authorized
     #endif
     func checkOnboardCondition() {
         DispatchQueue.main.async {
@@ -585,6 +586,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     @Published var possibleAudioFiles: [String] = []
     var silentForSpeakerSettingUpdate: Bool = false
     var skipPlaySpeakerSample: Bool = false
+    @Published var zoomMeetingStatusText: String = "idle"
 
     enum ServerStatus {
         case Init
@@ -929,6 +931,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         super.init()
         ResourceManager.shared.set(addressCandidate: self.addressCandidate)
         ResourceManager.shared.set(modeType: self.modeType)
+        #if USER
+        configureZoomMeetingShareBridge()
+        #endif
 
         self.tts.delegate = self
         self.logList.delegate = self
@@ -1252,7 +1257,6 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     }
     #endif
 
-    #if ATTEND
     func requestCameraAuthorization() {
         self.authRequestedByUser = true
         AVCaptureDevice.requestAccess(for: .video) { granted in
@@ -1261,6 +1265,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             }
         }
     }
+    #if ATTEND
     func requestPhotoLibraryAuthorization() {
         self.authRequestedByUser = true
         PHPhotoLibrary.requestAuthorization() { status in
@@ -2196,6 +2201,11 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             if userInfo.type == .PlayAudio {
                 self.playAudio(file: userInfo.value)
             }
+            if userInfo.type == .ZoomStatus {
+                #if ATTEND
+                self.zoomMeetingStatusText = userInfo.value
+                #endif
+            }
             if userInfo.type == .StartBGM {
                 self.startBGM(userInfo.value)
             } else if userInfo.type == .StopBGM {
@@ -2248,6 +2258,14 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             silentForChange = true
             showingChatView = userInfo.value == "open"
         }
+        #if USER
+        if userInfo.type == .JoinZoom {
+            _ = self.joinZoomMeeting(inviteLink: userInfo.value, useVideo: userInfo.flag1)
+        }
+        if userInfo.type == .LeaveZoom {
+            _ = self.leaveZoomMeeting()
+        }
+        #endif
         if userInfo.type == .SpeakState {
             self.share(user_info: userInfo)
         }

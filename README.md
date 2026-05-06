@@ -136,3 +136,16 @@ title: I18NText
 introduction: I18NText          # brief description of the tour
 destinations: Destinations
 ```
+
+## Zoom Meeting SDK JWT
+
+- Set `ZoomMeetingSDKJWTURL` in `CaBot/Info.plist`.
+- The endpoint is fetched with `GET` when joining a meeting.
+- The response can be either raw JWT text or JSON such as `{"jwt":"<token>"}`.
+
+Example `Info.plist` entry:
+
+```xml
+<key>ZoomMeetingSDKJWTURL</key>
+<string>https://your-server.example.com/zoom/sdk/jwt</string>
+```

@@ -20,12 +20,27 @@
  * THE SOFTWARE.
  *******************************************************************************/
 
-#ifndef bridging_h
-#define bridging_h
+#if USER
+import Foundation
 
-#include "Logging.h"
-#include "NavDeviceTTS.h"
-#include "NavUtil.h"
-#include "ZoomObjCRuntime.h"
+extension CaBotAppModel {
+    func configureZoomMeetingShareBridge() {
+        ZoomMeetingController.shared.onStatusChanged = { [weak self] status in
+            DispatchQueue.main.async {
+                self?.zoomMeetingStatusText = status
+                self?.share(user_info: SharedInfo(type: .ZoomStatus, value: status))
+            }
+        }
+    }
 
-#endif /* bridging_h */
+    @discardableResult
+    func joinZoomMeeting(inviteLink: String, useVideo: Bool) -> Bool {
+        ZoomMeetingController.shared.join(inviteLink: inviteLink, useVideo: useVideo)
+    }
+
+    @discardableResult
+    func leaveZoomMeeting() -> Bool {
+        ZoomMeetingController.shared.leave()
+    }
+}
+#endif

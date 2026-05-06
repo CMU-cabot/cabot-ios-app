@@ -157,7 +157,6 @@ struct OnboardGrantAccess: View {
             .disabled(modelData.contactsState != .notDetermined)
             .frame(width:250, alignment: .leading)
             #endif
-            #if ATTEND
             Button(action: {
                 userAction = true
                 modelData.requestCameraAuthorization()
@@ -177,6 +176,7 @@ struct OnboardGrantAccess: View {
             .disabled(modelData.cameraState != .notDetermined)
             .frame(width:250, alignment: .leading)
 
+            #if ATTEND
             Button(action: {
                 userAction = true
                 modelData.requestPhotoLibraryAuthorization()

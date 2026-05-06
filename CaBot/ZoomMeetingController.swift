@@ -1,0 +1,710 @@
+/*******************************************************************************
+ * Copyright (c) 2021  Carnegie Mellon University
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *******************************************************************************/
+
+import AVFoundation
+import Foundation
+import UIKit
+
+protocol ZoomMeetingControlling {
+    @discardableResult
+    func join(inviteLink: String, useVideo: Bool) -> Bool
+
+    @discardableResult
+    func leave() -> Bool
+}
+
+protocol ZoomCredentialProviding {
+    func meetingSDKJWTURL() -> URL?
+}
+
+private enum ZoomMeetingStatus: String {
+    case idle
+    case authenticating
+    case joining
+    case in_meeting
+    case leaving
+    case error
+}
+
+private enum ZoomSDKMeetingState: Int {
+    case idle = 0
+    case inMeeting = 3
+    case ended = 7
+}
+
+private struct PendingJoinRequest {
+    let inviteLink: String
+    let useVideo: Bool
+}
+
+private struct BundleInfoZoomCredentialProvider: ZoomCredentialProviding {
+    func meetingSDKJWTURL() -> URL? {
+        guard let rawValue = (Bundle.main.object(forInfoDictionaryKey: "ZoomMeetingSDKJWTURL") as? String)?.trimmedNonEmpty else {
+            return nil
+        }
+        return URL(string: rawValue)
+    }
+}
+
+final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
+    static let shared = ZoomMeetingController()
+
+    var onStatusChanged: ((String) -> Void)?
+
+    private let credentialProvider: ZoomCredentialProviding
+    private let urlSession: URLSession
+    private var status: ZoomMeetingStatus = .idle
+    private var pendingJoinRequest: PendingJoinRequest?
+    private var credentialTask: URLSessionDataTask?
+    private var meetingStatePollTimer: Timer?
+    private var sdkInitialized = false
+    private var isAuthorized = false
+
+    private let meetingStatePollingInterval: TimeInterval = 1.0
+    private let videoActivationRetryDelay: TimeInterval = 0.8
+
+    override convenience init() {
+        self.init(credentialProvider: BundleInfoZoomCredentialProvider(), urlSession: .shared)
+    }
+
+    init(credentialProvider: ZoomCredentialProviding, urlSession: URLSession = .shared) {
+        self.credentialProvider = credentialProvider
+        self.urlSession = urlSession
+        super.init()
+    }
+
+    func prepare() {
+        _ = ensureSDKInitialized(reportErrors: false)
+    }
+
+    func applicationWillResignActive() {
+        invokeRTCVoid(selector: "appWillResignActive")
+    }
+
+    func applicationDidBecomeActive() {
+        invokeRTCVoid(selector: "appDidBecomeActive")
+        syncPresentationContext()
+    }
+
+    func applicationDidEnterBackground() {
+        invokeRTCVoid(selector: "appDidEnterBackground")
+    }
+
+    func applicationWillTerminate() {
+        invokeRTCVoid(selector: "appWillTerminate")
+    }
+
+    @discardableResult
+    func join(inviteLink: String, useVideo: Bool) -> Bool {
+        guard let trimmedLink = inviteLink.trimmedNonEmpty else {
+            fail("Zoom join failed: invite link is empty.")
+            return false
+        }
+        guard let url = URL(string: trimmedLink), isSupportedInviteLink(url) else {
+            fail("Zoom join failed: invite link is invalid (\(trimmedLink)).")
+            return false
+        }
+        guard status == .idle || status == .error else {
+            fail("Zoom join failed: already busy with status \(status.rawValue).")
+            return false
+        }
+        if useVideo && AVCaptureDevice.authorizationStatus(for: .video) != .authorized {
+            fail("Zoom join failed: camera permission is not granted.")
+            return false
+        }
+
+        pendingJoinRequest = PendingJoinRequest(inviteLink: url.absoluteString, useVideo: useVideo)
+        updateStatus(.authenticating)
+
+        guard ensureSDKInitialized(reportErrors: true) else {
+            return false
+        }
+
+        if isAuthorized {
+            return startPendingJoin()
+        }
+
+        guard let tokenURL = credentialProvider.meetingSDKJWTURL() else {
+            fail("Zoom join failed: Meeting SDK JWT URL is not configured.")
+            return false
+        }
+        fetchMeetingSDKJWT(from: tokenURL)
+        return true
+    }
+
+    private func fetchMeetingSDKJWT(from tokenURL: URL) {
+        credentialTask?.cancel()
+
+        var request = URLRequest(url: tokenURL)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 15
+
+        credentialTask = urlSession.dataTask(with: request) { [weak self] data, response, error in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.credentialTask = nil
+
+                guard self.pendingJoinRequest != nil else {
+                    return
+                }
+
+                if let error {
+                    self.fail("Zoom join failed: could not fetch Meeting SDK JWT (\(error.localizedDescription)).")
+                    return
+                }
+
+                guard
+                    let httpResponse = response as? HTTPURLResponse,
+                    (200...299).contains(httpResponse.statusCode)
+                else {
+                    let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
+                    self.fail("Zoom join failed: Meeting SDK JWT endpoint returned HTTP \(statusCode).")
+                    return
+                }
+
+                guard
+                    let data,
+                    let token = Self.parseMeetingSDKJWT(from: data)
+                else {
+                    self.fail("Zoom join failed: Meeting SDK JWT endpoint response was invalid.")
+                    return
+                }
+
+                guard let authService = self.authService() else {
+                    self.fail("Zoom join failed: auth service is unavailable.")
+                    return
+                }
+
+                _ = ZoomObjCRuntime.setValue(token as NSString, forKey: "jwtToken", onTarget: authService)
+                ZoomObjCRuntime.invokeVoidSelector("sdkAuth", onTarget: authService)
+            }
+        }
+        credentialTask?.resume()
+    }
+
+    @discardableResult
+    func leave() -> Bool {
+        if status == .authenticating {
+            credentialTask?.cancel()
+            credentialTask = nil
+            pendingJoinRequest = nil
+            updateStatus(.idle)
+            return true
+        }
+        guard status != .idle && status != .error else {
+            NSLog("Zoom leave ignored: current status is %@", status.rawValue)
+            return false
+        }
+        guard let meetingService = meetingService() else {
+            fail("Zoom leave failed: meeting service is unavailable.")
+            return false
+        }
+
+        pendingJoinRequest = nil
+        updateStatus(.leaving)
+        ZoomObjCRuntime.invokeVoidSelector("leaveMeetingWithCmd:", onTarget: meetingService, integerArg: 0)
+        startMeetingStatePolling()
+        return true
+    }
+
+    @objc func onMobileRTCAuthReturn(_ returnValue: Int) {
+        DispatchQueue.main.async {
+            if returnValue == 0 {
+                self.isAuthorized = true
+                NSLog("Zoom auth succeeded")
+                if self.pendingJoinRequest != nil {
+                    _ = self.startPendingJoin()
+                } else {
+                    self.updateStatus(.idle)
+                }
+            } else {
+                self.isAuthorized = false
+                if self.pendingJoinRequest != nil {
+                    self.fail("Zoom auth failed with code \(returnValue).")
+                } else {
+                    self.updateStatus(.idle)
+                }
+            }
+        }
+    }
+
+    @objc func onMobileRTCAuthExpired() {
+        DispatchQueue.main.async {
+            self.isAuthorized = false
+            if self.status != .idle {
+                self.fail("Zoom auth expired.")
+            }
+        }
+    }
+
+    @objc func onJoinMeetingConfirmed() {
+        handleMeetingReadySignal()
+    }
+
+    @objc func onMeetingReady() {
+        handleMeetingReadySignal()
+    }
+
+    @objc func onInitMeetingView() {
+        handleMeetingReadySignal()
+    }
+
+    @objc func onMeetingStateChange(_ state: Int) {
+        DispatchQueue.main.async {
+            if self.status != .leaving && state == ZoomSDKMeetingState.inMeeting.rawValue {
+                self.markMeetingReady()
+            }
+            if self.status == .leaving && Self.isMeetingExitState(state) {
+                self.finishLeaving()
+            }
+        }
+    }
+
+    @objc func onMeetingError(_ error: Int, message: String?) {
+        DispatchQueue.main.async {
+            let detail = message?.trimmedNonEmpty ?? "Unknown error"
+            self.fail("Zoom meeting error (\(error)): \(detail)")
+        }
+    }
+
+    @objc func onMeetingEndedReason(_ reason: Int) {
+        DispatchQueue.main.async {
+            self.finishLeaving()
+        }
+    }
+
+    @objc func onJoinMeetingNeedUserInfo() {
+        DispatchQueue.main.async {
+            _ = self.leave()
+            self.fail("Zoom join failed: meeting requires additional user info.")
+        }
+    }
+
+    @objc func onJoinMeetingInfoRequired(_ infoType: Int) {
+        DispatchQueue.main.async {
+            _ = self.leave()
+            self.fail("Zoom join failed: unsupported additional join info type \(infoType).")
+        }
+    }
+
+    @objc func onCameraNoPrivilege() {
+        DispatchQueue.main.async {
+            self.fail("Zoom meeting failed: camera permission is missing.")
+        }
+    }
+
+    @objc func onMicrophoneNoPrivilege() {
+        DispatchQueue.main.async {
+            self.fail("Zoom meeting failed: microphone permission is missing.")
+        }
+    }
+
+    private func startPendingJoin() -> Bool {
+        guard let request = pendingJoinRequest else {
+            fail("Zoom join failed: there is no pending join request.")
+            return false
+        }
+        performJoin(request)
+        return true
+    }
+
+    private func performJoin(_ request: PendingJoinRequest) {
+        guard let meetingService = meetingService() else {
+            fail("Zoom join failed: meeting service is unavailable.")
+            return
+        }
+        guard let joinParam = makeJoinParam(inviteLink: request.inviteLink, useVideo: request.useVideo) else {
+            fail("Zoom join failed: invite link could not be parsed for direct join.")
+            return
+        }
+
+        syncPresentationContext()
+        configureMeetingSettings(for: request)
+        updateStatus(.joining)
+
+        let joinResult = ZoomObjCRuntime.invokeIntegerSelector(
+            "joinMeetingWithJoinParam:",
+            onTarget: meetingService,
+            objectArg: joinParam
+        )
+        if joinResult != 0 && joinResult != NSNotFound {
+            fail("Zoom join failed immediately with code \(joinResult).")
+            return
+        }
+        startMeetingStatePolling()
+    }
+
+    private func markMeetingReady() {
+        guard status != .in_meeting else {
+            return
+        }
+        stopMeetingStatePolling()
+        updateStatus(.in_meeting)
+        connectAudioIfNeeded()
+        applyMediaPreferencesIfNeeded()
+    }
+
+    private func handleMeetingReadySignal() {
+        DispatchQueue.main.async {
+            self.markMeetingReady()
+        }
+    }
+
+    private func ensureSDKInitialized(reportErrors: Bool) -> Bool {
+        if sdkInitialized {
+            syncPresentationContext()
+            attachDelegates()
+            return true
+        }
+        guard let sharedRTC = sharedRTC() else {
+            if reportErrors {
+                fail("Zoom Meeting SDK is not available. Add MobileRTC.xcframework to CaBot-User.")
+            } else {
+                NSLog("Zoom Meeting SDK is not available yet.")
+            }
+            return false
+        }
+
+        syncPresentationContext()
+
+        guard let contextClass = NSClassFromString("MobileRTCSDKInitContext") as? NSObject.Type else {
+            if reportErrors {
+                fail("Zoom Meeting SDK init context is unavailable.")
+            } else {
+                NSLog("Zoom Meeting SDK init context is unavailable.")
+            }
+            return false
+        }
+
+        let context = contextClass.init()
+        let domain = zoomDomain as NSString
+        _ = ZoomObjCRuntime.setValue(domain, forKey: "domain", onTarget: context)
+        _ = ZoomObjCRuntime.setValue(NSNumber(value: true), forKey: "enableCustomizeMeetingUI", onTarget: context)
+
+        let initialized = ZoomObjCRuntime.invokeBoolSelector("initialize:", onTarget: sharedRTC, objectArg: context)
+        if !initialized {
+            if reportErrors {
+                fail("Zoom Meeting SDK initialization failed.")
+            } else {
+                NSLog("Zoom Meeting SDK initialization failed.")
+            }
+            return false
+        }
+
+        sdkInitialized = true
+        attachDelegates()
+        return true
+    }
+
+    private func attachDelegates() {
+        if let authService = authService() {
+            _ = ZoomObjCRuntime.setValue(self, forKey: "delegate", onTarget: authService)
+        }
+        if let meetingService = meetingService() {
+            _ = ZoomObjCRuntime.setValue(self, forKey: "delegate", onTarget: meetingService)
+            _ = ZoomObjCRuntime.setValue(self, forKey: "customizedUImeetingDelegate", onTarget: meetingService)
+        }
+    }
+
+    private func makeJoinParam(inviteLink: String, useVideo: Bool) -> NSObject? {
+        guard
+            let url = URL(string: inviteLink),
+            let parsedLink = parseInviteLink(url)
+        else {
+            return nil
+        }
+        guard let joinParamClass = NSClassFromString("MobileRTCMeetingJoinParam") as? NSObject.Type else {
+            return nil
+        }
+
+        let joinParam = joinParamClass.init()
+        _ = ZoomObjCRuntime.setValue(parsedLink.meetingNumber as NSString, forKey: "meetingNumber", onTarget: joinParam)
+        _ = ZoomObjCRuntime.setValue(zoomDisplayName as NSString, forKey: "userName", onTarget: joinParam)
+        _ = ZoomObjCRuntime.setValue(NSNumber(value: !useVideo), forKey: "noVideo", onTarget: joinParam)
+        if let password = parsedLink.password {
+            _ = ZoomObjCRuntime.setValue(password as NSString, forKey: "password", onTarget: joinParam)
+        }
+        return joinParam
+    }
+
+    private func configureMeetingSettings(for request: PendingJoinRequest) {
+        guard let settings = meetingSettings() else { return }
+        ZoomObjCRuntime.invokeVoidSelector("disableDriveMode:", onTarget: settings, boolArg: true)
+        ZoomObjCRuntime.invokeVoidSelector("disableShowVideoPreviewWhenJoinMeeting:", onTarget: settings, boolArg: true)
+        ZoomObjCRuntime.invokeVoidSelector("setAutoConnectInternetAudio:", onTarget: settings, boolArg: true)
+        ZoomObjCRuntime.invokeVoidSelector("setMuteAudioWhenJoinMeeting:", onTarget: settings, boolArg: false)
+        ZoomObjCRuntime.invokeVoidSelector("setMuteVideoWhenJoinMeeting:", onTarget: settings, boolArg: !request.useVideo)
+    }
+
+    private func connectAudioIfNeeded() {
+        guard let meetingService = meetingService() else {
+            return
+        }
+        _ = ZoomObjCRuntime.invokeBoolSelector("connectMyAudio:", onTarget: meetingService, boolArg: true)
+
+        let muteAudioResult = ZoomObjCRuntime.invokeIntegerSelector(
+            "muteMyAudio:",
+            onTarget: meetingService,
+            boolArg: false
+        )
+        if muteAudioResult == NSNotFound {
+            NSLog("Zoom audio preference could not be applied.")
+        }
+    }
+
+    private func applyMediaPreferencesIfNeeded() {
+        guard let request = pendingJoinRequest, let meetingService = meetingService() else {
+            return
+        }
+        let muteResult = ZoomObjCRuntime.invokeIntegerSelector(
+            "muteMyVideo:",
+            onTarget: meetingService,
+            boolArg: !request.useVideo
+        )
+        if muteResult == NSNotFound {
+            NSLog("Zoom video preference could not be applied.")
+        }
+
+        if request.useVideo {
+            DispatchQueue.main.asyncAfter(deadline: .now() + self.videoActivationRetryDelay) { [weak self] in
+                guard let self, self.pendingJoinRequest?.useVideo == true else { return }
+                _ = ZoomObjCRuntime.invokeIntegerSelector(
+                    "muteMyVideo:",
+                    onTarget: meetingService,
+                    boolArg: false
+                )
+            }
+        }
+    }
+
+    private func startMeetingStatePolling() {
+        stopMeetingStatePolling()
+        meetingStatePollTimer = Timer.scheduledTimer(withTimeInterval: meetingStatePollingInterval, repeats: true) { [weak self] _ in
+            self?.pollMeetingState()
+        }
+        pollMeetingState()
+    }
+
+    private func stopMeetingStatePolling() {
+        meetingStatePollTimer?.invalidate()
+        meetingStatePollTimer = nil
+    }
+
+    private func pollMeetingState() {
+        guard let meetingService = meetingService() else {
+            return
+        }
+        let state = ZoomObjCRuntime.invokeIntegerSelector("getMeetingState", onTarget: meetingService, objectArg: nil)
+        guard state != NSNotFound else {
+            return
+        }
+        if status != .leaving && state == ZoomSDKMeetingState.inMeeting.rawValue {
+            markMeetingReady()
+        } else if status == .leaving && Self.isMeetingExitState(state) {
+            finishLeaving()
+        }
+    }
+
+    private func finishLeaving() {
+        pendingJoinRequest = nil
+        stopMeetingStatePolling()
+        updateStatus(.idle)
+    }
+
+    private func syncPresentationContext() {
+        guard let sharedRTC = sharedRTC() else { return }
+        if let scene = currentWindowScene() {
+            ZoomObjCRuntime.invokeVoidSelector("setMobileRTCPresentationScene:", onTarget: sharedRTC, objectArg: scene)
+        }
+        if let rootViewController = currentRootViewController() {
+            ZoomObjCRuntime.invokeVoidSelector("setMobileRTCRootController:", onTarget: sharedRTC, objectArg: rootViewController)
+        }
+    }
+
+    private func currentWindowScene() -> UIWindowScene? {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first(where: { !$0.windows.isEmpty })
+    }
+
+    private func currentRootViewController() -> UIViewController? {
+        let windowScene = currentWindowScene()
+        return windowScene?.windows.first(where: \.isKeyWindow)?.rootViewController ?? windowScene?.windows.first?.rootViewController
+    }
+
+    private func sharedRTC() -> NSObject? {
+        guard let rtcClass = NSClassFromString("MobileRTC") else {
+            return nil
+        }
+        return ZoomObjCRuntime.invokeObjectSelector("sharedRTC", onTarget: rtcClass) as? NSObject
+    }
+
+    private func authService() -> NSObject? {
+        guard let sharedRTC = sharedRTC() else { return nil }
+        return ZoomObjCRuntime.invokeObjectSelector("getAuthService", onTarget: sharedRTC) as? NSObject
+    }
+
+    private func meetingService() -> NSObject? {
+        guard let sharedRTC = sharedRTC() else { return nil }
+        return ZoomObjCRuntime.invokeObjectSelector("getMeetingService", onTarget: sharedRTC) as? NSObject
+    }
+
+    private func meetingSettings() -> NSObject? {
+        guard let sharedRTC = sharedRTC() else { return nil }
+        return ZoomObjCRuntime.invokeObjectSelector("getMeetingSettings", onTarget: sharedRTC) as? NSObject
+    }
+
+    private func invokeRTCVoid(selector: String) {
+        guard let sharedRTC = sharedRTC() else { return }
+        ZoomObjCRuntime.invokeVoidSelector(selector, onTarget: sharedRTC)
+    }
+
+    private var zoomDomain: String {
+        (Bundle.main.object(forInfoDictionaryKey: "ZoomMeetingSDKDomain") as? String)?.trimmedNonEmpty ?? "zoom.us"
+    }
+
+    private var zoomDisplayName: String {
+        (Bundle.main.object(forInfoDictionaryKey: "ZoomMeetingDisplayName") as? String)?.trimmedNonEmpty ?? "CaBot User"
+    }
+
+    private func isSupportedInviteLink(_ url: URL) -> Bool {
+        let lowercased = url.absoluteString.lowercased()
+        return lowercased.contains("zoom.us/") || lowercased.contains("zoomgov.com/")
+    }
+
+    private func parseInviteLink(_ url: URL) -> ParsedInviteLink? {
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            return nil
+        }
+        let pathComponents = url.pathComponents.map {
+            $0.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        }.filter { !$0.isEmpty }
+
+        let meetingNumber =
+            pathComponents.first(where: { $0.isZoomMeetingNumber }) ??
+            firstMeetingNumber(in: url.path)
+
+        guard let meetingNumber else {
+            return nil
+        }
+
+        let password = components.queryItems?
+            .first(where: { $0.name == "pwd" || $0.name == "passcode" })?
+            .value?
+            .trimmedNonEmpty
+
+        return ParsedInviteLink(meetingNumber: meetingNumber, password: password)
+    }
+
+    private func firstMeetingNumber(in text: String) -> String? {
+        let pattern = #"\b\d{9,13}\b"#
+        guard let regex = try? NSRegularExpression(pattern: pattern) else {
+            return nil
+        }
+        let range = NSRange(text.startIndex..<text.endIndex, in: text)
+        guard let match = regex.firstMatch(in: text, range: range), let matchRange = Range(match.range, in: text) else {
+            return nil
+        }
+        return String(text[matchRange])
+    }
+
+    private func updateStatus(_ next: ZoomMeetingStatus) {
+        guard status != next else {
+            return
+        }
+        status = next
+        NSLog("Zoom meeting status = %@", next.rawValue)
+        onStatusChanged?(next.rawValue)
+    }
+
+    private func fail(_ message: String) {
+        pendingJoinRequest = nil
+        credentialTask?.cancel()
+        credentialTask = nil
+        stopMeetingStatePolling()
+        NSLog("%@", message)
+        updateStatus(.error)
+    }
+
+    private static func parseMeetingSDKJWT(from data: Data) -> String? {
+        if
+            let response = try? JSONDecoder().decode(ZoomMeetingSDKJWTEndpointResponse.self, from: data),
+            let token = response.tokenValue?.trimmedNonEmpty,
+            token.isLikelyJWT
+        {
+            return token
+        }
+
+        guard
+            let body = String(data: data, encoding: .utf8)?.trimmedNonEmpty,
+            body.isLikelyJWT
+        else {
+            return nil
+        }
+        return body
+    }
+
+    private static func isMeetingExitState(_ state: Int) -> Bool {
+        state == ZoomSDKMeetingState.idle.rawValue || state == ZoomSDKMeetingState.ended.rawValue
+    }
+}
+
+private extension String {
+    var trimmedNonEmpty: String? {
+        let trimmed = trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? nil : trimmed
+    }
+
+    var isZoomMeetingNumber: Bool {
+        let charset = CharacterSet.decimalDigits.inverted
+        return count >= 9 && count <= 13 && rangeOfCharacter(from: charset) == nil
+    }
+
+    var isLikelyJWT: Bool {
+        split(separator: ".").count == 3 && rangeOfCharacter(from: .whitespacesAndNewlines) == nil
+    }
+}
+
+private struct ParsedInviteLink {
+    let meetingNumber: String
+    let password: String?
+}
+
+private struct ZoomMeetingSDKJWTEndpointResponse: Decodable {
+    let jwt: String?
+    let token: String?
+    let meetingSDKJWTCamelCase: String?
+    let meetingSDKJWT: String?
+    let meetingSdkJwt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case jwt
+        case token
+        case meetingSDKJWTCamelCase = "meetingSDKJWT"
+        case meetingSDKJWT = "meeting_sdk_jwt"
+        case meetingSdkJwt = "meetingSdkJwt"
+    }
+
+    var tokenValue: String? {
+        jwt ?? token ?? meetingSDKJWTCamelCase ?? meetingSDKJWT ?? meetingSdkJwt
+    }
+}

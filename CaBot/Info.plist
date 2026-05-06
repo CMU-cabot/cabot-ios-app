@@ -43,8 +43,8 @@
 	<string>This app uses your camera</string>
 	<key>NSContactsUsageDescription</key>
 	<string>This app uses your contacts</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>This app uses your photo library</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app uses your photo library</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
@@ -55,15 +55,15 @@
 	<true/>
 	<key>UILaunchScreen</key>
 	<dict>
-		<key>UILaunchImage</key>
-		<dict>
-			<key>UILaunchImageMinimumOSVersion</key>
-			<string>14.0</string>
-			<key>UILaunchImageName</key>
-			<string>LaunchImage</string>
-		</dict>
 		<key>UILaunchScreenBackgroundColor</key>
 		<string>UIColor.systemBackgroundColor</string>
+		<key>UILaunchImage</key>
+		<dict>
+			<key>UILaunchImageName</key>
+			<string>AppIcon</string>
+			<key>UILaunchImageMinimumOSVersion</key>
+			<string>14.0</string>
+		</dict>
 	</dict>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
@@ -76,13 +76,7 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-        <!--
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-        -->
 	</array>
-	<key>GitCommitHash</key>
-	<string>123456789</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -90,17 +84,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>UILaunchScreen</key>
-	<dict>
-	    <key>UILaunchScreenBackgroundColor</key>
-	    <string>UIColor.systemBackgroundColor</string>
-	    <key>UILaunchImage</key>
-	    <dict>
-	        <key>UILaunchImageName</key>
-	        <string>AppIcon</string>
-	        <key>UILaunchImageMinimumOSVersion</key>
-	        <string>14.0</string>
-	    </dict>
-	</dict>
+	<key>ZoomMeetingSDKJWTURL</key>
+	<string>https://miraikan-ais-console.azurewebsites.net/zoom/sdk/jwt</string>
+	<key>ZoomMeetingSDKDomain</key>
+	<string>zoom.us</string>
 </dict>
 </plist>

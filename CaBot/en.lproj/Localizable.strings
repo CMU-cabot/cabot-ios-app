@@ -403,3 +403,8 @@
 "Elevator Settings" = "Elevator Settings";
 "Authentication" = "Authentication";
 "Enable Control" = "Enable Control";
+
+// Zoom Meeting
+"Zoom Connecting" = "Zoom Connecting";
+"Zoom In Meeting" = "Zoom In Meeting";
+"Zoom Leaving" = "Zoom Leaving";

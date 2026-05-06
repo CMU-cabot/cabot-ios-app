@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -138,6 +138,14 @@
 		D7E54B522C0CD03A002FE3C4 /* MainMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7E54B512C0CD03A002FE3C4 /* MainMenuView.swift */; };
 		D7F6BE6E2C2A57C300CD8258 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7F6BE6D2C2A57C300CD8258 /* SettingView.swift */; };
 		E561455F2A6E02A8005CF82F /* RosWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E561455E2A6E02A8005CF82F /* RosWebView.swift */; };
+		E90000112EAF000100000001 /* ZoomObjCRuntime.m in Sources */ = {isa = PBXBuildFile; fileRef = E90000022EAF000100000001 /* ZoomObjCRuntime.m */; };
+		E90000122EAF000100000001 /* ZoomMeetingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90000032EAF000100000001 /* ZoomMeetingController.swift */; };
+		E90000132EAF000100000001 /* ZoomMeetingBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = E90000042EAF000100000001 /* ZoomMeetingBridge.swift */; };
+		E90000142EAF000100000001 /* MobileRTC.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E90000052EAF000100000001 /* MobileRTC.xcframework */; };
+		E90000152EAF000100000001 /* MobileRTC.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E90000052EAF000100000001 /* MobileRTC.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E90000172EAF000100000001 /* zoomcml.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = E90000082EAF000100000001 /* zoomcml.xcframework */; };
+		E90000182EAF000100000001 /* zoomcml.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E90000082EAF000100000001 /* zoomcml.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E90000192EAF000100000001 /* MobileRTCResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = E90000092EAF000100000001 /* MobileRTCResources.bundle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -167,6 +175,18 @@
 				7EDF3C4529D4901000AD1115 /* Resource in CopyFiles */,
 				7EDF3C4429D48C3200AD1115 /* Localizable.strings in CopyFiles */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E90000162EAF000100000001 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				E90000152EAF000100000001 /* MobileRTC.xcframework in Embed Frameworks */,
+				E90000182EAF000100000001 /* zoomcml.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -260,6 +280,13 @@
 		D7E54B512C0CD03A002FE3C4 /* MainMenuView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainMenuView.swift; sourceTree = "<group>"; };
 		D7F6BE6D2C2A57C300CD8258 /* SettingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		E561455E2A6E02A8005CF82F /* RosWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RosWebView.swift; sourceTree = "<group>"; };
+		E90000012EAF000100000001 /* ZoomObjCRuntime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZoomObjCRuntime.h; sourceTree = "<group>"; };
+		E90000022EAF000100000001 /* ZoomObjCRuntime.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZoomObjCRuntime.m; sourceTree = "<group>"; };
+		E90000032EAF000100000001 /* ZoomMeetingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomMeetingController.swift; sourceTree = "<group>"; };
+		E90000042EAF000100000001 /* ZoomMeetingBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomMeetingBridge.swift; sourceTree = "<group>"; };
+		E90000052EAF000100000001 /* MobileRTC.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:BJ4HAAB9B3:Zoom Communications, Inc."; lastKnownFileType = wrapper.xcframework; path = MobileRTC.xcframework; sourceTree = "<group>"; };
+		E90000082EAF000100000001 /* zoomcml.xcframework */ = {isa = PBXFileReference; expectedSignature = "AppleDeveloperProgram:BJ4HAAB9B3:Zoom Communications, Inc."; lastKnownFileType = wrapper.xcframework; path = zoomcml.xcframework; sourceTree = "<group>"; };
+		E90000092EAF000100000001 /* MobileRTCResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = MobileRTCResources.bundle; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -307,6 +334,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				D7CC051B2BFB352700C0B10A /* Collections in Frameworks */,
+				E90000142EAF000100000001 /* MobileRTC.xcframework in Frameworks */,
+				E90000172EAF000100000001 /* zoomcml.xcframework in Frameworks */,
 				A97F30E12CDDCA0D00BE5C43 /* PriorityQueueTTS in Frameworks */,
 				D7CC051C2BFB352700C0B10A /* Yams in Frameworks */,
 				30AFA5A02D00BD73004AFA98 /* ChatView in Frameworks */,
@@ -427,6 +456,10 @@
 				30E99DA3266B2216001ACAAA /* BeaconSampler.swift */,
 				30E50DCB269F672800729ABD /* TourManager.swift */,
 				3096BF1726A5D0990066F256 /* TTSHelper.swift */,
+				E90000012EAF000100000001 /* ZoomObjCRuntime.h */,
+				E90000022EAF000100000001 /* ZoomObjCRuntime.m */,
+				E90000032EAF000100000001 /* ZoomMeetingController.swift */,
+				E90000042EAF000100000001 /* ZoomMeetingBridge.swift */,
 			);
 			path = CaBot;
 			sourceTree = "<group>";
@@ -471,6 +504,7 @@
 				306A57DE265C446B006B510D /* Foundation.framework */,
 				306A57DC265C4466006B510D /* AVFoundation.framework */,
 				306A57DA265C4435006B510D /* Speech.framework */,
+				E90000062EAF000100000001 /* Vendor */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -518,6 +552,24 @@
 				A0EB9CF72E8FCCCB00C961B6 /* ElevatorSettingsView.swift */,
 			);
 			path = User;
+			sourceTree = "<group>";
+		};
+		E90000062EAF000100000001 /* Vendor */ = {
+			isa = PBXGroup;
+			children = (
+				E90000072EAF000100000001 /* Zoom */,
+			);
+			path = Vendor;
+			sourceTree = "<group>";
+		};
+		E90000072EAF000100000001 /* Zoom */ = {
+			isa = PBXGroup;
+			children = (
+				E90000052EAF000100000001 /* MobileRTC.xcframework */,
+				E90000082EAF000100000001 /* zoomcml.xcframework */,
+				E90000092EAF000100000001 /* MobileRTCResources.bundle */,
+			);
+			path = Zoom;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -615,6 +667,7 @@
 			buildPhases = (
 				D7CC04F32BFB352700C0B10A /* Sources */,
 				D7CC051A2BFB352700C0B10A /* Frameworks */,
+				E90000162EAF000100000001 /* Embed Frameworks */,
 				D7CC05212BFB352700C0B10A /* ShellScript */,
 				D7CC05222BFB352700C0B10A /* Resources */,
 				E46C82662C182BB200917AB3 /* ShellScript */,
@@ -739,6 +792,7 @@
 				D7CC05382BFB688400C0B10A /* User-InfoPlist.strings in Resources */,
 				D7CC05262BFB352700C0B10A /* Localizable.strings in Resources */,
 				D7CC05272BFB352700C0B10A /* Resource in Resources */,
+				E90000192EAF000100000001 /* MobileRTCResources.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -929,6 +983,9 @@
 				D7CC05162BFB352700C0B10A /* BeaconSampler.swift in Sources */,
 				D7CC05172BFB352700C0B10A /* StatusLabelStyle.swift in Sources */,
 				D7CC05182BFB352700C0B10A /* CaBotServiceTCP.swift in Sources */,
+				E90000112EAF000100000001 /* ZoomObjCRuntime.m in Sources */,
+				E90000122EAF000100000001 /* ZoomMeetingController.swift in Sources */,
+				E90000132EAF000100000001 /* ZoomMeetingBridge.swift in Sources */,
 				30AFA5932D00BCD0004AFA98 /* ChatClientOpenAI.swift in Sources */,
 				30AFA5952D00BCD0004AFA98 /* PriorityQueueTTSWrapper.swift in Sources */,
 			);

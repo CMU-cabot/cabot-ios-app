@@ -403,3 +403,8 @@
 "Elevator Settings" = "电梯设置";
 "Authentication" = "认证";
 "Enable Control" = "启用控制";
+
+// Zoom Meeting
+"Zoom Connecting" = "Zoom 连接中";
+"Zoom In Meeting" = "Zoom 通话中";
+"Zoom Leaving" = "Zoom 结束中";

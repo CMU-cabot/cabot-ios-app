@@ -403,3 +403,8 @@
 "Elevator Settings" = "エレベーター設定";
 "Authentication" = "認証";
 "Enable Control" = "制御を有効にする";
+
+// Zoom Meeting
+"Zoom Connecting" = "Zoom接続中";
+"Zoom In Meeting" = "Zoom通話中";
+"Zoom Leaving" = "Zoom終了中";
