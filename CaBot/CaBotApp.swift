@@ -183,6 +183,10 @@ struct ZoomMeetingIndicatorView: View {
         switch modelData.zoomMeetingStatusText {
         case "authenticating", "joining":
             return (NSLocalizedString("Zoom Connecting", comment: "Zoom meeting indicator while connecting"), "dot.radiowaves.left.and.right", .orange)
+        case "waiting_for_host":
+            return (NSLocalizedString("Zoom Waiting For Host", comment: "Zoom meeting indicator while waiting for host"), "hourglass", .orange)
+        case "reconnecting":
+            return (NSLocalizedString("Zoom Reconnecting", comment: "Zoom meeting indicator while reconnecting"), "arrow.triangle.2.circlepath", .orange)
         case "in_meeting":
             return (NSLocalizedString("Zoom In Meeting", comment: "Zoom meeting indicator while in meeting"), "video.fill.badge.checkmark", .green)
         case "leaving":

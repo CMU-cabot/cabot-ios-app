@@ -406,5 +406,7 @@
 
 // Zoom Meeting
 "Zoom Connecting" = "Zoom 连接中";
+"Zoom Waiting For Host" = "等待主持人开始";
+"Zoom Reconnecting" = "Zoom 重连中";
 "Zoom In Meeting" = "Zoom 通话中";
 "Zoom Leaving" = "Zoom 结束中";

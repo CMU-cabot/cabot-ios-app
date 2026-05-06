@@ -406,5 +406,7 @@
 
 // Zoom Meeting
 "Zoom Connecting" = "Zoom Connecting";
+"Zoom Waiting For Host" = "Zoom Waiting For Host";
+"Zoom Reconnecting" = "Zoom Reconnecting";
 "Zoom In Meeting" = "Zoom In Meeting";
 "Zoom Leaving" = "Zoom Leaving";

@@ -43,6 +43,8 @@ private enum ZoomMeetingStatus: String {
     case idle
     case authenticating
     case joining
+    case waiting_for_host
+    case reconnecting
     case in_meeting
     case leaving
     case error
@@ -50,8 +52,20 @@ private enum ZoomMeetingStatus: String {
 
 private enum ZoomSDKMeetingState: Int {
     case idle = 0
+    case connecting = 1
+    case waitingForHost = 2
     case inMeeting = 3
+    case disconnecting = 4
+    case reconnecting = 5
+    case failed = 6
     case ended = 7
+    case locked = 8
+    case unlocked = 9
+    case inWaitingRoom = 10
+    case webinarPromote = 11
+    case webinarDePromote = 12
+    case joinBO = 13
+    case leaveBO = 14
 }
 
 private struct PendingJoinRequest {
@@ -99,6 +113,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
     }
 
     func prepare() {
+        onStatusChanged?(status.rawValue)
         _ = ensureSDKInitialized(reportErrors: false)
     }
 
@@ -312,12 +327,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
 
     @objc func onMeetingStateChange(_ state: Int) {
         DispatchQueue.main.async {
-            if self.status != .leaving && state == ZoomSDKMeetingState.inMeeting.rawValue {
-                self.markMeetingReady()
-            }
-            if self.status == .leaving && Self.isMeetingExitState(state) {
-                self.finishLeaving()
-            }
+            self.handleMeetingStateChange(state)
         }
     }
 
@@ -407,7 +417,6 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         guard status != .in_meeting else {
             return
         }
-        stopMeetingStatePolling()
         updateStatus(.in_meeting)
         connectAudioIfNeeded()
         applyMediaPreferencesIfNeeded()
@@ -620,17 +629,47 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         guard let state = currentMeetingState() else {
             return
         }
-        if status != .leaving && state == ZoomSDKMeetingState.inMeeting.rawValue {
-            markMeetingReady()
-        } else if status == .leaving && Self.isMeetingExitState(state) {
-            finishLeaving()
-        }
+        handleMeetingStateChange(state)
     }
 
     private func finishLeaving() {
         pendingJoinRequest = nil
         stopMeetingStatePolling()
         updateStatus(.idle)
+    }
+
+    private func finishMeetingSession() {
+        pendingJoinRequest = nil
+        stopMeetingStatePolling()
+        updateStatus(.idle)
+    }
+
+    private func handleMeetingStateChange(_ state: Int) {
+        guard let meetingState = ZoomSDKMeetingState(rawValue: state) else {
+            NSLog("Zoom meeting state changed to unknown value %@", String(state))
+            return
+        }
+
+        switch meetingState {
+        case .idle, .ended:
+            finishMeetingSession()
+        case .connecting:
+            updateStatus(.joining)
+        case .waitingForHost, .inWaitingRoom:
+            updateStatus(.waiting_for_host)
+        case .inMeeting, .joinBO:
+            markMeetingReady()
+        case .disconnecting, .leaveBO:
+            updateStatus(.leaving)
+        case .reconnecting:
+            updateStatus(.reconnecting)
+        case .failed:
+            pendingJoinRequest = nil
+            stopMeetingStatePolling()
+            updateStatus(.error)
+        case .locked, .unlocked, .webinarPromote, .webinarDePromote:
+            break
+        }
     }
 
     private func syncPresentationContext() {

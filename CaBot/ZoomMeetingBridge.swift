@@ -30,7 +30,10 @@ extension CaBotAppModel {
                 let previousStatus = self?.zoomMeetingStatusText
                 self?.zoomMeetingStatusText = status
                 self?.share(user_info: SharedInfo(type: .ZoomStatus, value: status))
-                if status == "in_meeting" || (previousStatus == "leaving" && status == "idle") {
+                let shouldRestoreFromIdle =
+                    status == "idle" &&
+                    ["joining", "waiting_for_host", "reconnecting", "in_meeting", "leaving"].contains(previousStatus ?? "")
+                if status == "in_meeting" || shouldRestoreFromIdle {
                     if let stt = ChatData.shared.viewModel?.stt {
                         stt.prepareAudioForChat()
                     } else {
