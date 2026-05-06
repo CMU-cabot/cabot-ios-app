@@ -377,7 +377,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         }
         guard let sharedRTC = sharedRTC() else {
             if reportErrors {
-                fail("Zoom Meeting SDK is not available. Add MobileRTC.xcframework to CaBot-User.")
+                fail("Zoom Meeting SDK is not available. Run ./setup_zoom_sdk.sh before building CaBot-User.")
             } else {
                 NSLog("Zoom Meeting SDK is not available yet.")
             }

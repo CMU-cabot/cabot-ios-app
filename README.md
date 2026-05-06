@@ -151,8 +151,6 @@ This downloads the `zoom-sdk-7.0.2.34511` release asset from this repository and
 ./setup_zoom_sdk.sh --force
 ```
 
-If `Vendor/Zoom` is missing, the `CaBot-User` build also runs this script automatically.
-
 ## Zoom Meeting SDK JWT
 
 - Install the Zoom SDK binaries with `./setup_zoom_sdk.sh`.
