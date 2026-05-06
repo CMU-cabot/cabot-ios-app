@@ -17,11 +17,14 @@ cleanup() {
 }
 trap cleanup EXIT
 
-if [[ -d "${TARGET_DIR}" ]]; then
-    if [[ "${1:-}" != "--force" ]]; then
-        echo "Vendor/Zoom already exists. Remove it first or run ./setup_zoom_sdk.sh --force."
-        exit 1
+if [[ -d "${TARGET_DIR}" && "${1:-}" != "--force" ]]; then
+    if [[ -e "${TARGET_DIR}/MobileRTC.xcframework" && -e "${TARGET_DIR}/zoomcml.xcframework" && -e "${TARGET_DIR}/MobileRTCResources.bundle" ]]; then
+        echo "Zoom SDK is already installed in Vendor/Zoom."
+        exit 0
     fi
+    echo "Vendor/Zoom exists but is incomplete. Reinstalling..."
+    rm -rf "${TARGET_DIR}"
+elif [[ -d "${TARGET_DIR}" ]]; then
     rm -rf "${TARGET_DIR}"
 fi
 

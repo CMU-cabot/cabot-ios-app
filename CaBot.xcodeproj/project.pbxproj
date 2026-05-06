@@ -665,6 +665,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D7CC05282BFB352700C0B10A /* Build configuration list for PBXNativeTarget "CaBot-User" */;
 			buildPhases = (
+				E900001A2EAF000100000001 /* Setup Zoom SDK */,
 				D7CC04F32BFB352700C0B10A /* Sources */,
 				D7CC051A2BFB352700C0B10A /* Frameworks */,
 				E90000162EAF000100000001 /* Embed Frameworks */,
@@ -799,6 +800,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		E900001A2EAF000100000001 /* Setup Zoom SDK */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/setup_zoom_sdk.sh\"\n";
+		};
 		D7CC05212BFB352700C0B10A /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
