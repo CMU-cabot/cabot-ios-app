@@ -9,3 +9,5 @@ Podfile.lock
 Carthage/
 lastcommit.txt
 project.xcworkspace/
+Vendor/Zoom/
+temp/
