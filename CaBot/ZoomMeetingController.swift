@@ -96,6 +96,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
     private var meetingStatePollTimer: Timer?
     private var sdkInitialized = false
     private var isAuthorized = false
+    private var joinStateGraceDeadline: Date?
 
     private let meetingStatePollingInterval: TimeInterval = 1.0
     private let videoActivationRetryDelay: TimeInterval = 0.8
@@ -321,6 +322,21 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         handleMeetingReadySignal()
     }
 
+    @objc func onJBHWaitingWithCmd(_ cmd: Int) {
+        DispatchQueue.main.async {
+            switch cmd {
+            case 0: // JBHCmd_Show
+                self.updateStatus(.waiting_for_host)
+            case 1: // JBHCmd_Hide
+                if self.status == .waiting_for_host {
+                    self.updateStatus(.joining)
+                }
+            default:
+                break
+            }
+        }
+    }
+
     @objc func onInitMeetingView() {
         handleMeetingReadySignal()
     }
@@ -410,6 +426,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
             fail("Zoom join failed immediately with code \(joinResult).")
             return
         }
+        joinStateGraceDeadline = Date().addingTimeInterval(3.0)
         startMeetingStatePolling()
     }
 
@@ -617,7 +634,6 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         meetingStatePollTimer = Timer.scheduledTimer(withTimeInterval: meetingStatePollingInterval, repeats: true) { [weak self] _ in
             self?.pollMeetingState()
         }
-        pollMeetingState()
     }
 
     private func stopMeetingStatePolling() {
@@ -634,12 +650,14 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
 
     private func finishLeaving() {
         pendingJoinRequest = nil
+        joinStateGraceDeadline = nil
         stopMeetingStatePolling()
         updateStatus(.idle)
     }
 
     private func finishMeetingSession() {
         pendingJoinRequest = nil
+        joinStateGraceDeadline = nil
         stopMeetingStatePolling()
         updateStatus(.idle)
     }
@@ -651,25 +669,47 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         }
 
         switch meetingState {
-        case .idle, .ended:
+        case .idle:
+            if shouldIgnoreTransientIdleState() {
+                return
+            }
+            finishMeetingSession()
+        case .ended:
             finishMeetingSession()
         case .connecting:
             updateStatus(.joining)
         case .waitingForHost, .inWaitingRoom:
+            joinStateGraceDeadline = nil
             updateStatus(.waiting_for_host)
         case .inMeeting, .joinBO:
+            joinStateGraceDeadline = nil
             markMeetingReady()
         case .disconnecting, .leaveBO:
             updateStatus(.leaving)
         case .reconnecting:
+            joinStateGraceDeadline = nil
             updateStatus(.reconnecting)
         case .failed:
             pendingJoinRequest = nil
+            joinStateGraceDeadline = nil
             stopMeetingStatePolling()
             updateStatus(.error)
         case .locked, .unlocked, .webinarPromote, .webinarDePromote:
             break
         }
+    }
+
+    private func shouldIgnoreTransientIdleState() -> Bool {
+        guard pendingJoinRequest != nil else {
+            return false
+        }
+        guard status == .authenticating || status == .joining else {
+            return false
+        }
+        guard let joinStateGraceDeadline else {
+            return false
+        }
+        return joinStateGraceDeadline > Date()
     }
 
     private func syncPresentationContext() {
