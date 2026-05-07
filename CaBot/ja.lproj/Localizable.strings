@@ -405,6 +405,8 @@
 "Enable Control" = "制御を有効にする";
 
 // Zoom Meeting
+"Zoom Meeting Setting" = "Zoom ミーティング設定";
+"Meeting SDK Auth Endpoint" = "Meeting SDK 認証エンドポイント";
 "Zoom Connecting" = "Zoom接続中";
 "Zoom Waiting For Host" = "ホストの開始待ち";
 "Zoom Reconnecting" = "Zoom再接続中";

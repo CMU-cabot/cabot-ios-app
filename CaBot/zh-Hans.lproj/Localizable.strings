@@ -405,6 +405,8 @@
 "Enable Control" = "启用控制";
 
 // Zoom Meeting
+"Zoom Meeting Setting" = "Zoom 会议设置";
+"Meeting SDK Auth Endpoint" = "Meeting SDK 认证端点";
 "Zoom Connecting" = "Zoom 连接中";
 "Zoom Waiting For Host" = "等待主持人开始";
 "Zoom Reconnecting" = "Zoom 重连中";

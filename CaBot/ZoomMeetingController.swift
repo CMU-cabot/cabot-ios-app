@@ -77,12 +77,9 @@ private struct PendingJoinRequest {
     let useCamera: Bool
 }
 
-private struct BundleInfoZoomCredentialProvider: ZoomCredentialProviding {
+private struct PreferenceZoomCredentialProvider: ZoomCredentialProviding {
     func meetingSDKJWTURL() -> URL? {
-        guard let rawValue = (Bundle.main.object(forInfoDictionaryKey: "ZoomMeetingSDKJWTURL") as? String)?.trimmedNonEmpty else {
-            return nil
-        }
-        return URL(string: rawValue)
+        ZoomMeetingPreferenceStore.meetingSDKJWTURL()
     }
 }
 
@@ -108,7 +105,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
     private let videoActivationMaxAttempts = 6
 
     override convenience init() {
-        self.init(credentialProvider: BundleInfoZoomCredentialProvider(), urlSession: .shared)
+        self.init(credentialProvider: PreferenceZoomCredentialProvider(), urlSession: .shared)
     }
 
     init(credentialProvider: ZoomCredentialProviding, urlSession: URLSession = .shared) {

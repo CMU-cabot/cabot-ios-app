@@ -764,6 +764,19 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             }
         }
     }
+    private var isUpdatingZoomMeetingSDKJWTURL = false
+    @Published var zoomMeetingSDKJWTURL: String = ZoomMeetingPreferenceStore.meetingSDKJWTURLString() {
+        didSet {
+            guard !isUpdatingZoomMeetingSDKJWTURL else { return }
+
+            let resolvedValue = ZoomMeetingPreferenceStore.setMeetingSDKJWTURLString(zoomMeetingSDKJWTURL)
+            guard zoomMeetingSDKJWTURL != resolvedValue else { return }
+
+            isUpdatingZoomMeetingSDKJWTURL = true
+            zoomMeetingSDKJWTURL = resolvedValue
+            isUpdatingZoomMeetingSDKJWTURL = false
+        }
+    }
     let socketPort: String = "5000"
     let rosPort: String = "9091"
     @Published var menuDebug: Bool = false {
@@ -3072,5 +3085,38 @@ class BGMPlayer: NSObject, AVAudioPlayerDelegate {
                 player.play()
             }
         }
+    }
+}
+
+enum ZoomMeetingPreferenceStore {
+    static let meetingSDKJWTURLKey = "zoom_meeting_sdk_jwt_url"
+
+    static func defaultMeetingSDKJWTURLString() -> String {
+        (Bundle.main.object(forInfoDictionaryKey: "ZoomMeetingSDKJWTURL") as? String)?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    }
+
+    static func meetingSDKJWTURLString(userDefaults: UserDefaults = .standard) -> String {
+        let storedValue = userDefaults.string(forKey: meetingSDKJWTURLKey)?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return storedValue.isEmpty ? defaultMeetingSDKJWTURLString() : storedValue
+    }
+
+    static func meetingSDKJWTURL(userDefaults: UserDefaults = .standard) -> URL? {
+        let rawValue = meetingSDKJWTURLString(userDefaults: userDefaults)
+        return rawValue.isEmpty ? nil : URL(string: rawValue)
+    }
+
+    static func setMeetingSDKJWTURLString(_ value: String, userDefaults: UserDefaults = .standard) -> String {
+        let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmedValue.isEmpty {
+            userDefaults.removeObject(forKey: meetingSDKJWTURLKey)
+            userDefaults.synchronize()
+            return defaultMeetingSDKJWTURLString()
+        }
+
+        userDefaults.setValue(trimmedValue, forKey: meetingSDKJWTURLKey)
+        userDefaults.synchronize()
+        return trimmedValue
     }
 }
