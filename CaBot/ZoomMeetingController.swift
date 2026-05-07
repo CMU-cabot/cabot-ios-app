@@ -32,6 +32,9 @@ protocol ZoomMeetingControlling {
     func switchCamera() -> Bool
 
     @discardableResult
+    func isJoined() -> Bool
+
+    @discardableResult
     func leave() -> Bool
 }
 
@@ -288,8 +291,11 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
     }
 
     func currentCameraDirection() -> String {
+        guard status == .in_meeting else {
+            return ""
+        }
         guard let meetingService = meetingService() else {
-            return "front"
+            return ""
         }
         let isBackCamera = ZoomObjCRuntime.invokeBoolSelector(
             "isBackCamera",
@@ -297,6 +303,18 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
             objectArg: nil
         )
         return isBackCamera ? "back" : "front"
+    }
+
+    func isJoined() -> Bool {
+        if let state = currentMeetingState() {
+            return !Self.isMeetingExitState(state) && state != ZoomSDKMeetingState.connecting.rawValue
+        }
+        switch status {
+        case .waiting_for_host, .reconnecting, .in_meeting, .leaving:
+            return true
+        default:
+            return false
+        }
     }
 
     @objc func onMobileRTCAuthReturn(_ returnValue: Int) {
@@ -849,6 +867,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         status = next
         NSLog("Zoom meeting status = %@", next.rawValue)
         onStatusChanged?(next.rawValue)
+        onCameraDirectionChanged?(currentCameraDirection())
     }
 
     private func publishCurrentCameraDirection() {

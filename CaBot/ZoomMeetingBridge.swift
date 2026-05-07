@@ -28,8 +28,10 @@ extension CaBotAppModel {
         ZoomMeetingController.shared.onStatusChanged = { [weak self] status in
             DispatchQueue.main.async {
                 let previousStatus = self?.zoomMeetingStatusText
+                let isJoined = ZoomMeetingController.shared.isJoined()
+                let statusPayload = "\(status),\(isJoined ? "joined" : "not_joined")"
                 self?.zoomMeetingStatusText = status
-                self?.share(user_info: SharedInfo(type: .ZoomStatus, value: status))
+                self?.share(user_info: SharedInfo(type: .ZoomStatus, value: statusPayload))
                 let shouldRestoreFromIdle =
                     status == "idle" &&
                     ["joining", "waiting_for_host", "reconnecting", "in_meeting", "leaving"].contains(previousStatus ?? "")
