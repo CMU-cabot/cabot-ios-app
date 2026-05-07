@@ -147,8 +147,13 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
             fail("Zoom join failed: invite link is invalid (\(trimmedLink)).")
             return false
         }
+        let hasActiveMeetingSession = hasActiveMeetingSession()
+        guard !hasActiveMeetingSession else {
+            NSLog("Zoom join ignored: active meeting session already exists (status=%@).", status.rawValue)
+            return false
+        }
         guard status == .idle || status == .error else {
-            fail("Zoom join failed: already busy with status \(status.rawValue).")
+            NSLog("Zoom join ignored: already busy with status %@.", status.rawValue)
             return false
         }
         if useCamera && AVCaptureDevice.authorizationStatus(for: .video) != .authorized {
@@ -288,7 +293,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
     }
 
     func currentCameraDirection() -> String {
-        guard status == .in_meeting else {
+        guard status == .in_meeting || (status == .error && hasActiveMeetingSession()) else {
             return ""
         }
         guard let meetingService = meetingService() else {
@@ -303,14 +308,13 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
     }
 
     func isJoined() -> Bool {
-        if let state = currentMeetingState() {
-            return !Self.isMeetingExitState(state) && state != ZoomSDKMeetingState.connecting.rawValue
-        }
         switch status {
+        case .idle, .authenticating, .joining:
+            return false
+        case .error:
+            return hasActiveMeetingSession()
         case .waiting_for_host, .reconnecting, .in_meeting, .leaving:
             return true
-        default:
-            return false
         }
     }
 
