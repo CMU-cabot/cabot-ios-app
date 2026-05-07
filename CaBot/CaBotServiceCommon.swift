@@ -66,6 +66,7 @@ struct SharedInfo: Codable {
         case StopBGM
         case PauseNavigation
         case ZoomStatus
+        case ZoomCameraDirection
         case JoinZoom
         case SwitchZoomCamera
         case LeaveZoom

@@ -87,6 +87,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
     static let shared = ZoomMeetingController()
 
     var onStatusChanged: ((String) -> Void)?
+    var onCameraDirectionChanged: ((String) -> Void)?
 
     private let credentialProvider: ZoomCredentialProviding
     private let urlSession: URLSession
@@ -115,6 +116,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
 
     func prepare() {
         onStatusChanged?(status.rawValue)
+        onCameraDirectionChanged?(currentCameraDirection())
         _ = ensureSDKInitialized(reportErrors: false)
     }
 
@@ -281,7 +283,20 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
             NSLog("Zoom switch camera failed with code %@", String(result))
             return false
         }
+        publishCurrentCameraDirection()
         return true
+    }
+
+    func currentCameraDirection() -> String {
+        guard let meetingService = meetingService() else {
+            return "front"
+        }
+        let isBackCamera = ZoomObjCRuntime.invokeBoolSelector(
+            "isBackCamera",
+            onTarget: meetingService,
+            objectArg: nil
+        )
+        return isBackCamera ? "back" : "front"
     }
 
     @objc func onMobileRTCAuthReturn(_ returnValue: Int) {
@@ -435,6 +450,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
             return
         }
         updateStatus(.in_meeting)
+        publishCurrentCameraDirection()
         connectAudioIfNeeded()
         applyMediaPreferencesIfNeeded()
     }
@@ -681,6 +697,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         case .waitingForHost, .inWaitingRoom:
             joinStateGraceDeadline = nil
             updateStatus(.waiting_for_host)
+            publishCurrentCameraDirection()
         case .inMeeting, .joinBO:
             joinStateGraceDeadline = nil
             markMeetingReady()
@@ -831,6 +848,10 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         status = next
         NSLog("Zoom meeting status = %@", next.rawValue)
         onStatusChanged?(next.rawValue)
+    }
+
+    private func publishCurrentCameraDirection() {
+        onCameraDirectionChanged?(currentCameraDirection())
     }
 
     private func fail(_ message: String) {

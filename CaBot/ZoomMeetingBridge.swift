@@ -42,6 +42,15 @@ extension CaBotAppModel {
                 }
             }
         }
+        ZoomMeetingController.shared.onCameraDirectionChanged = { [weak self] direction in
+            DispatchQueue.main.async {
+                self?.zoomCameraDirectionText = direction
+                self?.share(user_info: SharedInfo(type: .ZoomCameraDirection, value: direction))
+            }
+        }
+        let initialDirection = ZoomMeetingController.shared.currentCameraDirection()
+        self.zoomCameraDirectionText = initialDirection
+        self.share(user_info: SharedInfo(type: .ZoomCameraDirection, value: initialDirection))
     }
 
     @discardableResult

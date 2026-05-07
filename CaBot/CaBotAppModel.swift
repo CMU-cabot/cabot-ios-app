@@ -587,6 +587,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     var silentForSpeakerSettingUpdate: Bool = false
     var skipPlaySpeakerSample: Bool = false
     @Published var zoomMeetingStatusText: String = "idle"
+    @Published var zoomCameraDirectionText: String = "front"
 
     enum ServerStatus {
         case Init
@@ -2206,6 +2207,11 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 self.zoomMeetingStatusText = userInfo.value
                 #endif
             }
+            if userInfo.type == .ZoomCameraDirection {
+                #if ATTEND
+                self.zoomCameraDirectionText = userInfo.value
+                #endif
+            }
             if userInfo.type == .StartBGM {
                 self.startBGM(userInfo.value)
             } else if userInfo.type == .StopBGM {
@@ -2305,6 +2311,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         self.share(user_info: SharedInfo(type: .ChangeSelectedSpeakerAudioFile, value: self.selectedSpeakerAudioFile))
         self.share(user_info: SharedInfo(type: .ChangeSpeakerVolume, value: String(self.speakerVolume)))
         self.share(user_info: SharedInfo(type: .ChangeFollowExactPath, value: self.followExactPathEnabled ? "on" : "off"))
+        self.share(user_info: SharedInfo(type: .ZoomCameraDirection, value: self.zoomCameraDirectionText))
 
     }
 
