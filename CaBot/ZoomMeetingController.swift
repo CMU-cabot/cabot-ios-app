@@ -797,7 +797,8 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
     }
 
     private var zoomDisplayName: String {
-        (Bundle.main.object(forInfoDictionaryKey: "ZoomMeetingDisplayName") as? String)?.trimmedNonEmpty ?? "CaBot User"
+        let suitcaseID = ChatData.shared.suitcase_id.trimmingCharacters(in: .whitespacesAndNewlines)
+        return suitcaseID.isEmpty ? "CaBot User" : suitcaseID
     }
 
     private func isSupportedInviteLink(_ url: URL) -> Bool {
