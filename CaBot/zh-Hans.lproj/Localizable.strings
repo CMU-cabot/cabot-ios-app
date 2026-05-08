@@ -72,7 +72,7 @@
 
 
 //OnboardGrantAccess
-"ONBOARD_MESSAGE"="请允许系统访问位置信息，蓝牙和发送通知";
+"ONBOARD_MESSAGE"="请允许应用访问位置信息、蓝牙、通知、麦克风、语音识别、联系人和相机。";
 "Enable Location Update"="允许访问位置信息";
 "Location Update Enabled"="位置信息已被允许";
 "Location Update Denied"="位置信息已被拒绝";
