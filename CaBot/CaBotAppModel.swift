@@ -360,10 +360,14 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             self.checkOnboardCondition()
         }
     }
+    @Published var cameraState: AVAuthorizationStatus = AVCaptureDevice.authorizationStatus(for: .video) {
+        didSet {
+            self.checkOnboardCondition()
+        }
+    }
+    @Published var photoLibraryState: PHAuthorizationStatus = .authorized
     #else
     @Published var contactsState: CNAuthorizationStatus = .authorized
-    #endif
-    #if ATTEND
     @Published var cameraState: AVAuthorizationStatus = AVCaptureDevice.authorizationStatus(for: .video) {
         didSet {
             self.checkOnboardCondition()
@@ -374,9 +378,6 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             self.checkOnboardCondition()
         }
     }
-    #else
-    @Published var cameraState: AVAuthorizationStatus = .authorized
-    @Published var photoLibraryState: PHAuthorizationStatus = .authorized
     #endif
     func checkOnboardCondition() {
         DispatchQueue.main.async {
@@ -585,6 +586,8 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     @Published var possibleAudioFiles: [String] = []
     var silentForSpeakerSettingUpdate: Bool = false
     var skipPlaySpeakerSample: Bool = false
+    @Published var zoomMeetingStatusText: String = "idle"
+    @Published var zoomCameraDirectionText: String = ""
 
     enum ServerStatus {
         case Init
@@ -761,6 +764,19 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             }
         }
     }
+    private var isUpdatingZoomMeetingSDKJWTURL = false
+    @Published var zoomMeetingSDKJWTURL: String = ZoomMeetingPreferenceStore.meetingSDKJWTURLString() {
+        didSet {
+            guard !isUpdatingZoomMeetingSDKJWTURL else { return }
+
+            let resolvedValue = ZoomMeetingPreferenceStore.setMeetingSDKJWTURLString(zoomMeetingSDKJWTURL)
+            guard zoomMeetingSDKJWTURL != resolvedValue else { return }
+
+            isUpdatingZoomMeetingSDKJWTURL = true
+            zoomMeetingSDKJWTURL = resolvedValue
+            isUpdatingZoomMeetingSDKJWTURL = false
+        }
+    }
     let socketPort: String = "5000"
     let rosPort: String = "9091"
     @Published var menuDebug: Bool = false {
@@ -929,6 +945,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         super.init()
         ResourceManager.shared.set(addressCandidate: self.addressCandidate)
         ResourceManager.shared.set(modeType: self.modeType)
+        #if USER
+        configureZoomMeetingShareBridge()
+        #endif
 
         self.tts.delegate = self
         self.logList.delegate = self
@@ -1252,7 +1271,6 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     }
     #endif
 
-    #if ATTEND
     func requestCameraAuthorization() {
         self.authRequestedByUser = true
         AVCaptureDevice.requestAccess(for: .video) { granted in
@@ -1261,6 +1279,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             }
         }
     }
+    #if ATTEND
     func requestPhotoLibraryAuthorization() {
         self.authRequestedByUser = true
         PHPhotoLibrary.requestAuthorization() { status in
@@ -2196,6 +2215,16 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             if userInfo.type == .PlayAudio {
                 self.playAudio(file: userInfo.value)
             }
+            if userInfo.type == .ZoomStatus {
+                #if ATTEND
+                self.zoomMeetingStatusText = userInfo.value
+                #endif
+            }
+            if userInfo.type == .ZoomCameraDirection {
+                #if ATTEND
+                self.zoomCameraDirectionText = userInfo.value
+                #endif
+            }
             if userInfo.type == .StartBGM {
                 self.startBGM(userInfo.value)
             } else if userInfo.type == .StopBGM {
@@ -2248,6 +2277,21 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             silentForChange = true
             showingChatView = userInfo.value == "open"
         }
+        #if USER
+        if userInfo.type == .JoinZoom {
+            _ = self.joinZoomMeeting(
+                inviteLink: userInfo.value,
+                useMic: userInfo.flag1,
+                useCamera: userInfo.flag2
+            )
+        }
+        if userInfo.type == .SwitchZoomCamera {
+            _ = self.switchZoomCamera()
+        }
+        if userInfo.type == .LeaveZoom {
+            _ = self.leaveZoomMeeting()
+        }
+        #endif
         if userInfo.type == .SpeakState {
             self.share(user_info: userInfo)
         }
@@ -2280,6 +2324,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         self.share(user_info: SharedInfo(type: .ChangeSelectedSpeakerAudioFile, value: self.selectedSpeakerAudioFile))
         self.share(user_info: SharedInfo(type: .ChangeSpeakerVolume, value: String(self.speakerVolume)))
         self.share(user_info: SharedInfo(type: .ChangeFollowExactPath, value: self.followExactPathEnabled ? "on" : "off"))
+        self.share(user_info: SharedInfo(type: .ZoomCameraDirection, value: self.zoomCameraDirectionText))
 
     }
 
@@ -3040,5 +3085,38 @@ class BGMPlayer: NSObject, AVAudioPlayerDelegate {
                 player.play()
             }
         }
+    }
+}
+
+enum ZoomMeetingPreferenceStore {
+    static let meetingSDKJWTURLKey = "zoom_meeting_sdk_jwt_url"
+
+    static func defaultMeetingSDKJWTURLString() -> String {
+        (Bundle.main.object(forInfoDictionaryKey: "ZoomMeetingSDKJWTURL") as? String)?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    }
+
+    static func meetingSDKJWTURLString(userDefaults: UserDefaults = .standard) -> String {
+        let storedValue = userDefaults.string(forKey: meetingSDKJWTURLKey)?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return storedValue.isEmpty ? defaultMeetingSDKJWTURLString() : storedValue
+    }
+
+    static func meetingSDKJWTURL(userDefaults: UserDefaults = .standard) -> URL? {
+        let rawValue = meetingSDKJWTURLString(userDefaults: userDefaults)
+        return rawValue.isEmpty ? nil : URL(string: rawValue)
+    }
+
+    static func setMeetingSDKJWTURLString(_ value: String, userDefaults: UserDefaults = .standard) -> String {
+        let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmedValue.isEmpty {
+            userDefaults.removeObject(forKey: meetingSDKJWTURLKey)
+            userDefaults.synchronize()
+            return defaultMeetingSDKJWTURLString()
+        }
+
+        userDefaults.setValue(trimmedValue, forKey: meetingSDKJWTURLKey)
+        userDefaults.synchronize()
+        return trimmedValue
     }
 }

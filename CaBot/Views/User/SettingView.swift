@@ -184,6 +184,11 @@ struct SettingView: View {
                 } label: {
                     Text("Elevator Settings")
                 }
+                NavigationLink {
+                    ZoomMeetingSettingView().environmentObject(modelData)
+                } label: {
+                    Text("Zoom Meeting Setting")
+                }
             }
         }
     }
@@ -222,5 +227,25 @@ extension View {
     func print(_ value: Any) -> Self {
         Swift.print(value)
         return self
+    }
+}
+
+struct ZoomMeetingSettingView: View {
+    @EnvironmentObject var modelData: CaBotAppModel
+
+    var body: some View {
+        Form {
+            Section {
+                VStack(alignment: .leading) {
+                    Text("Meeting SDK Auth Endpoint")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    TextField("Meeting SDK Auth Endpoint", text: $modelData.zoomMeetingSDKJWTURL)
+                        .autocapitalization(.none)
+                        .keyboardType(.URL)
+                }
+            }
+        }
+        .navigationTitle(Text("Zoom Meeting Setting"))
     }
 }

@@ -136,3 +136,31 @@ title: I18NText
 introduction: I18NText          # brief description of the tour
 destinations: Destinations
 ```
+
+## Zoom SDK setup
+
+Before opening Xcode for the `CaBot-User` target, download the Zoom Meeting SDK binaries:
+
+```bash
+./setup_zoom_sdk.sh
+```
+
+This downloads the `zoom-sdk-7.0.2.34511` release asset from this repository and installs it into `Vendor/Zoom`. To replace an existing local copy, run:
+
+```bash
+./setup_zoom_sdk.sh --force
+```
+
+## Zoom Meeting SDK JWT
+
+- Install the Zoom SDK binaries with `./setup_zoom_sdk.sh`.
+- Set `ZoomMeetingSDKJWTURL` in `CaBot/Info.plist`.
+- The endpoint is fetched with `GET` when joining a meeting.
+- The response can be either raw JWT text or JSON such as `{"jwt":"<token>"}`.
+
+Example `Info.plist` entry:
+
+```xml
+<key>ZoomMeetingSDKJWTURL</key>
+<string>https://your-server.example.com/zoom/sdk/jwt</string>
+```

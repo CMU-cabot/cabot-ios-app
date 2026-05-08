@@ -94,6 +94,9 @@ struct CaBotApp: App {
         WindowGroup {
             RootView()
                 .environmentObject(modelData)
+                #if USER
+                .overlay(ZoomMeetingIndicatorView().environmentObject(modelData), alignment: .top)
+                #endif
                 .overlay(SuitcaseStatusView().environmentObject(modelData), alignment: .topTrailing)
         }.onChange(of: scenePhase) { newScenePhase in
             Logging.checkLogDate()
@@ -137,12 +140,78 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let stacktrace = exception.callStackSymbols.joined(separator:"\n")
             NSLog( "<UncaughtException> \n\(exception)\n\(stacktrace)")
         }
+
+        #if USER
+        ZoomMeetingController.shared.prepare()
+        #endif
         
         return true
     }
+
+    func applicationWillResignActive(_ application: UIApplication) {
+        #if USER
+        ZoomMeetingController.shared.applicationWillResignActive()
+        #endif
+    }
+
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        #if USER
+        ZoomMeetingController.shared.applicationDidBecomeActive()
+        #endif
+    }
+
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        #if USER
+        ZoomMeetingController.shared.applicationDidEnterBackground()
+        #endif
+    }
     
     func applicationWillTerminate(_ application: UIApplication) {
+        #if USER
+        ZoomMeetingController.shared.applicationWillTerminate()
+        #endif
         NSLog( "<Terminate>" )
         Logging.stopLog()
     }
 }
+
+#if USER
+struct ZoomMeetingIndicatorView: View {
+    @EnvironmentObject var modelData: CaBotAppModel
+
+    private var indicator: (label: String, imageName: String, color: Color)? {
+        switch modelData.zoomMeetingStatusText {
+        case "authenticating", "joining":
+            return (NSLocalizedString("Zoom Connecting", comment: "Zoom meeting indicator while connecting"), "dot.radiowaves.left.and.right", .orange)
+        case "waiting_for_host":
+            return (NSLocalizedString("Zoom Waiting For Host", comment: "Zoom meeting indicator while waiting for host"), "hourglass", .orange)
+        case "reconnecting":
+            return (NSLocalizedString("Zoom Reconnecting", comment: "Zoom meeting indicator while reconnecting"), "arrow.triangle.2.circlepath", .orange)
+        case "in_meeting":
+            return (NSLocalizedString("Zoom In Meeting", comment: "Zoom meeting indicator while in meeting"), "video.fill.badge.checkmark", .green)
+        case "leaving":
+            return (NSLocalizedString("Zoom Leaving", comment: "Zoom meeting indicator while leaving"), "video.slash.fill", .gray)
+        default:
+            return nil
+        }
+    }
+
+    var body: some View {
+        Group {
+            if let indicator {
+                Label(indicator.label, systemImage: indicator.imageName)
+                    .font(.caption.weight(.semibold))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 7)
+                    .background(.ultraThinMaterial)
+                    .foregroundColor(indicator.color)
+                    .clipShape(Capsule())
+                    .shadow(color: .black.opacity(0.15), radius: 4, x: 0, y: 2)
+                    .padding(.top, 8)
+                    .allowsHitTesting(false)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            }
+        }
+    }
+}
+#endif

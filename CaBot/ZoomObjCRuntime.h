@@ -20,12 +20,24 @@
  * THE SOFTWARE.
  *******************************************************************************/
 
-#ifndef bridging_h
-#define bridging_h
+#import <Foundation/Foundation.h>
 
-#include "Logging.h"
-#include "NavDeviceTTS.h"
-#include "NavUtil.h"
-#include "ZoomObjCRuntime.h"
+NS_ASSUME_NONNULL_BEGIN
 
-#endif /* bridging_h */
+@interface ZoomObjCRuntime : NSObject
+
++ (nullable id)invokeObjectSelector:(NSString *)selector onTarget:(id)target;
++ (nullable id)invokeObjectSelector:(NSString *)selector onTarget:(id)target objectArg:(nullable id)arg;
++ (void)invokeVoidSelector:(NSString *)selector onTarget:(id)target;
++ (void)invokeVoidSelector:(NSString *)selector onTarget:(id)target objectArg:(nullable id)arg;
++ (void)invokeVoidSelector:(NSString *)selector onTarget:(id)target boolArg:(BOOL)arg;
++ (void)invokeVoidSelector:(NSString *)selector onTarget:(id)target integerArg:(NSInteger)arg;
++ (BOOL)invokeBoolSelector:(NSString *)selector onTarget:(id)target objectArg:(nullable id)arg;
++ (BOOL)invokeBoolSelector:(NSString *)selector onTarget:(id)target boolArg:(BOOL)arg;
++ (NSInteger)invokeIntegerSelector:(NSString *)selector onTarget:(id)target objectArg:(nullable id)arg;
++ (NSInteger)invokeIntegerSelector:(NSString *)selector onTarget:(id)target boolArg:(BOOL)arg;
++ (BOOL)setValue:(nullable id)value forKey:(NSString *)key onTarget:(id)target;
+
+@end
+
+NS_ASSUME_NONNULL_END
