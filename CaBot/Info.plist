@@ -41,6 +41,8 @@
 	<string>This app uses speech recognition</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app uses your camera</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>This app uses your calendar</string>
 	<key>NSContactsUsageDescription</key>
 	<string>This app uses your contacts</string>
 	<key>NSPhotoLibraryUsageDescription</key>
