@@ -777,6 +777,19 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             isUpdatingZoomMeetingSDKJWTURL = false
         }
     }
+    private var isUpdatingZoomMeetingSDKJWTAPIKey = false
+    @Published var zoomMeetingSDKJWTAPIKey: String = ZoomMeetingPreferenceStore.meetingSDKJWTAPIKeyString() {
+        didSet {
+            guard !isUpdatingZoomMeetingSDKJWTAPIKey else { return }
+
+            let resolvedValue = ZoomMeetingPreferenceStore.setMeetingSDKJWTAPIKeyString(zoomMeetingSDKJWTAPIKey)
+            guard zoomMeetingSDKJWTAPIKey != resolvedValue else { return }
+
+            isUpdatingZoomMeetingSDKJWTAPIKey = true
+            zoomMeetingSDKJWTAPIKey = resolvedValue
+            isUpdatingZoomMeetingSDKJWTAPIKey = false
+        }
+    }
     let socketPort: String = "5000"
     let rosPort: String = "9091"
     @Published var menuDebug: Bool = false {
@@ -3090,6 +3103,7 @@ class BGMPlayer: NSObject, AVAudioPlayerDelegate {
 
 enum ZoomMeetingPreferenceStore {
     static let meetingSDKJWTURLKey = "zoom_meeting_sdk_jwt_url"
+    static let meetingSDKJWTAPIKeyKey = "zoom_meeting_sdk_jwt_api_key"
 
     static func defaultMeetingSDKJWTURLString() -> String {
         (Bundle.main.object(forInfoDictionaryKey: "ZoomMeetingSDKJWTURL") as? String)?
@@ -3116,6 +3130,18 @@ enum ZoomMeetingPreferenceStore {
         }
 
         userDefaults.setValue(trimmedValue, forKey: meetingSDKJWTURLKey)
+        userDefaults.synchronize()
+        return trimmedValue
+    }
+
+    static func meetingSDKJWTAPIKeyString(userDefaults: UserDefaults = .standard) -> String {
+        userDefaults.string(forKey: meetingSDKJWTAPIKeyKey)?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    }
+
+    static func setMeetingSDKJWTAPIKeyString(_ value: String, userDefaults: UserDefaults = .standard) -> String {
+        let trimmedValue = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        userDefaults.setValue(trimmedValue, forKey: meetingSDKJWTAPIKeyKey)
         userDefaults.synchronize()
         return trimmedValue
     }

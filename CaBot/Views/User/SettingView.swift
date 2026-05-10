@@ -244,6 +244,14 @@ struct ZoomMeetingSettingView: View {
                         .autocapitalization(.none)
                         .keyboardType(.URL)
                 }
+                VStack(alignment: .leading) {
+                    Text("Meeting SDK Auth API Key")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    SecureField("Meeting SDK Auth API Key", text: $modelData.zoomMeetingSDKJWTAPIKey)
+                        .autocapitalization(.none)
+                        .keyboardType(.asciiCapable)
+                }
             }
         }
         .navigationTitle(Text("Zoom Meeting Setting"))

@@ -403,6 +403,7 @@
 // Zoom Meeting
 "Zoom Meeting Setting" = "Zoom Meeting Setting";
 "Meeting SDK Auth Endpoint" = "Meeting SDK Auth Endpoint";
+"Meeting SDK Auth API Key" = "Meeting SDK Auth API Key";
 "Zoom Connecting" = "Zoom Connecting";
 "Zoom Waiting For Host" = "Zoom Waiting For Host";
 "Zoom Reconnecting" = "Zoom Reconnecting";

@@ -40,6 +40,7 @@ protocol ZoomMeetingControlling {
 
 protocol ZoomCredentialProviding {
     func meetingSDKJWTURL() -> URL?
+    func meetingSDKJWTAPIKey() -> String
 }
 
 private enum ZoomMeetingStatus: String {
@@ -71,6 +72,17 @@ private enum ZoomSDKMeetingState: Int {
     case leaveBO = 14
 }
 
+private enum ZoomAuthPurpose {
+    case none
+    case join
+    case refresh
+}
+
+private struct ZoomAuthCredentialSnapshot: Equatable {
+    let endpoint: String
+    let apiKey: String
+}
+
 private struct PendingJoinRequest {
     let inviteLink: String
     let useMic: Bool
@@ -80,6 +92,10 @@ private struct PendingJoinRequest {
 private struct PreferenceZoomCredentialProvider: ZoomCredentialProviding {
     func meetingSDKJWTURL() -> URL? {
         ZoomMeetingPreferenceStore.meetingSDKJWTURL()
+    }
+
+    func meetingSDKJWTAPIKey() -> String {
+        ZoomMeetingPreferenceStore.meetingSDKJWTAPIKeyString()
     }
 }
 
@@ -98,6 +114,8 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
     private var sdkInitialized = false
     private var isAuthorized = false
     private var joinStateGraceDeadline: Date?
+    private var authPurpose: ZoomAuthPurpose = .none
+    private var authorizedCredentialSnapshot: ZoomAuthCredentialSnapshot?
 
     private let meetingStatePollingInterval: TimeInterval = 1.0
     private let videoActivationRetryDelay: TimeInterval = 0.8
@@ -166,13 +184,14 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
             useMic: useMic,
             useCamera: useCamera
         )
+        authPurpose = .join
         updateStatus(.authenticating)
 
         guard ensureSDKInitialized(reportErrors: true) else {
             return false
         }
 
-        if isAuthorized {
+        if canReuseCurrentAuthorization() {
             return startPendingJoin()
         }
 
@@ -190,18 +209,15 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         var request = URLRequest(url: tokenURL)
         request.httpMethod = "GET"
         request.timeoutInterval = 15
+        applyMeetingSDKJWTRequestHeaders(to: &request)
 
         credentialTask = urlSession.dataTask(with: request) { [weak self] data, response, error in
             DispatchQueue.main.async {
                 guard let self else { return }
                 self.credentialTask = nil
 
-                guard self.pendingJoinRequest != nil else {
-                    return
-                }
-
                 if let error {
-                    self.fail("Zoom join failed: could not fetch Meeting SDK JWT (\(error.localizedDescription)).")
+                    self.handleMeetingSDKAuthFailure("Zoom join failed: could not fetch Meeting SDK JWT (\(error.localizedDescription)).")
                     return
                 }
 
@@ -210,7 +226,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
                     (200...299).contains(httpResponse.statusCode)
                 else {
                     let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
-                    self.fail("Zoom join failed: Meeting SDK JWT endpoint returned HTTP \(statusCode).")
+                    self.handleMeetingSDKAuthFailure("Zoom join failed: Meeting SDK JWT endpoint returned HTTP \(statusCode).")
                     return
                 }
 
@@ -218,12 +234,12 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
                     let data,
                     let token = Self.parseMeetingSDKJWT(from: data)
                 else {
-                    self.fail("Zoom join failed: Meeting SDK JWT endpoint response was invalid.")
+                    self.handleMeetingSDKAuthFailure("Zoom join failed: Meeting SDK JWT endpoint response was invalid.")
                     return
                 }
 
                 guard let authService = self.authService() else {
-                    self.fail("Zoom join failed: auth service is unavailable.")
+                    self.handleMeetingSDKAuthFailure("Zoom join failed: auth service is unavailable.")
                     return
                 }
 
@@ -322,18 +338,25 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         DispatchQueue.main.async {
             if returnValue == 0 {
                 self.isAuthorized = true
+                self.authorizedCredentialSnapshot = self.currentCredentialSnapshot()
                 NSLog("Zoom auth succeeded")
-                if self.pendingJoinRequest != nil {
+                switch self.authPurpose {
+                case .join where self.pendingJoinRequest != nil:
                     _ = self.startPendingJoin()
-                } else {
-                    self.updateStatus(.idle)
+                case .refresh, .none, .join:
+                    self.authPurpose = .none
+                    if self.status == .idle {
+                        self.updateStatus(.idle)
+                    }
                 }
             } else {
                 self.isAuthorized = false
-                if self.pendingJoinRequest != nil {
+                self.authorizedCredentialSnapshot = nil
+                if self.authPurpose == .join && self.pendingJoinRequest != nil {
+                    self.authPurpose = .none
                     self.fail("Zoom auth failed with code \(returnValue).")
                 } else {
-                    self.updateStatus(.idle)
+                    self.handleMeetingSDKAuthFailure("Zoom auth failed with code \(returnValue).")
                 }
             }
         }
@@ -342,9 +365,8 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
     @objc func onMobileRTCAuthExpired() {
         DispatchQueue.main.async {
             self.isAuthorized = false
-            if self.status != .idle {
-                self.fail("Zoom auth expired.")
-            }
+            self.authorizedCredentialSnapshot = nil
+            self.reauthenticateMeetingSDKIfNeeded()
         }
     }
 
@@ -429,6 +451,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
             fail("Zoom join failed: there is no pending join request.")
             return false
         }
+        authPurpose = .none
         performJoin(request)
         return true
     }
@@ -876,6 +899,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
     }
 
     private func fail(_ message: String) {
+        authPurpose = .none
         pendingJoinRequest = nil
         credentialTask?.cancel()
         credentialTask = nil
@@ -904,6 +928,59 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
 
     private static func isMeetingExitState(_ state: Int) -> Bool {
         state == ZoomSDKMeetingState.idle.rawValue || state == ZoomSDKMeetingState.ended.rawValue
+    }
+
+    private func applyMeetingSDKJWTRequestHeaders(to request: inout URLRequest) {
+        let apiKey = credentialProvider.meetingSDKJWTAPIKey().trimmedNonEmpty
+        if let apiKey {
+            request.setValue(apiKey, forHTTPHeaderField: "X-API-Key")
+        }
+    }
+
+    private func currentCredentialSnapshot() -> ZoomAuthCredentialSnapshot? {
+        guard let endpoint = credentialProvider.meetingSDKJWTURL()?.absoluteString.trimmedNonEmpty else {
+            return nil
+        }
+        return ZoomAuthCredentialSnapshot(
+            endpoint: endpoint,
+            apiKey: credentialProvider.meetingSDKJWTAPIKey().trimmingCharacters(in: .whitespacesAndNewlines)
+        )
+    }
+
+    private func canReuseCurrentAuthorization() -> Bool {
+        guard isAuthorized else {
+            return false
+        }
+        return authorizedCredentialSnapshot == currentCredentialSnapshot()
+    }
+
+    private func reauthenticateMeetingSDKIfNeeded() {
+        guard status != .idle || hasActiveMeetingSession() else {
+            updateStatus(.idle)
+            return
+        }
+        guard let tokenURL = credentialProvider.meetingSDKJWTURL() else {
+            handleMeetingSDKAuthFailure("Zoom auth expired and Meeting SDK JWT URL is not configured.")
+            return
+        }
+        authPurpose = .refresh
+        fetchMeetingSDKJWT(from: tokenURL)
+    }
+
+    private func handleMeetingSDKAuthFailure(_ message: String) {
+        authPurpose = .none
+        isAuthorized = false
+        authorizedCredentialSnapshot = nil
+        credentialTask?.cancel()
+        credentialTask = nil
+        NSLog("%@", message)
+        if hasActiveMeetingSession() {
+            updateStatus(.error)
+        } else {
+            pendingJoinRequest = nil
+            stopMeetingStatePolling()
+            updateStatus(.idle)
+        }
     }
 }
 
