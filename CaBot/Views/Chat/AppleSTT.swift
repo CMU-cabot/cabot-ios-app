@@ -63,6 +63,7 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
         }
 
         //self.initPWCaptureSession()
+        AudioSessionRouteHelper.restorePreferredOutputRoute()
     }
 
     public func resetLang() {
