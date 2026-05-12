@@ -293,9 +293,8 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
     private var aveCount: Int = 0
 
     open func captureOutput(_ captureOutput: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        // append buffer to recognition request
         if !pwCapturingIgnore {
-            recognitionRequest?.appendAudioSampleBuffer(sampleBuffer)
+            appendRecognitionSampleBuffer(sampleBuffer)
         }
         if !pwCapturingStarted {
             NSLog("Recording started")
@@ -475,6 +474,91 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
             self.timeoutTimer?.invalidate()
             self.timeoutTimer = nil
         }
+    }
+
+    private func createRecognitionPCMBuffer(from sampleBuffer: CMSampleBuffer) -> AVAudioPCMBuffer? {
+        guard let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer),
+              let asbdPointer = CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription) else {
+            return nil
+        }
+
+        let asbd = asbdPointer.pointee
+        guard asbd.mFormatID == kAudioFormatLinearPCM,
+              asbd.mBitsPerChannel == 16 else {
+            return nil
+        }
+
+        let frameCount = CMSampleBufferGetNumSamples(sampleBuffer)
+        guard frameCount > 0 else {
+            return nil
+        }
+
+        var audioBufferList = AudioBufferList()
+        var blockBuffer: CMBlockBuffer?
+        let status = CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(
+            sampleBuffer,
+            bufferListSizeNeededOut: nil,
+            bufferListOut: &audioBufferList,
+            bufferListSize: MemoryLayout.stride(ofValue: audioBufferList),
+            blockBufferAllocator: nil,
+            blockBufferMemoryAllocator: nil,
+            flags: kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment,
+            blockBufferOut: &blockBuffer
+        )
+        guard status == noErr,
+              let sourceData = audioBufferList.mBuffers.mData else {
+            return nil
+        }
+
+        let sourceChannels = max(Int(asbd.mChannelsPerFrame), 1)
+        guard let monoFormat = AVAudioFormat(commonFormat: .pcmFormatInt16, sampleRate: asbd.mSampleRate, channels: 1, interleaved: false),
+              let pcmBuffer = AVAudioPCMBuffer(pcmFormat: monoFormat, frameCapacity: AVAudioFrameCount(frameCount)),
+              let monoData = pcmBuffer.int16ChannelData?[0] else {
+            return nil
+        }
+
+        pcmBuffer.frameLength = AVAudioFrameCount(frameCount)
+        let source = sourceData.bindMemory(to: Int16.self, capacity: frameCount * sourceChannels)
+
+        if sourceChannels == 1 {
+            monoData.assign(from: source, count: frameCount)
+            return pcmBuffer
+        }
+
+        for frameIndex in 0..<frameCount {
+            var sum = 0
+            let baseIndex = frameIndex * sourceChannels
+            for channelIndex in 0..<sourceChannels {
+                sum += Int(source[baseIndex + channelIndex])
+            }
+            monoData[frameIndex] = Int16(sum / sourceChannels)
+        }
+
+        // NSLog("[AppleSTT] PCM converted input sampleRate=\(asbd.mSampleRate) channels=\(asbd.mChannelsPerFrame) formatID=\(asbd.mFormatID) bits=\(asbd.mBitsPerChannel) bytesPerFrame=\(asbd.mBytesPerFrame) -> output sampleRate=\(pcmBuffer.format.sampleRate) channels=\(pcmBuffer.format.channelCount) commonFormat=\(pcmBuffer.format.commonFormat.rawValue) interleaved=\(pcmBuffer.format.isInterleaved)")
+
+        return pcmBuffer
+    }
+
+    private func appendRecognitionSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
+        guard let recognitionRequest else {
+            return
+        }
+        guard let formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer),
+              let asbdPointer = CMAudioFormatDescriptionGetStreamBasicDescription(formatDescription) else {
+            recognitionRequest.appendAudioSampleBuffer(sampleBuffer)
+            return
+        }
+
+        let channelCount = Int(asbdPointer.pointee.mChannelsPerFrame)
+        if channelCount <= 1 {
+            recognitionRequest.appendAudioSampleBuffer(sampleBuffer)
+            return
+        }
+
+        guard let recognitionBuffer = createRecognitionPCMBuffer(from: sampleBuffer) else {
+            return
+        }
+        recognitionRequest.append(recognitionBuffer)
     }
 
     public func prepareAudioForChat() {

@@ -2337,6 +2337,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         self.share(user_info: SharedInfo(type: .ChangeSelectedSpeakerAudioFile, value: self.selectedSpeakerAudioFile))
         self.share(user_info: SharedInfo(type: .ChangeSpeakerVolume, value: String(self.speakerVolume)))
         self.share(user_info: SharedInfo(type: .ChangeFollowExactPath, value: self.followExactPathEnabled ? "on" : "off"))
+        self.share(user_info: SharedInfo(type: .ZoomStatus, value: "\(self.zoomMeetingStatusText),\(ZoomMeetingController.shared.isJoined() ? "joined" : "not_joined")"))
         self.share(user_info: SharedInfo(type: .ZoomCameraDirection, value: self.zoomCameraDirectionText))
 
     }
