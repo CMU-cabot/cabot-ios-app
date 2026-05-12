@@ -291,6 +291,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
             return false
         }
 
+        logAvailableCameraDevices(context: "before switchMyCamera", selectedOnly: true)
         let result = ZoomObjCRuntime.invokeIntegerSelector(
             "switchMyCamera",
             onTarget: meetingService,
@@ -304,6 +305,8 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
             NSLog("Zoom switch camera failed with code %@", String(result))
             return false
         }
+        selectPreferredBackCameraIfNeeded(on: meetingService)
+        logAvailableCameraDevices(context: "after switchMyCamera", selectedOnly: true)
         publishCurrentCameraDirection()
         return true
     }
@@ -492,6 +495,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
             return
         }
         updateStatus(.in_meeting)
+        logAvailableCameraDevices(context: "meeting ready")
         publishCurrentCameraDirection()
         connectAudioIfNeeded()
         applyMediaPreferencesIfNeeded()
@@ -981,6 +985,107 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
             stopMeetingStatePolling()
             updateStatus(.idle)
         }
+    }
+
+    private func logAvailableCameraDevices(context: String, selectedOnly: Bool = false) {
+        guard let meetingService = meetingService() else {
+            NSLog("Zoom camera devices (%@): meeting service is unavailable", context)
+            return
+        }
+        guard let devices = cameraDevices(on: meetingService) else {
+            NSLog("Zoom camera devices (%@): getCameraDeviceList returned nil", context)
+            return
+        }
+
+        if devices.isEmpty {
+            NSLog("Zoom camera devices (%@): empty", context)
+            return
+        }
+
+        let selectedDevice = ZoomObjCRuntime.invokeObjectSelector("getSelectedCamera", onTarget: meetingService) as? NSObject
+        for (index, device) in devices.enumerated() {
+            let deviceId = (ZoomObjCRuntime.invokeObjectSelector("deviceId", onTarget: device) as? String) ?? ""
+            let deviceName = (ZoomObjCRuntime.invokeObjectSelector("deviceName", onTarget: device) as? String) ?? ""
+            let deviceType = (ZoomObjCRuntime.invokeObjectSelector("deviceType", onTarget: device) as? String) ?? ""
+            let position = ZoomObjCRuntime.invokeIntegerSelector("position", onTarget: device, objectArg: nil)
+            let isSelected = ZoomObjCRuntime.invokeBoolSelector("isSelectDevice", onTarget: device, objectArg: nil)
+            let isCurrent = selectedDevice === device
+            if selectedOnly && !isSelected {
+                continue
+            }
+            NSLog(
+                "Zoom camera devices (%@) [%ld]: id=%@ name=%@ type=%@ position=%ld selected=%@ current=%@",
+                context,
+                index,
+                deviceId,
+                deviceName,
+                deviceType,
+                position,
+                isSelected ? "true" : "false",
+                isCurrent ? "true" : "false"
+            )
+        }
+    }
+
+    private func cameraDevices(on meetingService: NSObject) -> [NSObject]? {
+        ZoomObjCRuntime.invokeObjectSelector("getCameraDeviceList", onTarget: meetingService) as? [NSObject]
+    }
+
+    private func selectPreferredBackCameraIfNeeded(on meetingService: NSObject) {
+        guard ZoomObjCRuntime.invokeBoolSelector("isBackCamera", onTarget: meetingService, objectArg: nil) else {
+            return
+        }
+        guard let devices = cameraDevices(on: meetingService) else {
+            NSLog("Zoom preferred back camera: getCameraDeviceList returned nil")
+            return
+        }
+
+        let backDevices = devices.filter {
+            ZoomObjCRuntime.invokeIntegerSelector("position", onTarget: $0, objectArg: nil) == AVCaptureDevice.Position.back.rawValue
+        }
+        guard let preferredDevice = preferredBackCamera(from: backDevices) else {
+            NSLog("Zoom preferred back camera: no back camera candidates found")
+            return
+        }
+
+        let preferredId = (ZoomObjCRuntime.invokeObjectSelector("deviceId", onTarget: preferredDevice) as? String) ?? ""
+        let preferredName = (ZoomObjCRuntime.invokeObjectSelector("deviceName", onTarget: preferredDevice) as? String) ?? ""
+        let preferredType = (ZoomObjCRuntime.invokeObjectSelector("deviceType", onTarget: preferredDevice) as? String) ?? ""
+        let isSelected = ZoomObjCRuntime.invokeBoolSelector("isSelectDevice", onTarget: preferredDevice, objectArg: nil)
+        if isSelected {
+            NSLog("Zoom preferred back camera already selected: id=%@ name=%@ type=%@", preferredId, preferredName, preferredType)
+            return
+        }
+
+        let switched = ZoomObjCRuntime.invokeBoolSelector(
+            "switchCamera:",
+            onTarget: meetingService,
+            objectArg: preferredId as NSString
+        )
+        NSLog(
+            "Zoom preferred back camera switch result=%@ id=%@ name=%@ type=%@",
+            switched ? "true" : "false",
+            preferredId,
+            preferredName,
+            preferredType
+        )
+    }
+
+    private func preferredBackCamera(from devices: [NSObject]) -> NSObject? {
+        let preferredTypes = [
+            "AVCaptureDeviceTypeBuiltInUltraWideCamera",
+            "AVCaptureDeviceTypeBuiltInDualWideCamera",
+            "AVCaptureDeviceTypeBuiltInWideAngleCamera"
+        ]
+
+        for preferredType in preferredTypes {
+            if let device = devices.first(where: {
+                (ZoomObjCRuntime.invokeObjectSelector("deviceType", onTarget: $0) as? String) == preferredType
+            }) {
+                return device
+            }
+        }
+        return devices.first
     }
 }
 
