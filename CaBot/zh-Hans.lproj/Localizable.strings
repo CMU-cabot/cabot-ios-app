@@ -413,3 +413,5 @@
 "Zoom Reconnecting" = "Zoom 重连中";
 "Zoom In Meeting" = "Zoom 通话中";
 "Zoom Leaving" = "Zoom 结束中";
+"Zoom Connected Message" = "已连接到 Zoom。";
+"Zoom Disconnected Message" = "Zoom 已结束。";

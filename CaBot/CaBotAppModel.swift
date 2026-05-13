@@ -588,6 +588,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     var skipPlaySpeakerSample: Bool = false
     @Published var zoomMeetingStatusText: String = "idle"
     @Published var zoomCameraDirectionText: String = ""
+    var didSpeakZoomConnectedMessage: Bool = false
 
     enum ServerStatus {
         case Init

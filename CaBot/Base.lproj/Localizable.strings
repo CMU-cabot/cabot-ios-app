@@ -409,3 +409,5 @@
 "Zoom Reconnecting" = "Zoom Reconnecting";
 "Zoom In Meeting" = "Zoom In Meeting";
 "Zoom Leaving" = "Zoom Leaving";
+"Zoom Connected Message" = "Connected to Zoom.";
+"Zoom Disconnected Message" = "Zoom has ended.";

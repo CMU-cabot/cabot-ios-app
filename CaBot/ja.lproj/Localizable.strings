@@ -413,3 +413,5 @@
 "Zoom Reconnecting" = "Zoom再接続中";
 "Zoom In Meeting" = "Zoom通話中";
 "Zoom Leaving" = "Zoom終了中";
+"Zoom Connected Message" = "ズームに接続しました";
+"Zoom Disconnected Message" = "ズームを終了しました";

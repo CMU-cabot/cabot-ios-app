@@ -35,12 +35,15 @@ extension CaBotAppModel {
                 let shouldRestoreFromIdle =
                     status == "idle" &&
                     ["joining", "waiting_for_host", "reconnecting", "in_meeting", "leaving"].contains(previousStatus ?? "")
-                if status == "in_meeting" || shouldRestoreFromIdle {
-                    if let stt = ChatData.shared.viewModel?.stt {
-                        stt.prepareAudioForChat()
-                    } else {
-                        AudioSessionRouteHelper.restorePreferredOutputRoute()
-                    }
+                if status == "idle" {
+                    self?.didSpeakZoomConnectedMessage = false
+                }
+                if status == "in_meeting" {
+                    guard self?.didSpeakZoomConnectedMessage != true else { return }
+                    self?.didSpeakZoomConnectedMessage = true
+                    self?.speakZoomStatusMessage(connected: true)
+                } else if shouldRestoreFromIdle {
+                    self?.speakZoomStatusMessage(connected: false)
                 }
             }
         }
@@ -68,6 +71,21 @@ extension CaBotAppModel {
     @discardableResult
     func switchZoomCamera() -> Bool {
         ZoomMeetingController.shared.switchCamera()
+    }
+
+    private func speakZoomStatusMessage(connected: Bool) {
+        let zoomAudioRouteLogTag = "[ZOOM_AUDIO_ROUTE]"
+        let message = CustomLocalizedString(connected ? "Zoom Connected Message" : "Zoom Disconnected Message", lang: self.resourceLang)
+        NSLog("\(zoomAudioRouteLogTag) [ZoomMeetingBridge] speak zoom status message connected=\(connected) text=\(message)")
+        self.speak(message, priority: .Chat, timeout: 5) { reason, _ in
+            NSLog("\(zoomAudioRouteLogTag) [ZoomMeetingBridge] zoom status message completed connected=\(connected) reason=\(reason)")
+            guard reason == .Completed else { return }
+            if let stt = ChatData.shared.viewModel?.stt {
+                stt.prepareAudioForChat()
+            } else {
+                AudioSessionRouteHelper.restorePreferredOutputRoute()
+            }
+        }
     }
 }
 #endif
