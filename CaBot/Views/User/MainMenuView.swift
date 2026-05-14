@@ -68,6 +68,15 @@ struct MainMenuView: View {
                let _ = ad.waitingDestination?.title {
                 return true
             }
+            if let messages = ad.arriveMessages, !messages.isEmpty {
+                return true
+            }
+            if ad.subtour != nil {
+                return true
+            }
+            if modelData.tourManager.isSubtour {
+                return true
+            }
         }
         return false
     }
