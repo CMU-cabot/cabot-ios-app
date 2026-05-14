@@ -29,6 +29,21 @@ protocol TourManagerDelegate {
 }
 
 class TourManager: TourProtocol {
+    private struct SubtourState {
+        let tourID: String
+        let destinationRefs: [String]
+        var completedCount: Int = 0
+
+        init(tour: Tour) {
+            self.tourID = tour.id
+            self.destinationRefs = tour.destinations.map { $0.ref.description }
+        }
+
+        var remainingDestinationRefs: ArraySlice<String> {
+            destinationRefs.dropFirst(completedCount)
+        }
+    }
+
     static let defaultTourID: String = "TourManager"
     static let tourDataStoreKey: String = "tourDataStoreKey"
     var title: I18NText = I18NText(text: [:], pron: [:])
@@ -91,7 +106,7 @@ class TourManager: TourProtocol {
     private var _destinations: [any Destination]
     private var _currentDestination: (any Destination)?
     private var _arrivedDestination: (any Destination)?
-    private var _subtours: [Tour]
+    private var _subtours: [SubtourState]
     private var _defaultNavigationSetting: NavigationSettingProtocol
     private var _tempNavigationSetting: NavigationSettingProtocol?
     private var _tourSaveData: TourSaveData = TourSaveData()
@@ -135,6 +150,7 @@ class TourManager: TourProtocol {
         _destinations.removeAll()
         _currentDestination = nil
         _arrivedDestination = nil
+        _subtours.removeAll()
         //_tempNavigationSetting = tour.setting
         self.id = tour.id
         self.title = tour.title
@@ -172,6 +188,9 @@ class TourManager: TourProtocol {
     func arrivedCurrent() {
         _arrivedDestination = _currentDestination
         _currentDestination = nil
+        if let arrivedDestination = _arrivedDestination {
+            markCurrentSubtourProgress(arrivedDestination: arrivedDestination)
+        }
         delegate?.tourUpdated(manager: self)
         save()
     }
@@ -187,6 +206,7 @@ class TourManager: TourProtocol {
         _destinations.removeAll()
         _currentDestination = nil
         _arrivedDestination = nil
+        _subtours.removeAll()
         _tour = nil
         id = TourManager.defaultTourID
         title = I18NText(text: [:], pron: [:])
@@ -196,21 +216,31 @@ class TourManager: TourProtocol {
     }
         
     func addSubTour(tour: Tour) {
-        _subtours.append(tour)
+        _subtours.append(SubtourState(tour: tour))
+        let subtourDestinations = tour.destinations.map { $0 as any Destination }
+        _destinations.insert(contentsOf: subtourDestinations, at: 0)
         delegate?.tourUpdated(manager: self)
         save()
     }
 
     func clearSubTour() {
-        if let tour = _subtours.popLast() {
-            _destinations = _destinations.filter { dest in
-                // TODO dest.parent != tour
-                true
+        if let subtour = _subtours.popLast() {
+            var removeCount = 0
+            for (destination, expectedRef) in zip(_destinations, subtour.remainingDestinationRefs) {
+                if destinationReference(destination) == expectedRef {
+                    removeCount += 1
+                } else {
+                    break
+                }
+            }
+            if removeCount > 0 {
+                _destinations.removeFirst(removeCount)
             }
         }
         _arrivedDestination = nil
         delegate?.tourUpdated(manager: self)
         delegate?.tour(manager: self, destinationChanged: nil, isStartMessageSpeaking: true)
+        save()
     }
 
     func proceedToNextDestination(isStartMessageSpeaking: Bool = true) -> Bool {
@@ -307,6 +337,7 @@ class TourManager: TourProtocol {
         _destinations.removeAll()
         _currentDestination = nil
         _arrivedDestination = nil
+        _subtours.removeAll()
         _tour =  nil
         id = TourManager.defaultTourID
         if let data = UserDefaults.standard.data(forKey: TourManager.tourDataStoreKey) {
@@ -334,6 +365,31 @@ class TourManager: TourProtocol {
                     }
                 }
             }
+        }
+    }
+
+    private func destinationReference(_ destination: any Destination) -> String {
+        if let tourDestination = destination as? TourDestination {
+            return tourDestination.ref.description
+        }
+        return destination.value
+    }
+
+    private func markCurrentSubtourProgress(arrivedDestination: any Destination) {
+        guard !_subtours.isEmpty else { return }
+        let currentRef = destinationReference(arrivedDestination)
+        let currentIndex = _subtours.count - 1
+        var subtour = _subtours[currentIndex]
+        guard let nextRef = subtour.remainingDestinationRefs.first else {
+            _subtours.removeLast()
+            return
+        }
+        guard currentRef == nextRef else { return }
+        subtour.completedCount += 1
+        if subtour.completedCount >= subtour.destinationRefs.count {
+            _subtours.removeLast()
+        } else {
+            _subtours[currentIndex] = subtour
         }
     }
 }

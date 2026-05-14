@@ -631,8 +631,7 @@ class Tour: Decodable, Hashable{
         defaultVar = try container.decodeIfPresent(String.self, forKey: .defaultVar)
         debug = try container.decodeIfPresent(Bool.self, forKey: .debug)
         title = I18NText.decode(decoder: decoder, baseKey: "title")
-
-        introduction = I18NText(text: [:], pron: [:])
+        introduction = I18NText.decode(decoder: decoder, baseKey: "introduction")
         error = nil
     }
 
@@ -715,7 +714,15 @@ class TourDestination: Destination, Decodable {
     var arriveMessages: [I18NText]? = nil
     var waitingDestination: (any Destination)? = nil
     var waitingDestinationAngle: Int?
-    var subtour: Tour?
+    private var _subtour: String? = nil
+    var subtour: Tour? {
+        get {
+            if let _subtour {
+                return TourData.getTour(by: _subtour)
+            }
+            return nil
+        }
+    }
     var error: String?
     var warning: String?
     var forDemonstration: Bool = false
@@ -740,6 +747,7 @@ class TourDestination: Destination, Decodable {
         if let value = destRef?.waitingDestination {
             waitingDestination = WaitingDestination(value: value, arrivalAngle: destRef?.waitingDestinationAngle)
         }
+        _subtour = destRef?.subtour
 
         refTitle = try container.decode(String.self, forKey: .refTitle)
         value = ref.node_id
