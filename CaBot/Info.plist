@@ -87,7 +87,7 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>ZoomMeetingSDKJWTURL</key>
-	<string>https://miraikan-ais-console.azurewebsites.net/zoom/sdk/jwt</string>
+	<string>https://your-server.example.com/zoom/sdk/jwt</string>
 	<key>ZoomMeetingSDKDomain</key>
 	<string>zoom.us</string>
 </dict>
