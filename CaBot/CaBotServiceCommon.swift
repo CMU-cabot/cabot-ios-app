@@ -67,6 +67,7 @@ struct SharedInfo: Codable {
         case PauseNavigation
         case ZoomStatus
         case ZoomCameraDirection
+        case ZoomMeetingSDKJWTURL
         case JoinZoom
         case SwitchZoomCamera
         case LeaveZoom

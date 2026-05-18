@@ -2342,6 +2342,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         if let commitHash = Bundle.main.infoDictionary?["GitCommitHash"] as? String, !commitHash.isEmpty {
             self.share(user_info: SharedInfo(type: .UserAppCommitHash, value: commitHash))
         }
+        self.share(user_info: SharedInfo(type: .ZoomMeetingSDKJWTURL, value: self.zoomMeetingSDKJWTURL))
         self.share(user_info: SharedInfo(type: .ZoomStatus, value: "\(self.zoomMeetingStatusText),\(ZoomMeetingController.shared.isJoined() ? "joined" : "not_joined")"))
         self.share(user_info: SharedInfo(type: .ZoomCameraDirection, value: self.zoomCameraDirectionText))
         #endif
