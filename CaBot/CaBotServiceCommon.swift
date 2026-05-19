@@ -55,6 +55,7 @@ struct SharedInfo: Codable {
         case ChangeFollowExactPath
         case ChatRequest
         case ChatStatus
+        case SpeechRecognitionResult
         case ChangeEnableSpeaker
         case ChangeSelectedSpeakerAudioFile
         case ChangeSpeakerVolume

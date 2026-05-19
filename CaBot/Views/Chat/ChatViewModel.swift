@@ -71,6 +71,7 @@ class ChatViewModel: ObservableObject  {
             DispatchQueue.main.async {
                 self.messages.append(ChatMessage(user: .User, text: buffer))
                 self.send(message: buffer)
+                self.appModel?.share(user_info: SharedInfo(type: .SpeechRecognitionResult, value: buffer))
             }
         }, receiveValue: { chunk in buffer += chunk})
         .store(in: &self.cancellables)
