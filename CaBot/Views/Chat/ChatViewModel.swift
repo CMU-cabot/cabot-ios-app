@@ -165,6 +165,8 @@ class ChatData {
     static let shared = ChatData()
     private let locationLogPack = LogPack(title:"<Socket on: location>", threshold:7.0, maxPacking:10)
     private let cameraOrientationLogPack = LogPack(title:"<Socket on: camera_orientation>", threshold:7.0, maxPacking:10)
+    private let rightCameraOrientationLogPack = LogPack(title:"<Socket on: camera_right_orientation>", threshold:7.0, maxPacking:10)
+    private let leftCameraOrientationLogPack = LogPack(title:"<Socket on: camera_left_orientation>", threshold:7.0, maxPacking:10)
     private let cabotNameLogPack = LogPack(title:"<Socket on: cabot_name>", threshold:7.0, maxPacking:10)
     var viewModel: ChatViewModel?
     var tourManager: TourManager?
@@ -200,10 +202,38 @@ class ChatData {
         }
     }
 
+    var lastRightCameraImage: String? {
+        didSet {
+            guard let image = lastRightCameraImage else {return}
+            NSLog("chat camera_right_image \(image.count) bytes")
+        }
+    }
+
+    var lastLeftCameraImage: String? {
+        didSet {
+            guard let image = lastLeftCameraImage else {return}
+            NSLog("chat camera_left_image \(image.count) bytes")
+        }
+    }
+
     var lastCameraOrientation: CameraOrientation? {
         didSet {
             guard let orientation = lastCameraOrientation else {return}
             cameraOrientationLogPack.log(text:"\(orientation)")
+        }
+    }
+
+    var lastRightCameraOrientation: CameraOrientation? {
+        didSet {
+            guard let orientation = lastRightCameraOrientation else {return}
+            rightCameraOrientationLogPack.log(text:"\(orientation)")
+        }
+    }
+
+    var lastLeftCameraOrientation: CameraOrientation? {
+        didSet {
+            guard let orientation = lastLeftCameraOrientation else {return}
+            leftCameraOrientationLogPack.log(text:"\(orientation)")
         }
     }
 
@@ -216,7 +246,11 @@ class ChatData {
     func clear() {
         lastLocation = nil
         lastCameraImage = nil
+        lastRightCameraImage = nil
+        lastLeftCameraImage = nil
         lastCameraOrientation = nil
+        lastRightCameraOrientation = nil
+        lastLeftCameraOrientation = nil
         errorMessage = nil
         startNavigate = false
     }

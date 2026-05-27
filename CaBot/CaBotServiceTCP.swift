@@ -324,11 +324,39 @@ class CaBotServiceTCP: NSObject {
             guard let text = dt[0] as? String else { return }
             ChatData.shared.lastCameraImage = text
         }
+        socket.on("camera_right_image"){[weak self] dt, ack in
+            guard let text = dt[0] as? String else { return }
+            ChatData.shared.lastRightCameraImage = text
+        }
+        socket.on("camera_left_image"){[weak self] dt, ack in
+            guard let text = dt[0] as? String else { return }
+            ChatData.shared.lastLeftCameraImage = text
+        }
         socket.on("camera_orientation"){[weak self] dt, ack in
             guard let text = dt[0] as? String else { return }
             guard let data = String(text).data(using:.utf8) else { return }
             do {
                 ChatData.shared.lastCameraOrientation = try JSONDecoder().decode(ChatData.CameraOrientation.self, from: data)
+            } catch {
+                print(text)
+                NSLog(error.localizedDescription)
+            }
+        }
+        socket.on("camera_right_orientation"){[weak self] dt, ack in
+            guard let text = dt[0] as? String else { return }
+            guard let data = String(text).data(using:.utf8) else { return }
+            do {
+                ChatData.shared.lastRightCameraOrientation = try JSONDecoder().decode(ChatData.CameraOrientation.self, from: data)
+            } catch {
+                print(text)
+                NSLog(error.localizedDescription)
+            }
+        }
+        socket.on("camera_left_orientation"){[weak self] dt, ack in
+            guard let text = dt[0] as? String else { return }
+            guard let data = String(text).data(using:.utf8) else { return }
+            do {
+                ChatData.shared.lastLeftCameraOrientation = try JSONDecoder().decode(ChatData.CameraOrientation.self, from: data)
             } catch {
                 print(text)
                 NSLog(error.localizedDescription)
