@@ -24,12 +24,46 @@ import Combine
 import Foundation
 import ChatView
 import OpenAI
+import UIKit
 
 extension Model {
     static let ollama_llama3_2 = "ollama/llama3.2"
 }
 
+struct ChatCameraMessagePayload: Codable, Equatable {
+    struct Item: Codable, Equatable {
+        let label: String
+        let imageURL: String
+
+        enum CodingKeys: String, CodingKey {
+            case label
+            case imageURL = "image_url"
+        }
+    }
+
+    static let prefix = "cabot:camera_images:"
+
+    let items: [Item]
+
+    var encodedText: String {
+        guard let data = try? JSONEncoder().encode(self),
+              let json = String(data: data, encoding: .utf8) else {
+            return items.first?.imageURL ?? ""
+        }
+        return Self.prefix + json
+    }
+
+    static func decode(from text: String) -> ChatCameraMessagePayload? {
+        guard text.hasPrefix(prefix) else { return nil }
+        let json = String(text.dropFirst(prefix.count))
+        guard let data = json.data(using: .utf8) else { return nil }
+        return try? JSONDecoder().decode(ChatCameraMessagePayload.self, from: data)
+    }
+}
+
 class ChatClientOpenAI: ChatClient {
+    typealias VisionContent = ChatQuery.ChatCompletionMessageParam.ChatCompletionUserMessageParam.Content.VisionContent
+
     var callback: ChatClientCallback?
     var client: OpenAI?
     let welcome_text = "Hello"
@@ -86,14 +120,7 @@ class ChatClientOpenAI: ChatClient {
     func send(message: String) {
         guard let appModel = ChatData.shared.viewModel?.appModel, appModel.showingChatView else {return}
         // prepare messages
-        var messages: [ChatQuery.ChatCompletionMessageParam] = []
-        if message.hasPrefix("data:image") {
-            let vision: [ChatQuery.ChatCompletionMessageParam.ChatCompletionUserMessageParam.Content.VisionContent] =
-                [.init(chatCompletionContentPartImageParam: .init(imageUrl: .init(url: message, detail: .auto)))]
-            messages.append(.init(role: .user, content: vision)!)
-        } else if !message.isEmpty {
-            messages.append(.init(role: .user, content: message)!)
-        }
+        let messages = prepareMessages(message: message)
         // prepare metadata
         self.metadata["request_id"] = UUID().uuidString
         self.metadata["lang"] = chatLanguages[I18N.shared.langCode, default: "OTHER"]
@@ -168,14 +195,7 @@ class ChatClientOpenAI: ChatClient {
                                     NSLog("chat function \(name): \(params)")
                                     if params.is_image_required {
                                         success_count += 1
-                                        if let imageUrl = ChatData.shared.lastCameraImage {
-                                            camera_message = imageUrl
-                                            if let orientation = ChatData.shared.lastCameraOrientation, orientation.camera_rotate {
-                                                camera_message = self.rotate(imageUrl)
-                                            }
-                                        } else {
-                                            camera_message = CustomLocalizedString("Could not send camera image", lang: I18N.shared.lang)
-                                        }
+                                        camera_message = self.prepareCameraMessage()
                                     }
                                 }
                                 break
@@ -227,7 +247,9 @@ class ChatClientOpenAI: ChatClient {
             pub.send(completion: .finished)
             if let message = camera_message, let viewModel = ChatData.shared.viewModel {
                 DispatchQueue.main.async {
-                    viewModel.messages.append(ChatMessage(user: .User, text: message))
+                    self.displayMessageTexts(for: message).forEach { text in
+                        viewModel.messages.append(ChatMessage(user: .User, text: text))
+                    }
                     self.backgroundQueue.asyncAfter(deadline: .now() + 0.1) { // FIX heartbeat delay
                         self.send(message: message)
                     }
@@ -346,6 +368,67 @@ class ChatClientOpenAI: ChatClient {
         if tours.first(where: {$0.id == params.tour_id}) == nil {
             NSLog("chat tour_id \(params.tour_id) not found")
             ChatData.shared.errorMessage = CustomLocalizedString("Could not set tour", lang: I18N.shared.lang)
+        }
+    }
+
+    func prepareMessages(message: String) -> [ChatQuery.ChatCompletionMessageParam] {
+        var messages: [ChatQuery.ChatCompletionMessageParam] = []
+
+        if let payload = ChatCameraMessagePayload.decode(from: message) {
+            let vision = makeVisionContents(from: payload)
+            if !vision.isEmpty {
+                messages.append(.init(role: .user, content: vision)!)
+            }
+        } else if message.hasPrefix("data:image") {
+            let vision: [VisionContent] = [
+                .init(chatCompletionContentPartImageParam: .init(imageUrl: .init(url: message, detail: .auto)))
+            ]
+            messages.append(.init(role: .user, content: vision)!)
+        } else if !message.isEmpty {
+            messages.append(.init(role: .user, content: message)!)
+        }
+
+        return messages
+    }
+
+    func displayMessageTexts(for message: String) -> [String] {
+        if let payload = ChatCameraMessagePayload.decode(from: message) {
+            let imageURLs = payload.items.map(\.imageURL)
+            return imageURLs.isEmpty ? [message] : imageURLs
+        }
+        return [message]
+    }
+
+    func prepareCameraMessage() -> String {
+        guard let frontImage = preparedCameraImage(imageUrl: ChatData.shared.lastCameraImage, orientation: ChatData.shared.lastCameraOrientation) else {
+            return CustomLocalizedString("Could not send camera image", lang: I18N.shared.lang)
+        }
+
+        var items: [ChatCameraMessagePayload.Item] = [.init(label: "front camera", imageURL: frontImage)]
+        if let leftImage = preparedCameraImage(imageUrl: ChatData.shared.lastLeftCameraImage, orientation: ChatData.shared.lastLeftCameraOrientation) {
+            items.append(.init(label: "left camera", imageURL: leftImage))
+        }
+        if let rightImage = preparedCameraImage(imageUrl: ChatData.shared.lastRightCameraImage, orientation: ChatData.shared.lastRightCameraOrientation) {
+            items.append(.init(label: "right camera", imageURL: rightImage))
+        }
+
+        return ChatCameraMessagePayload(items: items).encodedText
+    }
+
+    func preparedCameraImage(imageUrl: String?, orientation: ChatData.CameraOrientation?) -> String? {
+        guard let imageUrl else { return nil }
+        if let orientation, orientation.camera_rotate && orientation.yaw > 0.0 {
+            return imageUrl
+        }
+        return rotate(imageUrl)
+    }
+
+    func makeVisionContents(from payload: ChatCameraMessagePayload) -> [VisionContent] {
+        payload.items.flatMap { item in
+            [
+                .init(chatCompletionContentPartTextParam: .init(text: item.label)),
+                .init(chatCompletionContentPartImageParam: .init(imageUrl: .init(url: item.imageURL, detail: .auto)))
+            ]
         }
     }
 
