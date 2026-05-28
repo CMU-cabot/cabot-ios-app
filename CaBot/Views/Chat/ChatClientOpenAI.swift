@@ -76,6 +76,12 @@ class ChatClientOpenAI: ChatClient {
     var metadata: [String: Any]
     private var backgroundQueue = DispatchQueue.init(label: "Background Queue")
     private let chatLanguages = ["ja": "JA", "en": "EN", "zh": "CN"]
+    private var cameraRequestTimer: Timer?
+    private var cameraRequestStartedAt: Date?
+    private var pendingCameraRequestCompletion: ((String) -> Void)?
+    private var cameraRequestObserver: NSObjectProtocol?
+    private let cameraRequestInterval: TimeInterval = 1.0
+    private let cameraRequestTimeout: TimeInterval = 5.0
 
     init(config:ChatConfiguration, callback: @escaping ChatClientCallback) {
         self.callback = callback
@@ -156,7 +162,7 @@ class ChatClientOpenAI: ChatClient {
         self.pub = PassthroughSubject<String, Error>()
         self.prepareSinkForHistory()
         var error_count = 0, success_count = 0
-        var camera_message: String?
+        var requiresCameraMessage = false
         DispatchQueue.main.async {
             appModel.sendingChatData = true
         }
@@ -175,11 +181,11 @@ class ChatClientOpenAI: ChatClient {
             guard let pub = self.pub, appModel.showingChatView else { return }
             switch partialResult {
             case .success(let result):
-                if camera_message == nil && !self.callback_called.contains(result.id) && result.choices[0].delta.toolCalls == nil {
+                if !requiresCameraMessage && !self.callback_called.contains(result.id) && result.choices[0].delta.toolCalls == nil {
                     self.callback?(result.id, pub)
                     self.callback_called.insert(result.id)
                 }
-                if camera_message == nil, let content = result.choices[0].delta.content {
+                if !requiresCameraMessage, let content = result.choices[0].delta.content {
                     success_count += min(content.count, 1)
                     pub.send(content)
                     NSLog("chat stream content \(content)")
@@ -195,7 +201,7 @@ class ChatClientOpenAI: ChatClient {
                                     NSLog("chat function \(name): \(params)")
                                     if params.is_image_required {
                                         success_count += 1
-                                        camera_message = self.prepareCameraMessage()
+                                        requiresCameraMessage = true
                                     }
                                 }
                                 break
@@ -245,15 +251,9 @@ class ChatClientOpenAI: ChatClient {
                 pub.send("\n\n\n\(msg)\n\(CustomLocalizedString("Checking now", lang: I18N.shared.lang))")
             }
             pub.send(completion: .finished)
-            if let message = camera_message, let viewModel = ChatData.shared.viewModel {
-                DispatchQueue.main.async {
-                    self.displayMessageTexts(for: message).forEach { text in
-                        viewModel.messages.append(ChatMessage(user: .User, text: text))
-                    }
-                    self.backgroundQueue.asyncAfter(deadline: .now() + 0.1) { // FIX heartbeat delay
-                        self.send(message: message)
-                    }
-                }
+            if requiresCameraMessage {
+                self.requestCameraMessage(appModel: appModel)
+                return
             }
             DispatchQueue.main.async {
                 appModel.sendingChatData = false
@@ -285,6 +285,94 @@ class ChatClientOpenAI: ChatClient {
     func cleanupForHistory(){
         queryResultCancellable = nil
         queryResultCache = ""
+    }
+
+    func cancelPendingCameraRequest() {
+        DispatchQueue.main.async {
+            self.finishCameraRequest(message: nil)
+        }
+    }
+
+    func requestCameraMessage(appModel: CaBotAppModel) {
+        DispatchQueue.main.async {
+            self.finishCameraRequest(message: nil)
+            guard appModel.showingChatView else {
+                appModel.sendingChatData = false
+                return
+            }
+
+            ChatData.shared.clearCameraCache()
+            self.cameraRequestStartedAt = Date()
+            self.pendingCameraRequestCompletion = { [weak self] message in
+                guard let self else { return }
+                guard let viewModel = ChatData.shared.viewModel, appModel.showingChatView else {
+                    DispatchQueue.main.async {
+                        appModel.sendingChatData = false
+                    }
+                    return
+                }
+                self.displayMessageTexts(for: message).forEach { text in
+                    viewModel.messages.append(ChatMessage(user: .User, text: text))
+                }
+                self.backgroundQueue.asyncAfter(deadline: .now() + 0.1) { // FIX heartbeat delay
+                    self.send(message: message)
+                }
+            }
+
+            NSLog("chat start camera request interval")
+            self.cameraRequestObserver = NotificationCenter.default.addObserver(forName: .chatCameraCacheDidUpdate, object: nil, queue: .main) { [weak self] _ in
+                self?.handleCameraCacheUpdate(appModel: appModel)
+            }
+            appModel.requestCameraImage()
+            self.cameraRequestTimer = Timer.scheduledTimer(withTimeInterval: self.cameraRequestInterval, repeats: true) { [weak self] timer in
+                guard let self else {
+                    timer.invalidate()
+                    return
+                }
+                guard appModel.showingChatView else {
+                    self.finishCameraRequest(message: nil)
+                    appModel.sendingChatData = false
+                    return
+                }
+                if let start = self.cameraRequestStartedAt, -start.timeIntervalSinceNow >= self.cameraRequestTimeout {
+                    NSLog("chat camera request timed out after \(String(format: "%.3f", self.cameraRequestElapsedTime)) sec")
+                    self.finishCameraRequest(message: self.prepareCameraMessage())
+                    return
+                }
+                appModel.requestCameraImage()
+            }
+        }
+    }
+
+    func handleCameraCacheUpdate(appModel: CaBotAppModel) {
+        guard pendingCameraRequestCompletion != nil else { return }
+        guard appModel.showingChatView else {
+            finishCameraRequest(message: nil)
+            appModel.sendingChatData = false
+            return
+        }
+        guard ChatData.shared.hasCompleteCameraCache else { return }
+        NSLog("chat complete camera cache received in \(String(format: "%.3f", cameraRequestElapsedTime)) sec")
+        finishCameraRequest(message: prepareCameraMessage())
+    }
+
+    var cameraRequestElapsedTime: TimeInterval {
+        guard let start = cameraRequestStartedAt else { return 0.0 }
+        return -start.timeIntervalSinceNow
+    }
+
+    func finishCameraRequest(message: String?) {
+        cameraRequestTimer?.invalidate()
+        cameraRequestTimer = nil
+        if let observer = cameraRequestObserver {
+            NotificationCenter.default.removeObserver(observer)
+            cameraRequestObserver = nil
+        }
+        cameraRequestStartedAt = nil
+        let completion = pendingCameraRequestCompletion
+        pendingCameraRequestCompletion = nil
+        guard let message, let completion else { return }
+        completion(message)
     }
 
     struct AroundDescription: Decodable {

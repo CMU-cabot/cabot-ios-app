@@ -26,7 +26,6 @@ import ChatView
 public struct ContentView: View {
     @EnvironmentObject var appModel: CaBotAppModel
     @StateObject var model: ChatViewModel
-    @State var timer: Timer?
     static var inactive_at: Date?
     public var body: some View {
         ChatView(messages: model.messages)
@@ -53,23 +52,11 @@ public struct ContentView: View {
     func startChat(_ start: Bool) {
         if !start {
             model.stt?.endRecognize()
-            timer?.invalidate()
+            model.chat?.cancelPendingCameraRequest()
             if ContentView.inactive_at == nil {
                 ContentView.inactive_at = Date()
             }
             return
-        }
-        var count_down = 0
-        timer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { timer in
-            if start, let stt: AppleSTT = model.stt {
-                if stt.recognizing {
-                    count_down = 2
-                }
-                if count_down > 0 {
-                    appModel.requestCameraImage()
-                    count_down -= 1
-                }
-            }
         }
         var welcome_message = false
         if model.stt == nil {

@@ -27,6 +27,10 @@ import ChatView
 import SwiftUI
 import PriorityQueueTTS
 
+extension Notification.Name {
+    static let chatCameraCacheDidUpdate = Notification.Name("chatCameraCacheDidUpdate")
+}
+
 class ChatViewModel: ObservableObject  {
     public var cancellables = Set<AnyCancellable>()
     @Published public var messages: [ChatMessage] = [] {
@@ -199,6 +203,7 @@ class ChatData {
         didSet {
             guard let image = lastCameraImage else {return}
             NSLog("chat camera_image \(image.count) bytes")
+            NotificationCenter.default.post(name: .chatCameraCacheDidUpdate, object: nil)
         }
     }
 
@@ -206,6 +211,7 @@ class ChatData {
         didSet {
             guard let image = lastRightCameraImage else {return}
             NSLog("chat camera_right_image \(image.count) bytes")
+            NotificationCenter.default.post(name: .chatCameraCacheDidUpdate, object: nil)
         }
     }
 
@@ -213,6 +219,7 @@ class ChatData {
         didSet {
             guard let image = lastLeftCameraImage else {return}
             NSLog("chat camera_left_image \(image.count) bytes")
+            NotificationCenter.default.post(name: .chatCameraCacheDidUpdate, object: nil)
         }
     }
 
@@ -220,6 +227,7 @@ class ChatData {
         didSet {
             guard let orientation = lastCameraOrientation else {return}
             cameraOrientationLogPack.log(text:"\(orientation)")
+            NotificationCenter.default.post(name: .chatCameraCacheDidUpdate, object: nil)
         }
     }
 
@@ -227,6 +235,7 @@ class ChatData {
         didSet {
             guard let orientation = lastRightCameraOrientation else {return}
             rightCameraOrientationLogPack.log(text:"\(orientation)")
+            NotificationCenter.default.post(name: .chatCameraCacheDidUpdate, object: nil)
         }
     }
 
@@ -234,6 +243,7 @@ class ChatData {
         didSet {
             guard let orientation = lastLeftCameraOrientation else {return}
             leftCameraOrientationLogPack.log(text:"\(orientation)")
+            NotificationCenter.default.post(name: .chatCameraCacheDidUpdate, object: nil)
         }
     }
 
@@ -245,13 +255,26 @@ class ChatData {
 
     func clear() {
         lastLocation = nil
+        clearCameraCache()
+        errorMessage = nil
+        startNavigate = false
+    }
+
+    func clearCameraCache() {
         lastCameraImage = nil
         lastRightCameraImage = nil
         lastLeftCameraImage = nil
         lastCameraOrientation = nil
         lastRightCameraOrientation = nil
         lastLeftCameraOrientation = nil
-        errorMessage = nil
-        startNavigate = false
+    }
+
+    var hasCompleteCameraCache: Bool {
+        lastCameraImage != nil &&
+        lastCameraOrientation != nil &&
+        lastRightCameraImage != nil &&
+        lastRightCameraOrientation != nil &&
+        lastLeftCameraImage != nil &&
+        lastLeftCameraOrientation != nil
     }
 }
