@@ -505,7 +505,7 @@ class ChatClientOpenAI: ChatClient {
 
     func preparedCameraImage(imageUrl: String?, orientation: ChatData.CameraOrientation?) -> String? {
         guard let imageUrl else { return nil }
-        if let orientation, orientation.camera_rotate && orientation.yaw > 0.0 {
+        if let orientation, orientation.camera_rotate && orientation.yaw < -Double.pi / 2 {
             return imageUrl
         }
         return rotate(imageUrl)
