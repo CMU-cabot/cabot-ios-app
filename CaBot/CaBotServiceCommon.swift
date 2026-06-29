@@ -158,6 +158,7 @@ enum CaBotManageCommand:String {
     case speaker_alert
     case enablewifi
     case disablewifi
+    case rotate_screen
     case follow_exact_path
     case release_emergencystop
 }

@@ -1555,6 +1555,8 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                 break
             case .disablewifi:
                 break
+            case .rotate_screen:
+                break
             case .follow_exact_path:
                 break
             case .release_emergencystop:
