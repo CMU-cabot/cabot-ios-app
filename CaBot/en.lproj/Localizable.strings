@@ -165,6 +165,9 @@
 "The app will be disconnected."="The app will be disconnected.";
 "Power off"="Power off";
 "Device Status"="Device Status";
+"Screen Rotation"="Screen Rotation";
+"Portrait"="Portrait";
+"Landscape"="Landscape";
 "DEVICE_ERROR_ALERT%@" = "Device - %@";
 "CHECK_DEVICE_STATUS" = "Please Check Device Status Menu";
 

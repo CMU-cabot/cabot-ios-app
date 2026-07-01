@@ -17,6 +17,7 @@ struct DetailSettingView: View {
     @State private var isConfirmingReboot = false
     @State private var isConfirmingPoweroff = false
     @State private var isConfirmingReleaseEmergencystop = false
+    @State private var isConfirmingRotateScreen = false
 
     let startSounds:[String] = [
         "/System/Library/Audio/UISounds/nano/3rdParty_Success_Haptic.caf",
@@ -148,6 +149,24 @@ struct DetailSettingView: View {
                     Text("WiFi")
                 }
                 .disabled(!cabotAppModel.suitcaseConnected || !cabotAppModel.wifiDetected)
+
+                Button(action: {
+                    isConfirmingRotateScreen = true
+                }) {
+                    Text("Screen Rotation")
+                        .frame(width: nil, alignment: .topLeading)
+                }
+                .confirmationDialog(Text("Screen Rotation"), isPresented: $isConfirmingRotateScreen) {
+                    Button("Portrait") {
+                        cabotAppModel.systemManageCommand(command: .rotate_screen, param: "portrait")
+                    }
+                    Button("Landscape") {
+                        cabotAppModel.systemManageCommand(command: .rotate_screen, param: "landscape")
+                    }
+                    Button("Cancel", role: .cancel) {
+                    }
+                }
+                .disabled(!cabotAppModel.suitcaseConnected)
 
             }
             

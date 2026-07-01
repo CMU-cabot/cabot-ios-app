@@ -27,6 +27,7 @@ struct DeviceStatusView: View {
     @State private var isConfirmingReboot = false
     @State private var isConfirmingPoweroff = false
     @State private var isConfirmingReleaseEmergencystop = false
+    @State private var isConfirmingRotateScreen = false
     var body: some View {
         return VStack {
             Form {
@@ -114,6 +115,24 @@ struct DeviceStatusView: View {
                         Text("WiFi")
                     }
                     .disabled(!modelData.suitcaseConnected || !modelData.wifiDetected)
+
+                    Button(action: {
+                        isConfirmingRotateScreen = true
+                    }) {
+                        Text("Screen Rotation")
+                            .frame(width: nil, alignment: .topLeading)
+                    }
+                    .confirmationDialog(Text("Screen Rotation"), isPresented: $isConfirmingRotateScreen) {
+                        Button("Portrait") {
+                            modelData.systemManageCommand(command: .rotate_screen, param: "portrait")
+                        }
+                        Button("Landscape") {
+                            modelData.systemManageCommand(command: .rotate_screen, param: "landscape")
+                        }
+                        Button("Cancel", role: .cancel) {
+                        }
+                    }
+                    .disabled(!modelData.suitcaseConnected)
                 }
             }
             .navigationTitle("Device Status")
