@@ -153,14 +153,14 @@ struct DetailSettingView: View {
                 Button(action: {
                     isConfirmingRotateScreen = true
                 }) {
-                    Text("画面回転")
+                    Text("Screen Rotation")
                         .frame(width: nil, alignment: .topLeading)
                 }
-                .confirmationDialog(Text("画面回転"), isPresented: $isConfirmingRotateScreen) {
-                    Button("縦") {
+                .confirmationDialog(Text("Screen Rotation"), isPresented: $isConfirmingRotateScreen) {
+                    Button("Portrait") {
                         cabotAppModel.systemManageCommand(command: .rotate_screen, param: "portrait")
                     }
-                    Button("横") {
+                    Button("Landscape") {
                         cabotAppModel.systemManageCommand(command: .rotate_screen, param: "landscape")
                     }
                     Button("Cancel", role: .cancel) {

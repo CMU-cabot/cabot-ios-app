@@ -165,6 +165,9 @@
 "The app will be disconnected."="スーツケースとの接続が解除されます";
 "Power off"="電源オフ";
 "Device Status"="デバイス状態";
+"Screen Rotation"="画面回転";
+"Portrait"="縦";
+"Landscape"="横";
 "DEVICE_ERROR_ALERT%@" = "デバイス - %@";
 "CHECK_DEVICE_STATUS" = "デバイスメニューを確認してください";
 
