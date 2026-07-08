@@ -149,6 +149,11 @@ class ChatClientOpenAI: ChatClient {
             }
             self.metadata["destinations"] = tourManager.destinations.map{$0._id}
         }
+#if USER
+        self.metadata["staff_call_available"] =
+            appModel.lastSuccessfulZoomJoinParameters != nil &&
+            appModel.zoomMeetingStatusText != "in_meeting"
+#endif
         // query
         let query = ChatQuery(messages: messages, model: "dummy", metadata: AnyCodable(self.metadata), stream: true)
 
@@ -224,6 +229,11 @@ class ChatClientOpenAI: ChatClient {
                                         self.onTourSetting(params)
                                     }
                                 }
+                                break
+                            case "call_staff":
+                                NSLog("chat function \(name)")
+                                success_count += 1
+                                ChatData.shared.callStaffOnSpeechEnd = true
                                 break
                             default:
                                 break

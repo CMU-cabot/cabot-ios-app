@@ -589,6 +589,10 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     @Published var zoomMeetingStatusText: String = "idle"
     @Published var zoomCameraDirectionText: String = ""
     var didSpeakZoomConnectedMessage: Bool = false
+    #if USER
+    var pendingZoomJoinParameters: ZoomJoinParameters?
+    var lastSuccessfulZoomJoinParameters: ZoomJoinParameters?
+    #endif
 
     enum ServerStatus {
         case Init
