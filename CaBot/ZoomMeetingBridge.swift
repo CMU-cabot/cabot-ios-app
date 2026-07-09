@@ -35,6 +35,9 @@ extension CaBotAppModel {
                 let shouldRestoreFromIdle =
                     status == "idle" &&
                     ["joining", "waiting_for_host", "reconnecting", "in_meeting", "leaving"].contains(previousStatus ?? "")
+                if status == "in_meeting" {
+                    self?.lastSuccessfulZoomJoinParameters = self?.pendingZoomJoinParameters
+                }
                 if status == "idle" {
                     self?.didSpeakZoomConnectedMessage = false
                 }
@@ -60,7 +63,12 @@ extension CaBotAppModel {
 
     @discardableResult
     func joinZoomMeeting(inviteLink: String, useMic: Bool, useCamera: Bool) -> Bool {
-        ZoomMeetingController.shared.join(inviteLink: inviteLink, useMic: useMic, useCamera: useCamera)
+        let joinParameters = ZoomJoinParameters(inviteLink: inviteLink, useMic: useMic, useCamera: useCamera)
+        let started = ZoomMeetingController.shared.join(inviteLink: inviteLink, useMic: useMic, useCamera: useCamera)
+        if started {
+            self.pendingZoomJoinParameters = joinParameters
+        }
+        return started
     }
 
     @discardableResult
@@ -71,6 +79,18 @@ extension CaBotAppModel {
     @discardableResult
     func switchZoomCamera() -> Bool {
         ZoomMeetingController.shared.switchCamera()
+    }
+
+    @discardableResult
+    func callStaffWithLastSuccessfulZoom() -> Bool {
+        guard let joinParameters = self.lastSuccessfulZoomJoinParameters else {
+            return false
+        }
+        return self.joinZoomMeeting(
+            inviteLink: joinParameters.inviteLink,
+            useMic: joinParameters.useMic,
+            useCamera: joinParameters.useCamera
+        )
     }
 
     private func speakZoomStatusMessage(connected: Bool) {
@@ -87,5 +107,11 @@ extension CaBotAppModel {
             }
         }
     }
+}
+
+struct ZoomJoinParameters {
+    let inviteLink: String
+    let useMic: Bool
+    let useCamera: Bool
 }
 #endif

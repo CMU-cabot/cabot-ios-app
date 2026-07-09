@@ -161,6 +161,26 @@ class ChatViewModel: ObservableObject  {
             self.appModel?.showingChatView = false
             return true
         }
+#if USER
+        if ChatData.shared.callStaffOnSpeechEnd {
+            ChatData.shared.callStaffOnSpeechEnd = false
+            let started: Bool
+            if Thread.isMainThread {
+                started = self.appModel?.callStaffWithLastSuccessfulZoom() ?? false
+            } else {
+                var result = false
+                DispatchQueue.main.sync {
+                    NSLog("Dispatch thredcallStaffWithLastSuccessfulZoom")
+                    result = self.appModel?.callStaffWithLastSuccessfulZoom() ?? false
+                }
+                started = result
+            }
+            guard started else { return false }
+            self.chatState.chatState = .Inactive
+            self.appModel?.showingChatView = false
+            return true
+        }
+#endif
         return false
     }
 }
@@ -176,6 +196,7 @@ class ChatData {
     var tourManager: TourManager?
     var errorMessage: String?
     var startNavigate = false
+    var callStaffOnSpeechEnd = false
 
     struct CurrentLocation: Decodable {
         var lat: Double
@@ -258,6 +279,7 @@ class ChatData {
         clearCameraCache()
         errorMessage = nil
         startNavigate = false
+        callStaffOnSpeechEnd = false
     }
 
     func clearCameraCache() {
