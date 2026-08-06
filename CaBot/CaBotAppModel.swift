@@ -2306,7 +2306,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             )
         }
         if userInfo.type == .SwitchZoomCamera {
-            _ = self.switchZoomCamera()
+            _ = self.switchZoomCamera(command: userInfo.value)
         }
         if userInfo.type == .LeaveZoom {
             _ = self.leaveZoomMeeting()
