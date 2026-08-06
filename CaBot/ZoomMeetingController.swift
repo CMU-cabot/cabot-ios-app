@@ -29,7 +29,7 @@ protocol ZoomMeetingControlling {
     func join(inviteLink: String, useMic: Bool, useCamera: Bool) -> Bool
 
     @discardableResult
-    func switchCamera() -> Bool
+    func switchCamera(command: String) -> Bool
 
     @discardableResult
     func isJoined() -> Bool
@@ -116,6 +116,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
     private var joinStateGraceDeadline: Date?
     private var authPurpose: ZoomAuthPurpose = .none
     private var authorizedCredentialSnapshot: ZoomAuthCredentialSnapshot?
+    private var pendingCameraDirection: String?
 
     private let meetingStatePollingInterval: TimeInterval = 1.0
     private let videoActivationRetryDelay: TimeInterval = 0.8
@@ -281,7 +282,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
     }
 
     @discardableResult
-    func switchCamera() -> Bool {
+    func switchCamera(command: String) -> Bool {
         guard hasActiveMeetingSession() else {
             NSLog("Zoom switch camera ignored: no active meeting session")
             return false
@@ -291,6 +292,31 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
             return false
         }
 
+        let normalizedCommand = command.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        switch normalizedCommand {
+        case "":
+            // Preserve the legacy command: an empty value toggles front/back.
+            guard currentCameraDirection() != "off" else {
+                NSLog("Zoom switch camera ignored: video is off")
+                return false
+            }
+            return toggleCamera(on: meetingService)
+        case "off":
+            pendingCameraDirection = nil
+            guard currentCameraDirection() != "off" else {
+                publishCurrentCameraDirection()
+                return true
+            }
+            return setMyVideoMuted(true, on: meetingService)
+        case "front", "back":
+            return requestCameraDirection(normalizedCommand, on: meetingService)
+        default:
+            NSLog("Zoom switch camera ignored: unsupported command %@", command)
+            return false
+        }
+    }
+
+    private func toggleCamera(on meetingService: NSObject) -> Bool {
         logAvailableCameraDevices(context: "before switchMyCamera", selectedOnly: true)
         let result = ZoomObjCRuntime.invokeIntegerSelector(
             "switchMyCamera",
@@ -318,12 +344,100 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         guard let meetingService = meetingService() else {
             return ""
         }
+        let isSendingMyVideo = ZoomObjCRuntime.invokeBoolSelector(
+            "isSendingMyVideo",
+            onTarget: meetingService,
+            objectArg: nil
+        )
+        guard isSendingMyVideo else {
+            return "off"
+        }
         let isBackCamera = ZoomObjCRuntime.invokeBoolSelector(
             "isBackCamera",
             onTarget: meetingService,
             objectArg: nil
         )
         return isBackCamera ? "back" : "front"
+    }
+
+    private func requestCameraDirection(_ direction: String, on meetingService: NSObject) -> Bool {
+        let currentDirection = currentCameraDirection()
+        guard currentDirection != direction else {
+            pendingCameraDirection = nil
+            publishCurrentCameraDirection()
+            return true
+        }
+
+        if currentDirection == "off" {
+            let canUnmuteMyVideo = ZoomObjCRuntime.invokeBoolSelector(
+                "canUnmuteMyVideo",
+                onTarget: meetingService,
+                objectArg: nil
+            )
+            guard canUnmuteMyVideo else {
+                NSLog("Zoom video cannot be unmuted by the current user")
+                return false
+            }
+            pendingCameraDirection = direction
+            guard setMyVideoMuted(false, on: meetingService) else {
+                pendingCameraDirection = nil
+                return false
+            }
+            schedulePendingCameraDirection(direction, attempt: 1)
+            return true
+        }
+
+        pendingCameraDirection = nil
+        return toggleCamera(on: meetingService)
+    }
+
+    private func setMyVideoMuted(_ muted: Bool, on meetingService: NSObject) -> Bool {
+        let result = ZoomObjCRuntime.invokeIntegerSelector(
+            "muteMyVideo:",
+            onTarget: meetingService,
+            boolArg: muted
+        )
+        guard result != NSNotFound else {
+            NSLog("Zoom muteMyVideo is unavailable")
+            return false
+        }
+        guard result == 0 else {
+            NSLog("Zoom muteMyVideo(%@) failed with code %@", muted ? "true" : "false", String(result))
+            return false
+        }
+        scheduleCameraDirectionPublish()
+        return true
+    }
+
+    private func schedulePendingCameraDirection(_ direction: String, attempt: Int) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + videoActivationPollingInterval) { [weak self] in
+            guard let self, self.pendingCameraDirection == direction else { return }
+            guard let meetingService = self.meetingService() else { return }
+
+            if self.currentCameraDirection() == "off" {
+                guard attempt < self.videoActivationMaxAttempts else {
+                    NSLog("Zoom video did not activate while selecting %@ camera", direction)
+                    self.pendingCameraDirection = nil
+                    self.publishCurrentCameraDirection()
+                    return
+                }
+                self.schedulePendingCameraDirection(direction, attempt: attempt + 1)
+                return
+            }
+
+            self.pendingCameraDirection = nil
+            if self.currentCameraDirection() != direction {
+                _ = self.toggleCamera(on: meetingService)
+            } else {
+                self.publishCurrentCameraDirection()
+            }
+        }
+    }
+
+    private func scheduleCameraDirectionPublish() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + videoActivationPollingInterval) { [weak self] in
+            self?.publishCurrentCameraDirection()
+        }
     }
 
     func isJoined() -> Bool {
@@ -403,6 +517,15 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
     @objc func onMeetingStateChange(_ state: Int) {
         DispatchQueue.main.async {
             self.handleMeetingStateChange(state)
+        }
+    }
+
+    @objc func onMyVideoStateChange() {
+        DispatchQueue.main.async {
+            if let direction = self.pendingCameraDirection {
+                self.schedulePendingCameraDirection(direction, attempt: 1)
+            }
+            self.publishCurrentCameraDirection()
         }
     }
 
@@ -670,6 +793,7 @@ final class ZoomMeetingController: NSObject, ZoomMeetingControlling {
         )
 
         if isSendingMyVideo {
+            publishCurrentCameraDirection()
             return
         }
 

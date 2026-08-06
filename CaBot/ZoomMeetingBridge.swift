@@ -77,8 +77,8 @@ extension CaBotAppModel {
     }
 
     @discardableResult
-    func switchZoomCamera() -> Bool {
-        ZoomMeetingController.shared.switchCamera()
+    func switchZoomCamera(command: String = "") -> Bool {
+        ZoomMeetingController.shared.switchCamera(command: command)
     }
 
     @discardableResult
