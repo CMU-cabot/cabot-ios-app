@@ -472,6 +472,12 @@ class ChatClientOpenAI: ChatClient {
     func prepareMessages(message: String) -> [ChatQuery.ChatCompletionMessageParam] {
         var messages: [ChatQuery.ChatCompletionMessageParam] = []
 
+        if let viewModel = ChatData.shared.viewModel,
+           let lastSpeech = viewModel.lastApproachedFacilitySpeech {
+            messages.append(.init(role: .assistant, content: lastSpeech.text)!)
+            viewModel.lastApproachedFacilitySpeech = nil
+        }
+
         if let payload = ChatCameraMessagePayload.decode(from: message) {
             let vision = makeVisionContents(from: payload)
             if !vision.isEmpty {

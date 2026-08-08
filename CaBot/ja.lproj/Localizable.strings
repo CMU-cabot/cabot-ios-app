@@ -418,3 +418,6 @@
 "Zoom Leaving" = "Zoom終了中";
 "Zoom Connected Message" = "ズームに接続しました";
 "Zoom Disconnected Message" = "ズームを終了しました";
+
+// Support POI descriptions in conversations
+"APPROACEHD_TO_FACILITY"="^(?<direction>正面|右側|左側)に(?<destination>.+?)があります$";

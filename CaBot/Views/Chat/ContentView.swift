@@ -78,11 +78,14 @@ public struct ContentView: View {
         }
         ContentView.inactive_at = nil
         debugPrintTourData()
-        if welcome_message {
-            model.send(message: "")
+        if let lastSpeech = model.lastApproachedFacilitySpeech,
+           -lastSpeech.timestamp.timeIntervalSinceNow <= 10.0 {
+            model.stt?.restartRecognize()
         } else {
-//            model.stt?.restartRecognize()
-            if let greeting = picker.next() {
+            model.lastApproachedFacilitySpeech = nil
+            if welcome_message {
+                model.send(message: "")
+            } else if let greeting = picker.next() {
                 model.chat?.speakGreeting(CustomLocalizedString(greeting, lang: I18N.shared.lang))
             }
         }
