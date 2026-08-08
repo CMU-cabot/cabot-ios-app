@@ -79,7 +79,7 @@ public struct ContentView: View {
         ContentView.inactive_at = nil
         debugPrintTourData()
         if let lastSpeech = model.lastSpokenMessage,
-           -lastSpeech.timestamp.timeIntervalSinceNow <= 10.0 {
+           -lastSpeech.timestamp.timeIntervalSinceNow <= 5.0 {
             model.stt?.restartRecognize()
         } else {
             model.lastSpokenMessage = nil

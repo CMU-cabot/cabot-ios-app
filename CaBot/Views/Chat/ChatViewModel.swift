@@ -185,7 +185,7 @@ class ChatViewModel: ObservableObject  {
         return false
     }
 
-    func checkApproachedFacilitySpeech(text: String?, force: Bool, priority: CaBotTTS.SpeechPriority, code: CaBotTTS.Reason) {
+    func checkApproachedFacilitySpeech(text: String?, force: Bool, priority: CaBotTTS.SpeechPriority) {
         guard let text else { return }
 
         let language = self.appModel?.resourceLang ?? I18N.shared.lang
@@ -202,7 +202,7 @@ class ChatViewModel: ObservableObject  {
         }
 
         self.lastSpokenMessage = (timestamp: Date(), text: text)
-        NSLog("Matched approached facility speech: \(text), force=\(force), priority=\(priority), code=\(code)")
+        NSLog("Matched approached facility speech: \(text), force=\(force), priority=\(priority)")
     }
 
 }

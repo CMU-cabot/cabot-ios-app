@@ -115,8 +115,9 @@ class CaBotTTS : TTSProtocol {
         self.delegate?.activityLog(category: "app speech speaking", text: text ?? "", memo: "force=\(force)")
 
 
+        ChatData.shared.viewModel?.checkApproachedFacilitySpeech(text: text, force: force, priority: priority)
         self._speak(text == nil ? "" : text!, priority:priority, timeout :sec, tag: tag, completionHandler: { uuid, utext, code, length in
-            ChatData.shared.viewModel?.checkApproachedFacilitySpeech(text: text, force: force, priority: priority, code: code)
+            ChatData.shared.viewModel?.checkApproachedFacilitySpeech(text: text, force: force, priority: priority)
             if code == .Completed {
                 self.delegate?.activityLog(category: "app speech completed", text: text ?? "", memo: "force=\(force),code=\(code)")
             } else if code == .Canceled {
