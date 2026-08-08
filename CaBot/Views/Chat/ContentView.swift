@@ -78,11 +78,11 @@ public struct ContentView: View {
         }
         ContentView.inactive_at = nil
         debugPrintTourData()
-        if let lastSpeech = model.lastApproachedFacilitySpeech,
+        if let lastSpeech = model.lastSpokenMessage,
            -lastSpeech.timestamp.timeIntervalSinceNow <= 10.0 {
             model.stt?.restartRecognize()
         } else {
-            model.lastApproachedFacilitySpeech = nil
+            model.lastSpokenMessage = nil
             if welcome_message {
                 model.send(message: "")
             } else if let greeting = picker.next() {

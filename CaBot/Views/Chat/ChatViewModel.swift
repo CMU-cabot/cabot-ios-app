@@ -46,7 +46,7 @@ class ChatViewModel: ObservableObject  {
     var appModel: CaBotAppModel?
     let inactive_delay = 20.0
     let welcome_delay = 5 * 60.0
-    var lastApproachedFacilitySpeech: (timestamp: Date, text: String)?
+    var lastSpokenMessage: (timestamp: Date, text: String)?
 
     @Published var playBGM: Bool = true
 
@@ -201,7 +201,7 @@ class ChatViewModel: ObservableObject  {
             return
         }
 
-        self.lastApproachedFacilitySpeech = (timestamp: Date(), text: text)
+        self.lastSpokenMessage = (timestamp: Date(), text: text)
         NSLog("Matched approached facility speech: \(text), force=\(force), priority=\(priority), code=\(code)")
     }
 
