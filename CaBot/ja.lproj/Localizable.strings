@@ -421,3 +421,4 @@
 
 // Support POI descriptions in conversations
 "APPROACEHD_TO_FACILITY"="^(?<direction>正面|右側|左側)に(?<destination>.+?)があります$";
+"Please speak"="どうぞ";
