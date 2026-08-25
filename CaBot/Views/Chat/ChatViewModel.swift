@@ -185,7 +185,7 @@ class ChatViewModel: ObservableObject  {
         return false
     }
 
-    func checkApproachedFacilitySpeech(text: String?, force: Bool, priority: CaBotTTS.SpeechPriority) {
+    func checkApproachedFacilitySpeech(text: String?, force: Bool, priority: CaBotTTS.SpeechPriority, start: Bool = false) {
         guard let text else { return }
 
         let language = self.appModel?.resourceLang ?? I18N.shared.lang
@@ -196,13 +196,15 @@ class ChatViewModel: ObservableObject  {
         }
 
         let range = NSRange(text.startIndex..<text.endIndex, in: text)
-        guard let match = regularExpression.firstMatch(in: text, range: range),
-              match.range == range else {
+        guard regularExpression.firstMatch(in: text, range: range) != nil else {
             return
         }
 
-        self.lastSpokenMessage = (timestamp: Date(), text: text)
-        NSLog("Matched approached facility speech: \(text), force=\(force), priority=\(priority)")
+        let estimatedCharactersPerSecond = 5.0
+        let estimatedDuration = Double(text.count) / estimatedCharactersPerSecond
+        let timestamp = Date().addingTimeInterval(start ? estimatedDuration : 0)
+        self.lastSpokenMessage = (timestamp: timestamp, text: text)
+        NSLog("Matched approached facility speech: \(text), force=\(force), priority=\(priority), start=\(start), estimatedDuration=\(estimatedDuration)")
     }
 
 }

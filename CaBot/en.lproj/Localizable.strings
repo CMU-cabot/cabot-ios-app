@@ -420,5 +420,5 @@
 "Zoom Disconnected Message" = "Zoom has ended.";
 
 // Support POI descriptions in conversations
-"APPROACEHD_TO_FACILITY"="^(?<destination>.+?) is (?<direction>in front of you|on your right|on your left)$";
+"APPROACEHD_TO_FACILITY"="^(?<destination>.+?) is (?<direction>in front of you|on your right|on your left)";
 "Please speak"="Please speak";
