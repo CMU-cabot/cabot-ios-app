@@ -418,3 +418,7 @@
 "Zoom Leaving" = "Zoom 结束中";
 "Zoom Connected Message" = "已连接到 Zoom。";
 "Zoom Disconnected Message" = "Zoom 已结束。";
+
+// Support POI descriptions in conversations
+"APPROACEHD_TO_FACILITY"="^在(?<direction>正面|右侧|左側)有(?<destination>.+?)";
+"Please speak"="请说话";

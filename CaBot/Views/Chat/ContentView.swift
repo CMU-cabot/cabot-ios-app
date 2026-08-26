@@ -78,11 +78,16 @@ public struct ContentView: View {
         }
         ContentView.inactive_at = nil
         debugPrintTourData()
-        if welcome_message {
-            model.send(message: "")
-        } else {
+        if let lastSpeech = model.lastSpokenMessage,
+           -lastSpeech.timestamp.timeIntervalSinceNow <= 5.0 {
 //            model.stt?.restartRecognize()
-            if let greeting = picker.next() {
+            model.chat?.speakGreeting(CustomLocalizedString("Please speak", lang: I18N.shared.lang))
+        } else {
+            model.lastSpokenMessage = nil
+            if welcome_message {
+                model.send(message: "")
+            } else if let greeting = picker.next() {
+//                model.stt?.restartRecognize()
                 model.chat?.speakGreeting(CustomLocalizedString(greeting, lang: I18N.shared.lang))
             }
         }

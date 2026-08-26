@@ -46,6 +46,7 @@ class ChatViewModel: ObservableObject  {
     var appModel: CaBotAppModel?
     let inactive_delay = 20.0
     let welcome_delay = 5 * 60.0
+    var lastSpokenMessage: (timestamp: Date, text: String)?
 
     @Published var playBGM: Bool = true
 
@@ -183,6 +184,29 @@ class ChatViewModel: ObservableObject  {
 #endif
         return false
     }
+
+    func checkApproachedFacilitySpeech(text: String?, force: Bool, priority: CaBotTTS.SpeechPriority, start: Bool = false) {
+        guard let text else { return }
+
+        let language = self.appModel?.resourceLang ?? I18N.shared.lang
+        let pattern = CustomLocalizedString("APPROACEHD_TO_FACILITY", lang: language)
+        guard pattern != "APPROACEHD_TO_FACILITY",
+              let regularExpression = try? NSRegularExpression(pattern: pattern) else {
+            return
+        }
+
+        let range = NSRange(text.startIndex..<text.endIndex, in: text)
+        guard regularExpression.firstMatch(in: text, range: range) != nil else {
+            return
+        }
+
+        let estimatedCharactersPerSecond = 5.0
+        let estimatedDuration = Double(text.count) / estimatedCharactersPerSecond
+        let timestamp = Date().addingTimeInterval(start ? estimatedDuration : 0)
+        self.lastSpokenMessage = (timestamp: timestamp, text: text)
+        NSLog("Matched approached facility speech: \(text), force=\(force), priority=\(priority), start=\(start), estimatedDuration=\(estimatedDuration)")
+    }
+
 }
 
 class ChatData {
