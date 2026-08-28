@@ -185,26 +185,28 @@ class ChatViewModel: ObservableObject  {
         return false
     }
 
-    func checkApproachedFacilitySpeech(text: String?, force: Bool, priority: CaBotTTS.SpeechPriority, start: Bool = false) {
-        guard let text else { return }
+    func isApproachedFacility(_ text: String?) -> Bool {
+        guard let text else { return false }
 
         let language = self.appModel?.resourceLang ?? I18N.shared.lang
         let pattern = CustomLocalizedString("APPROACEHD_TO_FACILITY", lang: language)
         guard pattern != "APPROACEHD_TO_FACILITY",
               let regularExpression = try? NSRegularExpression(pattern: pattern) else {
-            return
+            return false
         }
 
         let range = NSRange(text.startIndex..<text.endIndex, in: text)
-        guard regularExpression.firstMatch(in: text, range: range) != nil else {
-            return
-        }
+        return regularExpression.firstMatch(in: text, range: range) != nil
+    }
+
+    func checkApproachedFacilitySpeech(text: String?, force: Bool, priority: CaBotTTS.SpeechPriority, code: Any? = nil) {
+        guard let text, isApproachedFacility(text) else { return }
 
         let estimatedCharactersPerSecond = 5.0
-        let estimatedDuration = Double(text.count) / estimatedCharactersPerSecond
-        let timestamp = Date().addingTimeInterval(start ? estimatedDuration : 0)
+        let estimatedDuration = code == nil ? Double(text.count) / estimatedCharactersPerSecond : 0
+        let timestamp = Date().addingTimeInterval(estimatedDuration)
         self.lastSpokenMessage = (timestamp: timestamp, text: text)
-        NSLog("Matched approached facility speech: \(text), force=\(force), priority=\(priority), start=\(start), estimatedDuration=\(estimatedDuration)")
+        NSLog("Matched approached facility speech: \(text), force=\(force), priority=\(priority), estimatedDuration=\(estimatedDuration), code=\(code ?? "Start")")
     }
 
 }
