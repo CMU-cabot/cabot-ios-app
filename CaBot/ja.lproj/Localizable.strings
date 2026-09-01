@@ -398,8 +398,8 @@
 "Play the voice recognition timeout sound" = "音声認識タイムアウト音を再生する";
 
 // Dummy greeting messages
-"GREETING_1" = "ご用件をお聞かせください。";
-"GREETING_2" = "何かお手伝いできることはありますか？";
+"GREETING_1" = "ご用件をどうぞ。";
+"GREETING_2" = "ご質問をどうぞ。";
 "GREETING_3" = "どうされましたか？";
 
 // Elevator
