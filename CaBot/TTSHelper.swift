@@ -97,19 +97,18 @@ class CaBotTTS : TTSProtocol {
         // let isVoiceOverRunning = UIAccessibility.isVoiceOverRunning
         // let selfspeak = forceSelfvoice || !isForeground || !isVoiceOverRunning
         
-        let chatViewModel = ChatData.shared.viewModel
-        if priority == .Low && chatViewModel?.appModel?.showingChatView == true {
+        let isApproachedFacility = AITextContextManager.shared.isApproachedFacility(text)
+        if priority == .Low && ChatData.shared.viewModel?.appModel?.showingChatView == true {
             return
         }
         var overrideForce = false
         if priority == .Low && self._tts.isSpeaking {
-            guard chatViewModel?.lastSpokenMessage != nil,
-                  chatViewModel?.isApproachedFacility(text) == true else {
+            guard isApproachedFacility && AITextContextManager.shared.hasPendingAIText() else {
                 return
             }
-            overrideForce = true
+//            overrideForce = true
+//            AITextContextManager.shared.clearPendingAIText()
         }
-        chatViewModel?.lastSpokenMessage = nil
         if overrideForce || force || self._tts.isPaused || PriorityQueueTTSWrapper.shared.needForceSpeak(priority) {
             self._tts.stop( true )
             Debug(log:"<TTS> force stop tts by \(text?._summary(15) ?? "")")
@@ -122,11 +121,13 @@ class CaBotTTS : TTSProtocol {
         self.delegate?.activityLog(category: "app speech speaking", text: text ?? "", memo: "force=\(force)")
 
 
-        chatViewModel?.checkApproachedFacilitySpeech(text: text, force: force, priority: priority)
+        if isApproachedFacility {
+            AITextContextManager.shared.replacePendingAIText(text: text!, type: "poi")
+        }
         self._speak(text == nil ? "" : text!, priority:priority, timeout :sec, tag: tag, completionHandler: { uuid, utext, code, length in
+            AITextContextManager.shared.updatePendingAIText(text: text, code: code)
             if code == .Completed {
                 self.delegate?.activityLog(category: "app speech completed", text: text ?? "", memo: "force=\(force),code=\(code)")
-                chatViewModel?.checkApproachedFacilitySpeech(text: text, force: force, priority: priority, code: code)
             } else if code == .Canceled {
                 self.delegate?.activityLog(category: "app speech canceled", text: text ?? "", memo: "force=\(force),code=\(code)")
             }
