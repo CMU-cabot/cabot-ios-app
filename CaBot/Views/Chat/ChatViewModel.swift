@@ -46,8 +46,6 @@ class ChatViewModel: ObservableObject  {
     var appModel: CaBotAppModel?
     let inactive_delay = 20.0
     let welcome_delay = 5 * 60.0
-    var lastSpokenMessage: (timestamp: Date, text: String)?
-
     @Published var playBGM: Bool = true
 
     func toggleChat() {
@@ -185,30 +183,6 @@ class ChatViewModel: ObservableObject  {
         return false
     }
 
-    func isApproachedFacility(_ text: String?) -> Bool {
-        guard let text else { return false }
-
-        let language = self.appModel?.resourceLang ?? I18N.shared.lang
-        let pattern = CustomLocalizedString("APPROACEHD_TO_FACILITY", lang: language)
-        guard pattern != "APPROACEHD_TO_FACILITY",
-              let regularExpression = try? NSRegularExpression(pattern: pattern) else {
-            return false
-        }
-
-        let range = NSRange(text.startIndex..<text.endIndex, in: text)
-        return regularExpression.firstMatch(in: text, range: range) != nil
-    }
-
-    func checkApproachedFacilitySpeech(text: String?, force: Bool, priority: CaBotTTS.SpeechPriority, code: Any? = nil) {
-        guard let text, isApproachedFacility(text) else { return }
-
-        let estimatedCharactersPerSecond = 5.0
-        let estimatedDuration = code == nil ? Double(text.count) / estimatedCharactersPerSecond : 0
-        let timestamp = Date().addingTimeInterval(estimatedDuration)
-        self.lastSpokenMessage = (timestamp: timestamp, text: text)
-        NSLog("Matched approached facility speech: \(text), force=\(force), priority=\(priority), estimatedDuration=\(estimatedDuration), code=\(code ?? "Start")")
-    }
-
 }
 
 class ChatData {
@@ -324,5 +298,92 @@ class ChatData {
         lastRightCameraOrientation != nil &&
         lastLeftCameraImage != nil &&
         lastLeftCameraOrientation != nil
+    }
+
+}
+
+class AITextContextManager {
+    static let shared = AITextContextManager()
+    private var pendingAIText: (timestamp: Date, text: String, type: String)?
+
+    func replacePendingAIText(text: String, type: String) {
+        let estimatedCharactersPerSecond = 5.0
+        let estimatedDuration = Double(text.count) / estimatedCharactersPerSecond
+        let now = Date()
+        if let previousPendingAIText = pendingAIText,
+           previousPendingAIText.timestamp > now,
+           previousPendingAIText.type == type {
+            pendingAIText = (timestamp: previousPendingAIText.timestamp.addingTimeInterval(estimatedDuration),
+                             text: "\(previousPendingAIText.text)\n\(text)",
+                             type: type)
+        } else {
+            pendingAIText = (timestamp: now.addingTimeInterval(estimatedDuration), text: text, type: type)
+        }
+        if let pendingAIText {
+            let secondsUntilTimestamp = pendingAIText.timestamp.timeIntervalSinceNow
+            let logText = pendingAIText.text.replacingOccurrences(of: "\n", with: "\\n")
+            NSLog("replacePendingAIText text: \(logText), timestamp in \(String(format: "%.1f", secondsUntilTimestamp)) seconds, type: \(type)")
+        }
+    }
+
+    func updatePendingAIText(text: String?, code: CaBotTTS.Reason) {
+        guard code == .Completed,
+              let text,
+              pendingAIText?.text.hasSuffix(text) == true else {
+            if code != .Paused {
+                let logText = text.map { String($0.prefix(50)) } ?? ""
+                NSLog("updatePendingAIText skip text: \(String(describing: logText))..., code: \(code)")
+            }
+            return
+        }
+
+        pendingAIText?.timestamp = Date()
+        NSLog("updatePendingAIText text: \(text), code: \(code)")
+    }
+
+    func appendPendingAIText(_ text: String, type: String) {
+        if pendingAIText != nil {
+            pendingAIText?.text += "\n\(text)"
+        } else {
+            pendingAIText = (timestamp: Date(), text: text, type: type)
+        }
+        NSLog("appendPendingAIText text: \(text), type: \(type)")
+    }
+
+    func hasRecentPendingAIText(within timeout: TimeInterval = 20.0) -> Bool {
+        guard let pendingAIText else { return false }
+        let expire = -pendingAIText.timestamp.timeIntervalSinceNow
+        NSLog("hasRecentPendingAIText after \(String(format: "%.1f", expire)) seconds")
+        return expire <= timeout
+    }
+
+    func hasPendingAIText() -> Bool {
+        pendingAIText != nil
+    }
+
+    func consumePendingAIText() -> String? {
+        defer { pendingAIText = nil }
+        if let logText = pendingAIText?.text.replacingOccurrences(of: "\n", with: "\\n") {
+            NSLog("consumePendingAIText \(logText)")
+        }
+        return pendingAIText?.text
+    }
+
+    func clearPendingAIText() {
+        pendingAIText = nil
+    }
+
+    func isApproachedFacility(_ text: String?) -> Bool {
+        guard let text else { return false }
+
+        let language = ChatData.shared.viewModel?.appModel?.resourceLang ?? I18N.shared.lang
+        let pattern = CustomLocalizedString("APPROACEHD_TO_FACILITY", lang: language)
+        guard pattern != "APPROACEHD_TO_FACILITY",
+              let regularExpression = try? NSRegularExpression(pattern: pattern) else {
+            return false
+        }
+
+        let range = NSRange(text.startIndex..<text.endIndex, in: text)
+        return regularExpression.firstMatch(in: text, range: range) != nil
     }
 }

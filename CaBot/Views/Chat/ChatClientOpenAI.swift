@@ -114,13 +114,7 @@ class ChatClientOpenAI: ChatClient {
         }
     }
     func speakGreeting(_ message: String) {
-        if let viewModel = ChatData.shared.viewModel {
-            if viewModel.lastSpokenMessage != nil {
-                viewModel.lastSpokenMessage?.text += "\n\(message)"
-            } else {
-                viewModel.lastSpokenMessage = (timestamp: Date(), text: message)
-            }
-        }
+        AITextContextManager.shared.appendPendingAIText(message, type: "greeting")
         self.pub = PassthroughSubject<String, Error>()
         if let pub = self.pub {
             let result_id = UUID().uuidString
@@ -479,10 +473,8 @@ class ChatClientOpenAI: ChatClient {
     func prepareMessages(message: String) -> [ChatQuery.ChatCompletionMessageParam] {
         var messages: [ChatQuery.ChatCompletionMessageParam] = []
 
-        if let viewModel = ChatData.shared.viewModel,
-           let lastSpeech = viewModel.lastSpokenMessage {
-            messages.append(.init(role: .assistant, content: lastSpeech.text)!)
-            viewModel.lastSpokenMessage = nil
+        if let aiText = AITextContextManager.shared.consumePendingAIText() {
+            messages.append(.init(role: .assistant, content: aiText)!)
         }
 
         if let payload = ChatCameraMessagePayload.decode(from: message) {

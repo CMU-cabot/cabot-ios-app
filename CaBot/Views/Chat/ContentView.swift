@@ -56,6 +56,7 @@ public struct ContentView: View {
             if ContentView.inactive_at == nil {
                 ContentView.inactive_at = Date()
             }
+            AITextContextManager.shared.clearPendingAIText()
             return
         }
         var welcome_message = false
@@ -78,12 +79,11 @@ public struct ContentView: View {
         }
         ContentView.inactive_at = nil
         debugPrintTourData()
-        if let lastSpeech = model.lastSpokenMessage,
-           -lastSpeech.timestamp.timeIntervalSinceNow <= 5.0 {
+        if AITextContextManager.shared.hasRecentPendingAIText() {
 //            model.stt?.restartRecognize()
             model.chat?.speakGreeting(CustomLocalizedString("Please speak", lang: I18N.shared.lang))
         } else {
-            model.lastSpokenMessage = nil
+            AITextContextManager.shared.clearPendingAIText()
             if welcome_message {
                 model.send(message: "")
             } else if let greeting = picker.next() {

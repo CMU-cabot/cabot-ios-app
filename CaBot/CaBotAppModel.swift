@@ -1864,10 +1864,12 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
 
                 let arrivedMsg = CustomLocalizedString("You have arrived at %@. ", lang: self.resourceLang, cd.title.pron)
                 var announce = ""
+                var aiText = arrivedMsg
                 if let count = cd.arriveMessages?.count {
                     for i in 0 ..< count{
                         announce += cd.arriveMessages?[i].text ?? ""
                     }
+                    aiText += "\n" + announce
                 } else{
                     if let _ = cd.content,
                        tourManager.setting.showContentWhenArrive {
@@ -1905,6 +1907,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                         self.shouldNoAnnounceToPushRightButton = true
                         self.willSpeakArriveMessage = false
                     }
+                    AITextContextManager.shared.replacePendingAIText(text: aiText, type: "arrived")
                 }
             }
             break
