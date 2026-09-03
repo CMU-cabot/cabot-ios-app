@@ -56,7 +56,7 @@ public struct ContentView: View {
             if ContentView.inactive_at == nil {
                 ContentView.inactive_at = Date()
             }
-            AITextContextManager.shared.clearPendingAIText()
+            AITextContextManager.shared.clearPendingAIText("greeting")
             return
         }
         var welcome_message = false

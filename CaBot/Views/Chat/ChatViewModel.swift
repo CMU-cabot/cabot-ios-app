@@ -369,8 +369,10 @@ class AITextContextManager {
         return pendingAIText?.text
     }
 
-    func clearPendingAIText() {
+    func clearPendingAIText(_ type: String? = nil) {
+        guard type == nil || pendingAIText?.type == type else { return }
         pendingAIText = nil
+        NSLog("clearPendingAIText type: \(type ?? "all")")
     }
 
     func isApproachedFacility(_ text: String?) -> Bool {
