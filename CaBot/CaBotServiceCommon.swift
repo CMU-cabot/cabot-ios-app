@@ -461,7 +461,7 @@ enum CaBotLogRequestType:String, Decodable {
     case appLog
 }
 
-enum LogTransferAssetType: String {
+enum LogTransferAssetType: String, Codable {
     case appLog
     case attachmentImage
 }

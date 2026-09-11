@@ -294,6 +294,12 @@
 "CONFIRM_DISCARD_SUBMISSION" = "Do you want to discard the report?";
 "SUITCASE_DOES_NOT_ACCEPT_NEW_REPORT" = "The suitcase does not accept new report";
 "PLEASE_CONNECT_TO_SUITCASE" = "Please connect the smartphone to the suitcase";
+"LOG_UPLOAD_STATUS" = "Log upload status";
+"APP_LOG_UPLOAD_PENDING" = "The smartphone log upload is pending. It will retry automatically after reconnection.";
+"APP_LOG_UPLOAD_FAILED" = "The smartphone log upload failed. Reconnect and retry from here.";
+"RETRY_PENDING_LOG_UPLOAD" = "Retry log upload";
+"APP_LOG_UPLOAD_FAILED_ALERT_TITLE" = "Log upload failed";
+"APP_LOG_UPLOAD_FAILED_ALERT_MESSAGE" = "The report text was sent, but the smartphone logs could not finish uploading. The app saved the pending upload locally and will retry after reconnection.";
 "INVALID_DATE_STRING" = "Invalid date string";
 
 

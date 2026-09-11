@@ -25,6 +25,18 @@ struct LogFilesView: View {
     var body: some View {
         if modelData.isListReady {
             Form{
+                if let pendingStatusMessageKey = modelData.pendingUploadStatusMessageKey {
+                    Section(header: Text("LOG_UPLOAD_STATUS")) {
+                        Text(LocalizedStringKey(pendingStatusMessageKey))
+                            .foregroundColor(.secondary)
+                        if modelData.hasRetryablePendingUploads {
+                            Button("RETRY_PENDING_LOG_UPLOAD") {
+                                modelData.retryPendingUploads()
+                            }
+                            .disabled(!modelData.isSuitcaseConnected)
+                        }
+                    }
+                }
                 Section(header: Text("SELECT_LOG")){
                     ForEach($modelData.log_list, id: \.self) { log_entry in
                     Button(action: {
@@ -53,6 +65,22 @@ struct LogFilesView: View {
                 }
             }
             .listStyle(PlainListStyle())
+            .alert(
+                Text("APP_LOG_UPLOAD_FAILED_ALERT_TITLE"),
+                isPresented: $modelData.shouldShowPendingUploadFailureAlert
+            ) {
+                if modelData.hasRetryablePendingUploads {
+                    Button("RETRY_PENDING_LOG_UPLOAD") {
+                        modelData.dismissPendingUploadFailureAlert()
+                        modelData.retryPendingUploads()
+                    }
+                }
+                Button("Okay", role: .cancel) {
+                    modelData.dismissPendingUploadFailureAlert()
+                }
+            } message: {
+                Text("APP_LOG_UPLOAD_FAILED_ALERT_MESSAGE")
+            }
             .onDisappear() {
                 modelData.clear()
             }
@@ -493,6 +521,7 @@ struct ReportSubmissionForm: View {
                 .alert(Text("CONFIRM_DISCARD_SUBMISSION"), isPresented: $showingConfirmationAlert){
                     Button(role: .destructive,
                            action: {
+                        modelData.discardSelectedDraft()
                         dismiss()
                     }, label: {
                         Text("Yes")

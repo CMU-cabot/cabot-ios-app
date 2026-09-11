@@ -146,9 +146,22 @@ class FallbackService: CaBotServiceProtocol {
     }
     
     func send_log(log_info: LogRequest, files: [LogTransferFile]) -> Bool {
-        guard let service = getService() else { return false }
         NSLog("fallback send_log \(log_info)")
-        return service.send_log(log_info: log_info, files: files)
+        let primaryService = getService()
+        if let primaryService, primaryService.send_log(log_info: log_info, files: files) {
+            return true
+        }
+        let primaryServiceID = primaryService.map { ObjectIdentifier($0 as AnyObject) }
+        for service in services {
+            guard service.isConnected() else { continue }
+            if let primaryServiceID, ObjectIdentifier(service as AnyObject) == primaryServiceID {
+                continue
+            }
+            if service.send_log(log_info: log_info, files: files) {
+                return true
+            }
+        }
+        return false
     }
 
     func share(user_info: SharedInfo) -> Bool {
@@ -920,6 +933,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     let dialogViewHelper: DialogViewHelper
     private let feedbackGenerator = UINotificationFeedbackGenerator()
     let notificationCenter = UNUserNotificationCenter.current()
+    private var isRetryingPendingLogUploads = false
 
     let locationManager: CLLocationManager
     let locationUpdateTimeLimit: CFAbsoluteTime = 60*15
@@ -1366,7 +1380,38 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             type: CaBotLogRequestType.appLog.rawValue,
             log_name: log_name
         )
-        _ = self.fallbackService.send_log(log_info: log_info, files: files)
+        DispatchQueue.main.async {
+            self.logList.markPendingLogUploadSending(logName: log_name)
+        }
+        let succeeded = self.fallbackService.send_log(log_info: log_info, files: files)
+        DispatchQueue.main.async {
+            if succeeded {
+                self.logList.markPendingLogUploadSucceeded(logName: log_name)
+            } else {
+                self.logList.markPendingLogUploadFailed(logName: log_name)
+            }
+        }
+    }
+
+    func retryPendingLogUploads() {
+        retryPendingLogUploadsIfNeeded()
+    }
+
+    private func retryPendingLogUploadsIfNeeded() {
+        guard !isRetryingPendingLogUploads else { return }
+        let pendingUploads = self.logList.pendingLogUploadsForRetry()
+        guard !pendingUploads.isEmpty else { return }
+        guard self.suitcaseConnected else { return }
+
+        isRetryingPendingLogUploads = true
+        DispatchQueue.global(qos: .background).async {
+            for pendingUpload in pendingUploads {
+                self.submitLogFiles(files: pendingUpload.files, log_name: pendingUpload.logName)
+            }
+            DispatchQueue.main.async {
+                self.isRetryingPendingLogUploads = false
+            }
+        }
     }
 
     // MARK: LocationManagerDelegate
@@ -1754,6 +1799,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
                     _ = self.fallbackService.manage(command: .reqfeatures)
                     self.updateElevatorSettings()
                 }
+                self.retryPendingLogUploadsIfNeeded()
             } else {
                 stopBGM()
             }
@@ -2124,6 +2170,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             )
             let transferFiles = appLogTransfers + attachmentTransfers
 
+            self.logList.queuePendingLogUpload(logName: logName, files: transferFiles)
             DispatchQueue.global(qos: .background).async {
                 self.submitLogFiles(files: transferFiles, log_name: logName)
             }
@@ -2573,6 +2620,7 @@ protocol LogReportModelDelegate {
     func isSuitcaseConnected() -> Bool
     func requestDetail(log_name: String)
     func submitLogReport(log_name: String, title: String, detail: String, attachments: [LogAttachment])
+    func retryPendingLogUploads()
 }
 
 struct ImportedAttachmentFile {
@@ -2584,19 +2632,32 @@ struct ImportedAttachmentFile {
 class LogReportModel: NSObject, ObservableObject {
     private let maxAttachmentCount = 5
     private let maxAttachmentTotalBytes = 25 * 1024 * 1024
+    private let draftStorageKeyPrefix = "LogReportDraft"
+    private let pendingUploadStorageKey = "PendingLogUploads"
 
     @Published var log_list: [LogEntry]
     @Published var isListReady: Bool = false
     @Published var status: CaBotLogStatus = .OK
-    @Published var selectedLog: LogEntry = LogEntry(name: "dummy")
+    @Published var selectedLog: LogEntry = LogEntry(name: "dummy") {
+        didSet {
+            persistSelectedLogDraftIfNeeded()
+        }
+    }
     private var originalLog: LogEntry = LogEntry(name: "dummy")
     @Published var isDetailReady: Bool = false
     @Published var attachmentErrorMessageKey: String? = nil
+    @Published var pendingUploadStatusMessageKey: String? = nil
+    @Published var shouldShowPendingUploadFailureAlert: Bool = false
     var delegate: LogReportModelDelegate? = nil
     var debug: Bool = false
+    private var pendingLogUploads: [StoredPendingLogUpload]
 
     override init() {
         self.log_list = []
+        self.pendingLogUploads = []
+        super.init()
+        self.pendingLogUploads = loadPendingLogUploads()
+        refreshPendingUploadPresentation()
     }
 
     func set(list: [LogEntry]){
@@ -2610,8 +2671,8 @@ class LogReportModel: NSObject, ObservableObject {
 
     func set(detail: LogEntry) {
         let materializedLog = materializeAttachments(for: detail)
-        self.selectedLog = materializedLog
         self.originalLog = materializedLog
+        self.selectedLog = mergeDraft(into: materializedLog)
         self.isDetailReady = true
         self.attachmentErrorMessageKey = nil
     }
@@ -2642,6 +2703,13 @@ class LogReportModel: NSObject, ObservableObject {
                 attachments: renumberedAttachments(selectedLog.attachments ?? [])
             )
         }
+    }
+
+    func discardSelectedDraft() {
+        guard selectedLog.name != "dummy" else { return }
+        removeDraft(for: selectedLog.name)
+        selectedLog = originalLog
+        attachmentErrorMessageKey = nil
     }
 
     func addAttachments(importedFiles: [ImportedAttachmentFile]) {
@@ -2760,10 +2828,278 @@ class LogReportModel: NSObject, ObservableObject {
         }
     }
 
+    var hasRetryablePendingUploads: Bool {
+        pendingLogUploads.contains(where: { $0.status == .queued || $0.status == .failed })
+    }
+
+    func queuePendingLogUpload(logName: String, files: [LogTransferFile]) {
+        upsertPendingLogUpload(
+            StoredPendingLogUpload(
+                logName: logName,
+                files: files.map {
+                    StoredPendingLogUploadFile(
+                        fileName: $0.fileName,
+                        originalName: $0.originalName,
+                        filePath: $0.url.path,
+                        assetType: $0.assetType
+                    )
+                },
+                status: .queued
+            )
+        )
+    }
+
+    func markPendingLogUploadSending(logName: String) {
+        updatePendingLogUploadStatus(logName: logName, status: .sending)
+    }
+
+    func markPendingLogUploadFailed(logName: String) {
+        updatePendingLogUploadStatus(logName: logName, status: .failed)
+        shouldShowPendingUploadFailureAlert = true
+    }
+
+    func markPendingLogUploadSucceeded(logName: String) {
+        pendingLogUploads.removeAll { $0.logName == logName }
+        persistPendingLogUploads()
+        refreshPendingUploadPresentation()
+    }
+
+    func pendingLogUploadsForRetry() -> [(logName: String, files: [LogTransferFile])] {
+        pendingLogUploads.compactMap { upload in
+            guard upload.status == .queued || upload.status == .failed else {
+                return nil
+            }
+            return (
+                logName: upload.logName,
+                files: upload.files.map {
+                    LogTransferFile(
+                        fileName: $0.fileName,
+                        originalName: $0.originalName,
+                        url: URL(fileURLWithPath: $0.filePath),
+                        assetType: $0.assetType
+                    )
+                }
+            )
+        }
+    }
+
+    func retryPendingUploads() {
+        delegate?.retryPendingLogUploads()
+    }
+
+    func dismissPendingUploadFailureAlert() {
+        shouldShowPendingUploadFailureAlert = false
+    }
+
     private func attachmentSignature(_ attachments: [LogAttachment]?) -> [String] {
         renumberedAttachments(attachments ?? []).map {
             "\($0.file_name)|\($0.original_name)|\($0.order)"
         }
+    }
+
+    private struct StoredDraftAttachment: Codable {
+        let file_name: String
+        let original_name: String
+        let order: Int
+    }
+
+    private struct StoredLogDraft: Codable {
+        let title: String?
+        let detail: String?
+        let attachments: [StoredDraftAttachment]
+    }
+
+    private enum PendingLogUploadStatus: String, Codable {
+        case queued
+        case sending
+        case failed
+    }
+
+    private struct StoredPendingLogUploadFile: Codable {
+        let fileName: String
+        let originalName: String?
+        let filePath: String
+        let assetType: LogTransferAssetType
+    }
+
+    private struct StoredPendingLogUpload: Codable {
+        let logName: String
+        let files: [StoredPendingLogUploadFile]
+        var status: PendingLogUploadStatus
+    }
+
+    private func persistSelectedLogDraftIfNeeded() {
+        let normalizedSelectedLog = normalizedDraftLog(selectedLog)
+        guard normalizedSelectedLog.name != "dummy" else { return }
+
+        if logsMatchForDraft(normalizedSelectedLog, originalLog) || !hasPersistableDraftContent(normalizedSelectedLog) {
+            removeDraft(for: normalizedSelectedLog.name)
+            return
+        }
+
+        let draft = StoredLogDraft(
+            title: normalizedSelectedLog.title,
+            detail: normalizedSelectedLog.detail,
+            attachments: renumberedAttachments(normalizedSelectedLog.attachments ?? []).map {
+                StoredDraftAttachment(
+                    file_name: $0.file_name,
+                    original_name: $0.original_name,
+                    order: $0.order
+                )
+            }
+        )
+
+        do {
+            let data = try JSONEncoder().encode(draft)
+            UserDefaults.standard.set(data, forKey: draftStorageKey(for: normalizedSelectedLog.name))
+        } catch {
+            NSLog("Failed to save report draft for %@: %@", normalizedSelectedLog.name, error.localizedDescription)
+        }
+    }
+
+    private func mergeDraft(into log: LogEntry) -> LogEntry {
+        let normalizedLog = normalizedDraftLog(log)
+
+        guard let draft = loadDraft(for: normalizedLog.name) else {
+            return normalizedLog
+        }
+
+        if (normalizedLog.is_report_submitted ?? false || normalizedLog.is_uploaded_to_box ?? false) &&
+            draftMatchesLog(draft, log: normalizedLog) {
+            removeDraft(for: normalizedLog.name)
+            return normalizedLog
+        }
+
+        var mergedLog = normalizedLog
+        mergedLog.title = draft.title
+        mergedLog.detail = draft.detail
+        mergedLog.attachments = draft.attachments.map {
+            LogAttachment(
+                file_name: $0.file_name,
+                original_name: $0.original_name,
+                order: $0.order
+            )
+        }
+        return materializeAttachments(for: mergedLog)
+    }
+
+    private func loadDraft(for logName: String) -> StoredLogDraft? {
+        guard let data = UserDefaults.standard.data(forKey: draftStorageKey(for: logName)) else {
+            return nil
+        }
+
+        do {
+            return try JSONDecoder().decode(StoredLogDraft.self, from: data)
+        } catch {
+            NSLog("Failed to load report draft for %@: %@", logName, error.localizedDescription)
+            removeDraft(for: logName)
+            return nil
+        }
+    }
+
+    private func removeDraft(for logName: String) {
+        UserDefaults.standard.removeObject(forKey: draftStorageKey(for: logName))
+    }
+
+    private func draftStorageKey(for logName: String) -> String {
+        "\(draftStorageKeyPrefix).\(logName)"
+    }
+
+    private func loadPendingLogUploads() -> [StoredPendingLogUpload] {
+        guard let data = UserDefaults.standard.data(forKey: pendingUploadStorageKey) else {
+            return []
+        }
+
+        do {
+            let uploads = try JSONDecoder().decode([StoredPendingLogUpload].self, from: data)
+            return uploads.map { upload in
+                var normalizedUpload = upload
+                if normalizedUpload.status == .sending {
+                    normalizedUpload.status = .failed
+                }
+                return normalizedUpload
+            }
+        } catch {
+            NSLog("Failed to load pending log uploads: %@", error.localizedDescription)
+            UserDefaults.standard.removeObject(forKey: pendingUploadStorageKey)
+            return []
+        }
+    }
+
+    private func persistPendingLogUploads() {
+        do {
+            let data = try JSONEncoder().encode(pendingLogUploads)
+            UserDefaults.standard.set(data, forKey: pendingUploadStorageKey)
+        } catch {
+            NSLog("Failed to save pending log uploads: %@", error.localizedDescription)
+        }
+    }
+
+    private func upsertPendingLogUpload(_ upload: StoredPendingLogUpload) {
+        pendingLogUploads.removeAll { $0.logName == upload.logName }
+        pendingLogUploads.append(upload)
+        persistPendingLogUploads()
+        refreshPendingUploadPresentation()
+    }
+
+    private func updatePendingLogUploadStatus(logName: String, status: PendingLogUploadStatus) {
+        guard let index = pendingLogUploads.firstIndex(where: { $0.logName == logName }) else {
+            return
+        }
+        pendingLogUploads[index].status = status
+        persistPendingLogUploads()
+        refreshPendingUploadPresentation()
+    }
+
+    private func refreshPendingUploadPresentation() {
+        if pendingLogUploads.contains(where: { $0.status == .failed }) {
+            pendingUploadStatusMessageKey = "APP_LOG_UPLOAD_FAILED"
+        } else if !pendingLogUploads.isEmpty {
+            pendingUploadStatusMessageKey = "APP_LOG_UPLOAD_PENDING"
+        } else {
+            pendingUploadStatusMessageKey = nil
+        }
+    }
+
+    private func normalizedDraftLog(_ log: LogEntry) -> LogEntry {
+        var mutableLog = log
+        mutableLog.title = normalizedDraftText(log.title)
+        mutableLog.detail = normalizedDraftText(log.detail)
+        mutableLog.attachments = renumberedAttachments(log.attachments ?? [])
+        return mutableLog
+    }
+
+    private func normalizedDraftText(_ text: String?) -> String? {
+        guard let text else { return nil }
+        return text.isEmpty ? nil : text
+    }
+
+    private func hasPersistableDraftContent(_ log: LogEntry) -> Bool {
+        log.title != nil || log.detail != nil || !(log.attachments ?? []).isEmpty
+    }
+
+    private func logsMatchForDraft(_ lhs: LogEntry, _ rhs: LogEntry) -> Bool {
+        let normalizedLHS = normalizedDraftLog(lhs)
+        let normalizedRHS = normalizedDraftLog(rhs)
+        return normalizedLHS.title == normalizedRHS.title &&
+        normalizedLHS.detail == normalizedRHS.detail &&
+        attachmentSignature(normalizedLHS.attachments) == attachmentSignature(normalizedRHS.attachments)
+    }
+
+    private func draftMatchesLog(_ draft: StoredLogDraft, log: LogEntry) -> Bool {
+        let normalizedLog = normalizedDraftLog(log)
+        let draftAttachmentSignature = draft.attachments
+            .sorted {
+                if $0.order == $1.order {
+                    return $0.file_name < $1.file_name
+                }
+                return $0.order < $1.order
+            }
+            .map { "\($0.file_name)|\($0.original_name)|\($0.order)" }
+
+        return draft.title == normalizedLog.title &&
+        draft.detail == normalizedLog.detail &&
+        draftAttachmentSignature == attachmentSignature(normalizedLog.attachments)
     }
 
     private func renumberedAttachments(_ attachments: [LogAttachment]) -> [LogAttachment] {

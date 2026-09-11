@@ -298,6 +298,12 @@
 "CONFIRM_DISCARD_SUBMISSION" = "レポートを破棄しても良いですか？";
 "SUITCASE_DOES_NOT_ACCEPT_NEW_REPORT" = "スーツケースはレポートの提出を受け付けていません";
 "PLEASE_CONNECT_TO_SUITCASE" = "スーツケースと接続してください";
+"LOG_UPLOAD_STATUS" = "ログ送信状態";
+"APP_LOG_UPLOAD_PENDING" = "スマホのログ送信は保留中です。再接続後に自動で再試行します。";
+"APP_LOG_UPLOAD_FAILED" = "スマホのログ送信に失敗しました。再接続後、この画面から再試行できます。";
+"RETRY_PENDING_LOG_UPLOAD" = "ログ送信を再試行";
+"APP_LOG_UPLOAD_FAILED_ALERT_TITLE" = "ログ送信に失敗しました";
+"APP_LOG_UPLOAD_FAILED_ALERT_MESSAGE" = "報告本文は送信されましたが、スマホのログは最後まで送信できませんでした。未送信分は端末内に保存されており、再接続後に再試行できます。";
 "INVALID_DATE_STRING" = "無効な日付文字列";
 
 

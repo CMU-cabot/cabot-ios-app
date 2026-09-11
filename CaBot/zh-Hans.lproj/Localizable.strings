@@ -298,6 +298,12 @@
 "CONFIRM_DISCARD_SUBMISSION" = "是否销毁报告？";
 "SUITCASE_DOES_NOT_ACCEPT_NEW_REPORT" = "行李箱未接收提交的报告";
 "PLEASE_CONNECT_TO_SUITCASE" = "请连接行李箱";
+"LOG_UPLOAD_STATUS" = "日志上传状态";
+"APP_LOG_UPLOAD_PENDING" = "手机日志上传待处理。重新连接后将自动重试。";
+"APP_LOG_UPLOAD_FAILED" = "手机日志上传失败。重新连接后可在此处重试。";
+"RETRY_PENDING_LOG_UPLOAD" = "重试日志上传";
+"APP_LOG_UPLOAD_FAILED_ALERT_TITLE" = "日志上传失败";
+"APP_LOG_UPLOAD_FAILED_ALERT_MESSAGE" = "报告正文已发送，但手机日志未能完成上传。应用已在本地保存未发送内容，并会在重新连接后重试。";
 "INVALID_DATE_STRING" = "日期文字无效";
 
 
