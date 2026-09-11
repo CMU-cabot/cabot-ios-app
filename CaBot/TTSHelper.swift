@@ -98,7 +98,7 @@ class CaBotTTS : TTSProtocol {
         // let selfspeak = forceSelfvoice || !isForeground || !isVoiceOverRunning
         
         let isApproachedFacility = AITextContextManager.shared.isApproachedFacility(text)
-        if priority == .Low && ChatData.shared.viewModel?.appModel?.showingChatView == true {
+        if priority == .Low && ChatData.shared.viewModel?.appModel?.showingChatView == true && !isApproachedFacility {
             return
         }
         var overrideForce = false
@@ -106,7 +106,7 @@ class CaBotTTS : TTSProtocol {
             guard isApproachedFacility && AITextContextManager.shared.hasPendingAIText() else {
                 return
             }
-//            overrideForce = true
+            overrideForce = true
 //            AITextContextManager.shared.clearPendingAIText()
         }
         if overrideForce || force || self._tts.isPaused || PriorityQueueTTSWrapper.shared.needForceSpeak(priority) {
