@@ -308,6 +308,7 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
     private let secondaryAddrKey = "secondary_ip_address"
     private let menuDebugKey = "menu_debug"
     private let noSuitcaseDebugKey = "noSuitcaseDebugKey"
+    private let chatTestModeKey = "chatTestModeKey"
     private let modeTypeKey = "modeTypeKey"
     private let notificationCenterID = "cabot_state_notification"
     private let voiceSettingKey = "voiceSettingKey"
@@ -810,6 +811,12 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
             suitcaseConnected = true
         }
     }
+    @Published var chatTestMode: Bool = false {
+        didSet {
+            UserDefaults.standard.setValue(chatTestMode, forKey: chatTestModeKey)
+            UserDefaults.standard.synchronize()
+        }
+    }
     @Published var modeType:ModeType = .Normal{
         didSet {
             UserDefaults.standard.setValue(modeType.rawValue, forKey: modeTypeKey)
@@ -989,6 +996,9 @@ final class CaBotAppModel: NSObject, ObservableObject, CaBotServiceDelegateBLE, 
         updateNetworkConfig()
         if let menuDebug = UserDefaults.standard.value(forKey: menuDebugKey) as? Bool {
             self.menuDebug = menuDebug
+        }
+        if let chatTestMode = UserDefaults.standard.value(forKey: chatTestModeKey) as? Bool {
+            self.chatTestMode = chatTestMode
         }
         if let attendSpeechRate = UserDefaults.standard.value(forKey: attendSpeechRateKey) as? Double {
             self.attendSpeechRate = attendSpeechRate

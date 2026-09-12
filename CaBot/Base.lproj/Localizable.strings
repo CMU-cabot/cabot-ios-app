@@ -366,6 +366,8 @@
 // Chat
 "SPEAK_NOW" = "Speak Now!";
 "Chat Settings" = "Chat Settings";
+"Play Loading Sound" = "Play Loading Sound";
+"Test Mode" = "Test Mode";
 "Chat server connection" = "Chat server connection";
 "An unexpected error has occurred" = "An unexpected error has occurred";
 "Received an unexpected response" = "Received an unexpected response";

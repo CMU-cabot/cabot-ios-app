@@ -370,6 +370,8 @@
 // Chat
 "SPEAK_NOW" = "話しかけてください";
 "Chat Settings" = "対話設定";
+"Play Loading Sound" = "読み込み中の音を再生";
+"Test Mode" = "テストモード";
 "Chat server connection" = "対話サーバー接続";
 "An unexpected error has occurred" = "予期せぬエラーが起きました";
 "Received an unexpected response" = "想定外の応答を受け取りました";

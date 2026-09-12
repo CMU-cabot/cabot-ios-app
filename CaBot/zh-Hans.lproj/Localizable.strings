@@ -370,6 +370,8 @@
 // Chat
 "SPEAK_NOW" = "请开始说话！";
 "Chat Settings" = "聊天设置";
+"Play Loading Sound" = "播放加载音效";
+"Test Mode" = "测试模式";
 "Chat server connection" = "聊天服务器连接";
 "An unexpected error has occurred" = "发生了意外错误";
 "Received an unexpected response" = "收到意外的响应";

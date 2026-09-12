@@ -45,6 +45,7 @@ struct ChatSettingsView: View {
                 }
             }
             Toggle("Play Loading Sound", isOn: $model.chatModel.playBGM)
+            Toggle("Test Mode", isOn: $model.chatTestMode)
         }.navigationTitle(Text("Settings"))
     }
 }

@@ -35,18 +35,20 @@ struct MainMenuView: View {
             if hasAnyAction() {
                 ActionMenus()
                     .environmentObject(modelData)
+                    .disabled(modelData.serverIsReady == .Loading)
             }
             DestinationMenus()
                 .environmentObject(modelData)
+                .disabled(modelData.serverIsReady == .Loading)
             MainMenus()
                 .environmentObject(modelData)
-                .disabled((!modelData.suitcaseConnected && !modelData.menuDebug) || modelData.serverIsReady != .Ready)
             StatusMenus()
                 .environmentObject(modelData)
+                .disabled(modelData.serverIsReady == .Loading)
             SettingMenus()
                 .environmentObject(modelData)
+                .disabled(modelData.serverIsReady == .Loading)
         }
-        .disabled(modelData.serverIsReady == .Loading)
         .overlay(Group {
             if modelData.serverIsReady == .Loading {
                 ProgressView("Loading...")
@@ -270,6 +272,10 @@ struct DestinationMenus: View {
 struct MainMenus: View {
     @EnvironmentObject var modelData: CaBotAppModel
 
+    private var isNavigationDisabled: Bool {
+        (!modelData.suitcaseConnected && !modelData.menuDebug) || modelData.serverIsReady != .Ready
+    }
+
     var body: some View {
         Section(header: Text("Navigation"), footer: Group {
             if modelData.serverIsReady == .NotReady {
@@ -286,6 +292,7 @@ struct MainMenus: View {
                     label: {
                         Text("START_CONVERSATION")
                     })
+                .disabled(isNavigationDisabled && !modelData.chatTestMode)
             }
             NavigationLink(
                 destination: DestinationsView()
@@ -293,12 +300,14 @@ struct MainMenus: View {
                 label: {
                     Text("SELECT_DESTINATION")
                 })
+            .disabled(isNavigationDisabled)
             NavigationLink(
                 destination: ToursView()
                     .environmentObject(modelData).heartbeat("ToursView"),
                 label: {
                     Text("SELECT_TOUR")
                 })
+            .disabled(isNavigationDisabled)
         }
     }
 }
