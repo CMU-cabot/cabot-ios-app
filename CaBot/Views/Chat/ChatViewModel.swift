@@ -398,7 +398,7 @@ final class PTTManager {
     static let shared = PTTManager()
 
     /// Treat PTT as off when no `ptton` message arrives within this interval.
-    static let defaultInactivityTimeout: TimeInterval = 10.0 // 3.0
+    static let defaultInactivityTimeout: TimeInterval = 3.0
 
     private let inactivityTimeout: TimeInterval
     private var inactivityWorkItem: DispatchWorkItem?
