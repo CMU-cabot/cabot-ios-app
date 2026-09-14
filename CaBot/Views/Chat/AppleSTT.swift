@@ -92,7 +92,13 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
                 speakendaction(selfvoice)
             }
 
+            // Navigation actions schedule their own announcement and close the
+            // chat. They must take precedence over the PTT close path.
             if ChatData.shared.viewModel?.navigationAction() == true {
+                return
+            }
+
+            if PTTManager.shared.closePTTConversationAfterResponseIfNeeded() == true {
                 return
             }
 
@@ -117,7 +123,11 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
     }
 
     public func endRecognize() {
-        if self.speaking {
+        endRecognize(stopTTS: true)
+    }
+
+    private func endRecognize(stopTTS: Bool) {
+        if stopTTS && self.speaking {
             tts?.stop()
         }
         DispatchQueue.main.async {
@@ -132,9 +142,13 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
     }
 
     public func restartRecognize() {
+        restartRecognize(silently: false)
+    }
+
+    private func restartRecognize(silently: Bool, stopTTS: Bool = true) {
         self.paused = false;
         self.restarting = true;
-        self.restartSTT()
+        self.restartSTT(playStartSound: !silently, stopTTS: stopTTS)
     }
 
     public func resetActions(
@@ -147,20 +161,24 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
         self.last_failure = failure
     }
 
-    private func restartSTT() {
+    private func restartSTT(playStartSound: Bool = true, stopTTS: Bool = true) {
         if  PriorityQueueTTS.shared.isSpeaking {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.restartSTT()
+                self.restartSTT(playStartSound: playStartSound, stopTTS: stopTTS)
             }
             return
         }
         if self.recognizing {
-            self.endRecognize()
+            self.endRecognize(stopTTS: stopTTS)
         }
-        self.tts?.stop()
+        if stopTTS {
+            self.tts?.stop()
+        }
         if let actions = self.last_action {
-            self.tts?.vibrate()
-            self.tts?.playVoiceRecoStart()
+            if playStartSound {
+                self.tts?.vibrate()
+                self.tts?.playVoiceRecoStart()
+            }
             ContentView.inactive_at = nil
 
             DispatchQueue.main.asyncAfter(deadline: .now()+self.waitDelay) {
@@ -210,6 +228,7 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
     private var speechRecognizer: SFSpeechRecognizer?
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
     private var recognitionTask: SFSpeechRecognitionTask?
+    private let pttRecognition = PTTRecognitionState()
 
     private var last_action: ((PassthroughSubject<String, Error>, UInt64)->Void)?
     private var last_failure:(NSError)->Void = {arg in}
@@ -331,6 +350,9 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
 
     private func startRecognize(_ action: @escaping (PassthroughSubject<String, Error>, UInt64)->Void, failure: @escaping (NSError)->Void,  timeout: @escaping ()->Void){
         self.paused = false
+        let sessionID = UUID()
+        pttRecognition.sessionID = sessionID
+        pttRecognition.didComplete = false
 
         self.last_timeout = timeout
         self.last_failure = failure
@@ -345,20 +367,23 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
             guard let weakself = self else {
                 return
             }
+            guard weakself.pttRecognition.sessionID == sessionID else {
+                return
+            }
             let complete:()->Void = {
-                if let last_text = weakself.last_converted {
-                    NSLog("Recognized: \(last_text)")
-                    let text = PassthroughSubject<String, Error>()
-                    action(text, 0)
-                    text.send(last_text)
-                    text.send(completion: .finished)
-                }
+                weakself.completeRecognition(action)
             }
 
             if e != nil {
+                if weakself.pttRecognition.finishAction != nil {
+                    weakself.completePTTRecognition()
+                    return
+                }
                 guard let error:NSError = e as NSError? else {
-                    weakself.endRecognize()
-                    timeout()
+                    if !weakself.restartRecognizeWhilePTTOn() {
+                        weakself.endRecognize()
+                        timeout()
+                    }
                     return;
                 }
 
@@ -371,14 +396,22 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
                     DispatchQueue.main.async {
                         weakself.state?.wrappedValue.chatState = .Recognized
                     }
-                    timeout()
-                } else if code == 209 || code == 216 || code == 1700 || code == 301 || code == 1110 {
+                    if !weakself.restartRecognizeWhilePTTOn() {
+                        timeout()
+                    }
+                } else if code == 1110 {
+                    // No speech detected. Keep listening while PTT is held.
+                    if !weakself.restartRecognizeWhilePTTOn() {
+                        complete()
+                    }
+                } else if code == 209 || code == 216 || code == 1700 || code == 301 {
                     // noop
                     // 209 : trying to stop while starting
                     // 216 : terminated by manual
                     // 1700: background
-                    // 1110: No speech detected
-                    complete()
+                    if !PTTManager.shared.isPTTOn {
+                        complete()
+                    }
                 } else if code == 4 {
                     weakself.endRecognize(); // network error
                     //let newError = weakself.createError(NSLocalizedString("checkNetworkConnection", tableName: nil, bundle: Bundle.module, value: "", comment:""))
@@ -412,9 +445,11 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
             weakself.last_text = result.bestTranscription.formattedString;
             weakself.last_converted = ContactsUtil.shared.convert(result.bestTranscription.formattedString)
 
-            weakself.resulttimer = Timer.scheduledTimer(withTimeInterval: weakself.resulttimerDuration, repeats: false, block: { (timer) in
-                weakself.endRecognize()
-            })
+            if !PTTManager.shared.isPTTOn {
+                weakself.resulttimer = Timer.scheduledTimer(withTimeInterval: weakself.resulttimerDuration, repeats: false, block: { (timer) in
+                    weakself.endRecognize()
+                })
+            }
 
             let str = weakself.last_text
             let isFinal:Bool = result.isFinal;
@@ -427,7 +462,15 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
                     }
                 }
                 if isFinal{
-                    complete()
+                    if weakself.completePTTRecognitionIfNeeded() {
+                        return
+                    }
+                    if PTTManager.shared.isPTTOn {
+                        complete()
+                        _ = weakself.restartRecognizeWhilePTTOn()
+                    } else {
+                        complete()
+                    }
                 }
             }else{
                 if isFinal{
@@ -447,8 +490,10 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
         }
 
         self.timeoutTimer = Timer.scheduledTimer(withTimeInterval: self.timeoutDuration, repeats: false, block: { (timer) in
-            self.endRecognize()
-            timeout()
+            if !self.restartRecognizeWhilePTTOn() {
+                self.endRecognize()
+                timeout()
+            }
         })
 
         self.restarting = false
@@ -555,5 +600,104 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
         self.pwCaptureSession?.stopRunning()
         AudioSessionRouteHelper.restorePreferredOutputRoute()
         self.initPWCaptureSession()
+    }
+
+    // MARK: - Push-to-talk
+
+    /// State that exists only to finish and restart Apple Speech requests while
+    /// PTT is held. Keeping it together prevents the ordinary STT state from
+    /// becoming coupled to the PTT conversation lifecycle.
+    private final class PTTRecognitionState {
+        var sessionID = UUID()
+        var didComplete = false
+        var finishAction: ((Bool) -> Void)?
+        var finishWorkItem: DispatchWorkItem?
+    }
+
+    /// Ends microphone input for PTT and waits for Apple Speech to return its
+    /// final result before the caller closes the chat UI.
+    public func finishPTTRecognition(completion: @escaping (Bool) -> Void) {
+        pttRecognition.finishAction = completion
+
+        guard recognizing, recognitionRequest != nil else {
+            completePTTRecognition()
+            return
+        }
+
+        // Stop feeding buffers before ending the Speech request. Otherwise the
+        // capture delegate can keep appending audio to a finished request and
+        // cause SpeechFramework to emit errors continuously.
+        stopPWCaptureSession()
+        recognitionRequest?.endAudio()
+
+        let workItem = DispatchWorkItem { [weak self] in
+            guard let self, self.pttRecognition.finishAction != nil else { return }
+            self.completePTTRecognition()
+        }
+        pttRecognition.finishWorkItem?.cancel()
+        pttRecognition.finishWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: workItem)
+    }
+
+    /// Stops a response being read aloud and starts a fresh PTT recognition.
+    public func resumePTTRecognition() {
+        pttRecognition.finishAction = nil
+        pttRecognition.finishWorkItem?.cancel()
+        pttRecognition.finishWorkItem = nil
+
+        if speaking || recognizing {
+            // PTTManager has already stopped the shared TTS queue.
+            endRecognize(stopTTS: false)
+        }
+        restartRecognize(silently: false, stopTTS: false)
+    }
+
+    /// Starts a fresh recognition request while the PTT button remains held.
+    /// Apple Speech requests cannot accept more audio after a final result.
+    @discardableResult
+    private func restartRecognizeWhilePTTOn() -> Bool {
+        guard PTTManager.shared.isPTTOn else { return false }
+        restartRecognize(silently: true)
+        return true
+    }
+
+    private func completeRecognition(_ action: @escaping (PassthroughSubject<String, Error>, UInt64)->Void) {
+        guard !pttRecognition.didComplete,
+              let lastText = last_converted?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !lastText.isEmpty else {
+            return
+        }
+
+        pttRecognition.didComplete = true
+        NSLog("Recognized: \(lastText)")
+        let text = PassthroughSubject<String, Error>()
+        action(text, 0)
+        text.send(lastText)
+        text.send(completion: .finished)
+    }
+
+    private func completeCurrentRecognition() {
+        guard let action = last_action else { return }
+        completeRecognition(action)
+    }
+
+    @discardableResult
+    private func completePTTRecognitionIfNeeded() -> Bool {
+        guard pttRecognition.finishAction != nil else { return false }
+        completePTTRecognition()
+        return true
+    }
+
+    private func completePTTRecognition() {
+        guard let completion = pttRecognition.finishAction else { return }
+        completeCurrentRecognition()
+        pttRecognition.finishAction = nil
+        pttRecognition.finishWorkItem?.cancel()
+        pttRecognition.finishWorkItem = nil
+        endRecognize()
+        let didSendRecognitionResult = pttRecognition.didComplete
+        DispatchQueue.main.async {
+            completion(didSendRecognitionResult)
+        }
     }
 }

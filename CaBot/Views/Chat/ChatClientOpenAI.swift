@@ -473,7 +473,7 @@ class ChatClientOpenAI: ChatClient {
     func prepareMessages(message: String) -> [ChatQuery.ChatCompletionMessageParam] {
         var messages: [ChatQuery.ChatCompletionMessageParam] = []
 
-        if let aiText = AITextContextManager.shared.consumePendingAIText() {
+        if let aiText = AITextContextManager.shared.consumePendingAIText(), !aiText.isEmpty {
             messages.append(.init(role: .assistant, content: aiText)!)
         }
 

@@ -389,3 +389,105 @@ class AITextContextManager {
         return regularExpression.firstMatch(in: text, range: range) != nil
     }
 }
+
+/// Coordinates the robot's push-to-talk button with the chat lifecycle.
+///
+/// `ptton` is sent continuously while the button is pressed. Only the first
+/// message changes state; later messages refresh the inactivity timeout.
+final class PTTManager {
+    static let shared = PTTManager()
+
+    /// Treat PTT as off when no `ptton` message arrives within this interval.
+    static let defaultInactivityTimeout: TimeInterval = 10.0 // 3.0
+
+    private let inactivityTimeout: TimeInterval
+    private var inactivityWorkItem: DispatchWorkItem?
+    private var closeAfterPTTResponse = false
+
+    private(set) var isPTTOn = false
+
+    init(inactivityTimeout: TimeInterval = PTTManager.defaultInactivityTimeout) {
+        self.inactivityTimeout = inactivityTimeout
+    }
+
+    /// Handles one periodically received `ptton` navigation command.
+    /// This method must be called on the main queue.
+    func receivePTTOn() {
+        inactivityWorkItem?.cancel()
+
+        if !isPTTOn {
+            isPTTOn = true
+            print("PTT state changed: on")
+            startPTTConversation()
+        }
+
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.receivePTTOff()
+        }
+        inactivityWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + inactivityTimeout, execute: workItem)
+    }
+
+    /// Handles an explicit `pttoff` command or PTT inactivity timeout.
+    /// This method must be called on the main queue.
+    func receivePTTOff() {
+        inactivityWorkItem?.cancel()
+        inactivityWorkItem = nil
+
+        guard isPTTOn else { return }
+        isPTTOn = false
+        print("PTT state changed: off")
+        finishPTTConversation()
+    }
+
+    /// A newly pressed PTT always interrupts a response and begins listening.
+    private func startPTTConversation() {
+        closeAfterPTTResponse = false
+        PriorityQueueTTS.shared.cancel(at: .immediate)
+
+        guard let viewModel = ChatData.shared.viewModel,
+              let appModel = viewModel.appModel else {
+            return
+        }
+
+        let wasShowingChat = appModel.showingChatView
+        appModel.showingChatView = true
+
+        // A hidden chat initializes STT from ContentView. Resume only an
+        // existing conversation, including an AI response that was interrupted.
+        if wasShowingChat {
+            viewModel.stt?.resumePTTRecognition()
+        }
+    }
+
+    /// Ends microphone input and leaves the chat open through the AI response.
+    private func finishPTTConversation() {
+        guard let viewModel = ChatData.shared.viewModel,
+              let stt = viewModel.stt else {
+            closePTTConversation()
+            return
+        }
+
+        closeAfterPTTResponse = true
+        stt.finishPTTRecognition { [weak self, weak viewModel] didSendRecognitionResult in
+            guard let self else { return }
+            if !didSendRecognitionResult && viewModel?.appModel?.sendingChatData != true {
+                self.closePTTConversation()
+            }
+        }
+    }
+
+    /// Called when reading the response has completed after `pttoff`.
+    func closePTTConversationAfterResponseIfNeeded() -> Bool {
+        guard closeAfterPTTResponse else { return false }
+        closePTTConversation()
+        return true
+    }
+
+    private func closePTTConversation() {
+        closeAfterPTTResponse = false
+        DispatchQueue.main.async {
+            ChatData.shared.viewModel?.appModel?.showingChatView = false
+        }
+    }
+}

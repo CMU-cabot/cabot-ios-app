@@ -81,10 +81,16 @@ public struct ContentView: View {
         debugPrintTourData()
         if AITextContextManager.shared.hasRecentPendingAIText() {
 //            model.stt?.restartRecognize()
-            model.chat?.speakGreeting(CustomLocalizedString("Please speak", lang: I18N.shared.lang))
+            if PTTManager.shared.isPTTOn {
+                model.chat?.speakGreeting("")
+            } else {
+                model.chat?.speakGreeting(CustomLocalizedString("Please speak", lang: I18N.shared.lang))
+            }
         } else {
             AITextContextManager.shared.clearPendingAIText()
-            if welcome_message {
+            if PTTManager.shared.isPTTOn {
+                model.chat?.speakGreeting("")
+            } else if welcome_message {
                 model.send(message: "")
             } else if let greeting = picker.next() {
 //                model.stt?.restartRecognize()

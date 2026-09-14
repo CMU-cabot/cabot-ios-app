@@ -406,6 +406,8 @@ enum NavigationEventType:String, Decodable {
     case togglespeakstate
     case getelevatorsettings
     case unknown
+    case ptton
+    case pttoff
 }
 
 struct NavigationEventRequest: Decodable {
@@ -661,6 +663,10 @@ class CaBotServiceActions {
                 }
             case .unknown:
                 break
+            case .ptton:
+                PTTManager.shared.receivePTTOn()
+            case .pttoff:
+                PTTManager.shared.receivePTTOff()
             }
         }
     }
