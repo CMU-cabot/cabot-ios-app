@@ -46,6 +46,7 @@ public struct ContentView: View {
         }
         .onDisappear() {
             startChat(false)
+            PTTManager.shared.chatDidDisappear()
         }
     }
     

@@ -403,6 +403,8 @@ final class PTTManager {
     private let inactivityTimeout: TimeInterval
     private var inactivityWorkItem: DispatchWorkItem?
     private var closeAfterPTTResponse = false
+    private var isClosingPTTConversation = false
+    private var pendingPTTStart = false
 
     private(set) var isPTTOn = false
 
@@ -445,6 +447,11 @@ final class PTTManager {
         closeAfterPTTResponse = false
         PriorityQueueTTS.shared.cancel(at: .immediate)
 
+        if isClosingPTTConversation {
+            pendingPTTStart = true
+            return
+        }
+
         guard let viewModel = ChatData.shared.viewModel,
               let appModel = viewModel.appModel else {
             return
@@ -471,6 +478,7 @@ final class PTTManager {
         closeAfterPTTResponse = true
         stt.finishPTTRecognition { [weak self, weak viewModel] didSendRecognitionResult in
             guard let self else { return }
+            guard self.closeAfterPTTResponse else { return }
             if !didSendRecognitionResult && viewModel?.appModel?.sendingChatData != true {
                 self.closePTTConversation()
             }
@@ -484,10 +492,32 @@ final class PTTManager {
         return true
     }
 
+    /// Called by ContentView after the NavigationLink pop has completed.
+    func chatDidDisappear() {
+        isClosingPTTConversation = false
+
+        guard pendingPTTStart, isPTTOn else {
+            pendingPTTStart = false
+            return
+        }
+        pendingPTTStart = false
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self, self.isPTTOn else { return }
+            self.startPTTConversation()
+        }
+    }
+
     private func closePTTConversation() {
         closeAfterPTTResponse = false
-        DispatchQueue.main.async {
-            ChatData.shared.viewModel?.appModel?.showingChatView = false
+        DispatchQueue.main.async { [weak self] in
+            guard let self, !self.isPTTOn,
+                  let appModel = ChatData.shared.viewModel?.appModel,
+                  appModel.showingChatView else {
+                return
+            }
+            self.isClosingPTTConversation = true
+            appModel.showingChatView = false
         }
     }
 }
