@@ -82,6 +82,7 @@ public struct ContentView: View {
         debugPrintTourData()
         if AITextContextManager.shared.hasRecentPendingAIText() {
 //            model.stt?.restartRecognize()
+            AITextContextManager.shared.updatePendingAIPrompt()
             if PTTManager.shared.isPTTOn {
                 model.chat?.speakGreeting("")
             } else {

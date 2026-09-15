@@ -343,11 +343,23 @@ class AITextContextManager {
 
     func appendPendingAIText(_ text: String, type: String) {
         if pendingAIText != nil {
-            pendingAIText?.text += "\n\(text)"
+            if !text.isEmpty {
+                pendingAIText?.text += "\n\(text)"
+            }
         } else {
             pendingAIText = (timestamp: Date(), text: text, type: type)
         }
         NSLog("appendPendingAIText text: \(text), type: \(type)")
+    }
+
+    func updatePendingAIPrompt() {
+        guard let type = pendingAIText?.type, type == "poi" else { return }
+
+        let language = ChatData.shared.viewModel?.appModel?.resourceLang ?? I18N.shared.lang
+        appendPendingAIText(
+            CustomLocalizedString("I can answer questions about it", lang: language),
+            type: type
+        )
     }
 
     func hasRecentPendingAIText(within timeout: TimeInterval = 20.0) -> Bool {
@@ -363,10 +375,11 @@ class AITextContextManager {
 
     func consumePendingAIText() -> String? {
         defer { pendingAIText = nil }
-        if let logText = pendingAIText?.text.replacingOccurrences(of: "\n", with: "\\n") {
-            NSLog("consumePendingAIText \(logText)")
-        }
-        return pendingAIText?.text
+        guard let pendingAIText else { return nil }
+
+        let logText = pendingAIText.text.replacingOccurrences(of: "\n", with: "\\n")
+        NSLog("consumePendingAIText \(logText)")
+        return pendingAIText.text
     }
 
     func clearPendingAIText(_ type: String? = nil) {
