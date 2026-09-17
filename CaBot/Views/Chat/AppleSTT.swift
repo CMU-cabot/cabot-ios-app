@@ -341,6 +341,7 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
                 let power = 110 + (log10((ave + 1) / Float(sampleRate / updateRate)) - log10(32768)) * 20
                 DispatchQueue.main.async {
                     self.state?.wrappedValue.power = power
+                    self.noteVADPower(power)
                 }
                 ave = 0
                 aveCount = 0
@@ -362,6 +363,7 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
         recognitionRequest!.contextualStrings = ContactsUtil.shared.getContextualStrings()
         last_text = nil
         last_converted = nil
+        resetVAD()
         NSLog("Start recognizing")
         recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest!, resultHandler: { [weak self] (result, e) in
             guard let weakself = self else {
@@ -445,16 +447,13 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
             weakself.last_text = result.bestTranscription.formattedString;
             weakself.last_converted = ContactsUtil.shared.convert(result.bestTranscription.formattedString)
 
-            if !PTTManager.shared.isPTTOn {
-                weakself.resulttimer = Timer.scheduledTimer(withTimeInterval: weakself.resulttimerDuration, repeats: false, block: { (timer) in
-                    weakself.endRecognize()
-                })
-            }
-
             let str = weakself.last_text
             let isFinal:Bool = result.isFinal;
             let length:Int = str?.count ?? 0
             if (length > 0) {
+                if !PTTManager.shared.isPTTOn {
+                    weakself.startResultTimerWithVAD()
+                }
                 DispatchQueue.main.async {
                     if let str, let converted = weakself.last_converted {
                         NSLog("Result = \(str)(\(converted)), Length = \(length), isFinal = \(isFinal)");
@@ -699,5 +698,96 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
         DispatchQueue.main.async {
             completion(didSendRecognitionResult)
         }
+    }
+
+    // MARK: - Voice activity detection
+
+    // The audio callback supplies approximately 30 power samples per second.
+    // A one-second VAD window therefore contains enough samples to distinguish
+    // a changing voice signal from a steady headset noise floor.
+    private let vadWindowDuration: TimeInterval = 1.0
+    private let vadMaximumWaitDuration: TimeInterval = 3
+    private let vadNoisePercentile: Float = 0.2
+    private let vadInitialSignalMargin: Float = 4.0
+    private let vadSignalMarginStep: Float = 0.75
+    private let vadMinimumVoiceFrames = 5
+
+    private var vadPowerSamples: [Float] = []
+    private var vadTextDetectedAt: Date?
+
+    private func resetVAD() {
+        vadPowerSamples.removeAll(keepingCapacity: true)
+        vadTextDetectedAt = nil
+    }
+
+    private func noteVADPower(_ power: Float) {
+        guard vadTextDetectedAt != nil else {
+            return
+        }
+        vadPowerSamples.append(power)
+    }
+
+    private func startResultTimerWithVAD() {
+        vadTextDetectedAt = Date()
+        startVADWindow()
+    }
+
+    private func startVADWindow() {
+        vadPowerSamples.removeAll(keepingCapacity: true)
+        resulttimer = Timer.scheduledTimer(withTimeInterval: resulttimerDuration, repeats: false) { [weak self] _ in
+            self?.checkVADAfterRecognitionResult()
+        }
+    }
+
+    private func checkVADAfterRecognitionResult() {
+        guard recognizing,
+              !PTTManager.shared.isPTTOn,
+              let textDetectedAt = vadTextDetectedAt else {
+            return
+        }
+
+        let elapsed = Date().timeIntervalSince(textDetectedAt)
+        if elapsed >= vadMaximumWaitDuration {
+            NSLog("STT VAD: force end after %.1f seconds", elapsed)
+            endRecognize()
+            return
+        }
+
+        let noiseFloor = vadNoiseFloor()
+        let margin = max(0, vadInitialSignalMargin - Float(elapsed / vadWindowDuration - 1) * vadSignalMarginStep)
+        let threshold = noiseFloor + margin
+        let longestVoiceRun = vadLongestVoiceRun(threshold: threshold)
+        let detected = longestVoiceRun >= vadMinimumVoiceFrames
+        NSLog("STT VAD: elapsed=%.1f noiseFloor=%.1f threshold=%.1f longestRun=%d detected=%@",
+              elapsed, noiseFloor, threshold, longestVoiceRun, detected ? "YES" : "NO")
+
+        if detected {
+            startVADWindow()
+        } else {
+            endRecognize()
+        }
+    }
+
+    private func vadNoiseFloor() -> Float {
+        guard !vadPowerSamples.isEmpty else {
+            return 0
+        }
+        let sortedSamples = vadPowerSamples.sorted()
+        let index = Int(Float(sortedSamples.count - 1) * vadNoisePercentile)
+        return sortedSamples[index]
+    }
+
+    private func vadLongestVoiceRun(threshold: Float) -> Int {
+        var currentRun = 0
+        var longestRun = 0
+        for power in vadPowerSamples {
+            if power >= threshold {
+                currentRun += 1
+                longestRun = max(longestRun, currentRun)
+            } else {
+                currentRun = 0
+            }
+        }
+        return longestRun
     }
 }
