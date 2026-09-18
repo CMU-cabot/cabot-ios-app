@@ -103,7 +103,7 @@ class CaBotTTS : TTSProtocol {
         }
         var overrideForce = false
         if priority == .Low && self._tts.isSpeaking {
-            guard isApproachedFacility && AITextContextManager.shared.hasPendingAIText() else {
+            guard isApproachedFacility && (self._tts.priority == .Low || ChatData.shared.viewModel?.appModel?.showingChatView == true) else {
                 return
             }
             overrideForce = true
