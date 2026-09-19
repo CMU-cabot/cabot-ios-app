@@ -412,9 +412,11 @@ final class PTTManager {
 
     /// Treat PTT as off when no `ptton` message arrives within this interval.
     static let defaultInactivityTimeout: TimeInterval = 3.0
+    static let responseDisplayTimeout: TimeInterval = 10.0
 
     private let inactivityTimeout: TimeInterval
     private var inactivityWorkItem: DispatchWorkItem?
+    private var responseDisplayWorkItem: DispatchWorkItem?
     private var closeAfterPTTResponse = false
     private var isClosingPTTConversation = false
     private var pendingPTTStart = false
@@ -458,6 +460,8 @@ final class PTTManager {
     /// A newly pressed PTT always interrupts a response and begins listening.
     private func startPTTConversation() {
         closeAfterPTTResponse = false
+        responseDisplayWorkItem?.cancel()
+        responseDisplayWorkItem = nil
         PriorityQueueTTS.shared.cancel(at: .immediate)
 
         if isClosingPTTConversation {
@@ -501,7 +505,18 @@ final class PTTManager {
     /// Called when reading the response has completed after `pttoff`.
     func closePTTConversationAfterResponseIfNeeded() -> Bool {
         guard closeAfterPTTResponse else { return false }
-        closePTTConversation()
+        closeAfterPTTResponse = false
+        let workItem = DispatchWorkItem { [weak self] in self?.closePTTConversation() }
+        responseDisplayWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.responseDisplayTimeout, execute: workItem)
+        return true
+    }
+
+    func resumeConversationAfterPTTResponseIfNeeded() -> Bool {
+        guard responseDisplayWorkItem != nil else { return false }
+        responseDisplayWorkItem?.cancel()
+        responseDisplayWorkItem = nil
+        ChatData.shared.viewModel?.stt?.restartRecognize()
         return true
     }
 
@@ -523,6 +538,8 @@ final class PTTManager {
 
     private func closePTTConversation() {
         closeAfterPTTResponse = false
+        responseDisplayWorkItem?.cancel()
+        responseDisplayWorkItem = nil
         DispatchQueue.main.async { [weak self] in
             guard let self, !self.isPTTOn,
                   let appModel = ChatData.shared.viewModel?.appModel,

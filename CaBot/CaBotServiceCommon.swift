@@ -643,6 +643,7 @@ class CaBotServiceActions {
                 delegate.cabot(service: service, soundRequest: request.param)
             case .toggleconversation:
                 NSLog("Receive activate microphone request")
+                if PTTManager.shared.resumeConversationAfterPTTResponseIfNeeded() { return }
                 if let appModel = ChatData.shared.viewModel?.appModel {
                     if appModel.showingChatView && appModel.sendingChatData {
                         if !appModel.receivingChatContent {

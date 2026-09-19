@@ -243,7 +243,7 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
     private var audioDataQueue:DispatchQueue? = nil
 
     private var timeoutTimer:Timer? = nil
-    private var timeoutDuration:TimeInterval = 20.0
+    private var timeoutDuration:TimeInterval = 10.0
 
     private var resulttimer:Timer? = nil
     private var resulttimerDuration:TimeInterval = 1.0
