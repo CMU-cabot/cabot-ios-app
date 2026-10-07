@@ -520,6 +520,15 @@ final class PTTManager {
         return true
     }
 
+    /// A manually opened conversation must not inherit the deferred close that
+    /// was scheduled for a previous PTT response.
+    func regularConversationDidStart() {
+        guard !isPTTOn else { return }
+        closeAfterPTTResponse = false
+        responseDisplayWorkItem?.cancel()
+        responseDisplayWorkItem = nil
+    }
+
     /// Called by ContentView after the NavigationLink pop has completed.
     func chatDidDisappear() {
         isClosingPTTConversation = false

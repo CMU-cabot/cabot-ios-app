@@ -60,6 +60,7 @@ public struct ContentView: View {
             AITextContextManager.shared.clearPendingAIText("greeting")
             return
         }
+        PTTManager.shared.regularConversationDidStart()
         var welcome_message = false
         if model.stt == nil {
             model.stt = AppleSTT(state: $model.chatState, tts: PriorityQueueTTSWrapper.shared)
