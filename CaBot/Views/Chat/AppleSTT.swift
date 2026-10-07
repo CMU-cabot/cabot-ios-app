@@ -302,9 +302,9 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
     private var aveCount: Int = 0
 
     open func captureOutput(_ captureOutput: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        if !pwCapturingIgnore {
-            appendRecognitionSampleBuffer(sampleBuffer)
-        }
+        guard !pwCapturingIgnore else { return }
+
+        appendRecognitionSampleBuffer(sampleBuffer)
         if !pwCapturingStarted {
             NSLog("Recording started")
         }
@@ -481,6 +481,8 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
         })
         self.stopstt = {
             self.recognitionTask?.cancel()
+            self.recognitionTask = nil
+            self.recognitionRequest = nil
             if self.resulttimer != nil{
                 self.resulttimer?.invalidate()
                 self.resulttimer = nil;
