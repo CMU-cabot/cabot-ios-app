@@ -766,6 +766,11 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
         if detected {
             startVADWindow()
         } else {
+            // Apple Speech does not always emit a final result after the user
+            // stops speaking.  The VAD timeout is our end-of-utterance signal
+            // in that case, so preserve the most recent partial result before
+            // tearing the recognition request down.
+            completeCurrentRecognition()
             endRecognize()
         }
     }
