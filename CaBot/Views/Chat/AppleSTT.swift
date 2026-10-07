@@ -751,6 +751,9 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
         let elapsed = Date().timeIntervalSince(textDetectedAt)
         if elapsed >= vadMaximumWaitDuration {
             NSLog("STT VAD: force end after %.1f seconds", elapsed)
+            // A forced VAD timeout can cancel Apple Speech before it emits a
+            // final result. Preserve the latest partial result first.
+            completeCurrentRecognition()
             endRecognize()
             return
         }
