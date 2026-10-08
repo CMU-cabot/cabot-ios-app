@@ -182,6 +182,7 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
             ContentView.inactive_at = nil
 
             DispatchQueue.main.asyncAfter(deadline: .now()+self.waitDelay) {
+                self.resetPWCaptureSession()
                 self.initPWCaptureSession()
                 self.startPWCaptureSession()
                 self.startRecognize(actions, failure:self.last_failure, timeout:self.last_timeout)
@@ -259,6 +260,14 @@ open class AppleSTT: NSObject, STTProtocol, AVCaptureAudioDataOutputSampleBuffer
 
     private var pwCapturingStarted: Bool = false
     private var pwCapturingIgnore: Bool = false
+
+    private func resetPWCaptureSession() {
+        pwCapturingIgnore = true
+        pwCaptureSession?.stopRunning()
+        pwCaptureSession = nil
+        pwCapturingStarted = false
+    }
+
     private func initPWCaptureSession(){//alternative
         if pwCapturingStarted, let captureSession = self.pwCaptureSession, !captureSession.isRunning {
             NSLog("AVCaptureSession is not running. Restarting...")
